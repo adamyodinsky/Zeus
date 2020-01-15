@@ -17,7 +17,7 @@ app.use('/', apiRouter);
 downloadFromS3Interval();
 
 // run server
-app.listen(3000, () => {
+app.listen(config.Port, () => {
   logger.info(`Server running on ${config.Port}:${config.Host}`);
 });
 
