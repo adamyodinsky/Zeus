@@ -1,22 +1,27 @@
-const { buildState, addCurrentUsageToState } = require('./buildState');
+const { buildState } = require('./buildState');
 const { saveStateToS3 } = require('../helpers/S3state');
 const logger = require('../helpers/logger');
+// const moment = require('moment');
+
 
 const executeStateBuilder = async() => {
   logger.info("State Build Iteration Starting...");
+  let startTime = Date.now();
   try {
     let state = await buildState();
-    await addCurrentUsageToState(state);
-    process.exit(1);
     await saveStateToS3(state);
     logger.info("State Build Iteration Ended Successfully");
   } catch (err) {
     logger.error(err.message);
   }
+  let interval =  (Date.now() - startTime) / 1000;
+
+  logger.info("Build Iteration Time in seconds:", interval);
 };
 
 const mainStateBuilder = () => {
-  setInterval(executeStateBuilder, 1000*5);
+  executeStateBuilder();
+  setInterval(executeStateBuilder, 1000*30);
 };
 
 module.exports = { mainStateBuilder };

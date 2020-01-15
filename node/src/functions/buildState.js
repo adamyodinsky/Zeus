@@ -54,11 +54,14 @@ const buildState = async() => {
         const key = `${newPodObject.name}-${newContainerObject.name}`;
         const currentUsageContainer = currentUsageMap.get(key);
 
-        // put the values
-        newPodObject.resources.current = {
-          cpu: currentUsageContainer.cpu,
-          memory: currentUsageContainer.memory
-        };
+        if (currentUsageContainer) { // put the values
+          container.resources.current = {
+            cpu: currentUsageContainer.cpu,
+            memory: currentUsageContainer.memory
+          };
+        } else {
+          logger.error('Could not found current state for key:', key);
+        }
         // push the object to the new container object
         newPodObject.containers.push(newContainerObject);
       }
