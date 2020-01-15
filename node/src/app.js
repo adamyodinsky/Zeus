@@ -13,6 +13,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', apiRouter);
 
+
 // run server
 app.listen(3000, () => {
   logger.info(`Server running on ${config.Port}:${config.Host}`);
