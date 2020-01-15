@@ -9,8 +9,6 @@ const app = express();
 const apiRouter = require('./routes/apiRouter')();
 
 // use router api
-// app.use(bodyParser.json());
-// app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', apiRouter);
 
 // run server
