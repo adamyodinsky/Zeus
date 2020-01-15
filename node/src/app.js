@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-// const config = require('./config/config');
+const config = require('./config/config');
 const logger = require('./helpers/logger');
 const bodyParser = require('body-parser');
 
@@ -15,5 +15,5 @@ app.use('/', apiRouter);
 
 // run server
 app.listen(3000, () => {
-  logger.info(`Server running on 3000:localhost`);
+  logger.info(`Server running on ${config.Port}:${config.Host}`);
 });
