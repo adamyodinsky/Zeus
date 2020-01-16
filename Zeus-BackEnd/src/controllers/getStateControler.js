@@ -6,7 +6,8 @@ const { exec } = require('../helpers/exec');
 
 const getState = async(req, res) => {
   try {
-    const state = JSON.parse(fs.readFileSync(config.STATE_FILE_PATH));
+    const statePath = req.query.stateType === 'demo'? `${config.STATE_FILE_PATH}/demo_state.json` : `${config.STATE_FILE_PATH}/${config.STATE_FILE_NAME}`;
+    const state = JSON.parse(fs.readFileSync(statePath));
     res.status(200).json(state);
     logger.info('get state controller success');
   } catch (e) {
@@ -33,12 +34,12 @@ const downloadFromS3 = async() => {
         `aws  --profile=zooz-dev s3 ls s3://${config.S3_BUCKET}/${config.STATE_FILE_NAME}`,
         true);
     await exec(
-        `aws  --profile=zooz-dev s3 cp s3://${config.S3_BUCKET}/${config.STATE_FILE_NAME} ${config.STATE_FILE_PATH}`,
+        `aws  --profile=zooz-dev s3 cp s3://${config.S3_BUCKET}/${config.STATE_FILE_NAME} ${config.STATE_FILE_PATH}/${config.STATE_FILE_NAME}`,
         true);
     console.log('Loaded state file successfully!');
   } catch (e) {
     console.log('Could not load state file from s3 bucket. Creating new local state file');
-    await exec(`echo '[]' > ${config.STATE_FILE_PATH}`);
+    await exec(`echo '[]' > ${config.STATE_FILE_PATH}/${config.STATE_FILE_NAME}`);
   }
 };
 
