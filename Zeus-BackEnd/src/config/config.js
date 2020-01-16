@@ -7,5 +7,8 @@ module.exports = {
   DEBUG: process.env.DEBUG === "true",
   STATE_FILE_PATH: process.env.STATE_FILE_PATH || `${__dirname}/stateFiles/ZeusState`,
   STATE_FILE_NAME: process.env.STATE_FILE_NAME || 'ZeusState',
-  S3_BUCKET: process.env.S3_BUCKET
+  S3_BUCKET: process.env.S3_BUCKET,
+  //----------FRONT-END----------------------------
+  frontEndHost: process.env.FRONTEND_HOST || 'localhost',
+  frontEndPort: Number(process.env.FRONTEND_PORT) || 3006,
 };

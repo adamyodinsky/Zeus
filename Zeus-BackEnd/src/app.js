@@ -5,14 +5,16 @@ const config = require('./config/config');
 const logger = require('./helpers/logger');
 const bodyParser = require('body-parser');
 const { downloadFromS3Interval } = require('./controllers/getStateControler');
+const cors = require('cors');
+// const corsOptions = require('./config/corsConfig');
 
 const app = express();
 const apiRouter = require('./routes/apiRouter')();
 
-// use router api
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use('/', apiRouter);
+app.use('/', apiRouter); // use router api
 
 downloadFromS3Interval();
 

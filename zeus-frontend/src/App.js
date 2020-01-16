@@ -1,26 +1,43 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import Pods from './Components/Pods/Pods'
+import axios from 'axios'
+import BarGraph from './Components/BarGraph/BarGraph';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends React.Component {
+
+  state = {
+    mainState: ''
+  };
+
+
+  getMainState = async () => {
+    const url =  "http://localhost:3001/state";
+    try {
+      const response = await axios.get(url);
+      console.log(response.data);
+      this.setState({
+        mainState :response.data
+      });
+    } catch (e) {
+      console.log('ERROR: could not get main state object');
+      console.log(e)
+    }
+  };
+
+  componentDidMount() {
+    this.getMainState();
+  }
+
+
+    render () {
+    return (
+        <div className="App">
+          {/*{this.state.mainState && <Pods state={ this.state.mainState } />}*/}
+          {this.state.mainState  && <BarGraph state={ this.state.mainState }/>}
+        </div>
+    );
+  }
 }
 
 export default App;
