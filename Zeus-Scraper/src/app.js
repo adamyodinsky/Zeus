@@ -4,11 +4,13 @@ const express = require('express');
 const config = require('./config/config');
 const logger = require('./helpers/logger');
 const { mainStateBuilder } = require('./functions/main');
+const connectDB = require('./config/mongoDB');
 
 const app = express();
-const apiRouter = require('./routes/apiRouter')();
+connectDB();
 
 // use router api
+const apiRouter = require('./routes/apiRouter')();
 app.use('/', apiRouter);
 
 // run server
