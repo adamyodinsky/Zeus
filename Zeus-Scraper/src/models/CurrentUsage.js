@@ -21,6 +21,11 @@ const CurrentUsageSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now
+  },
+  expireAt: {
+    type: Date,
+    default: Date.now,
+    index: { expires: '2m' }
   }
 }, {strict: false});
 

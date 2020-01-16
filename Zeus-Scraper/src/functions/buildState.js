@@ -2,6 +2,27 @@ const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
 const { saveCurrentUsageObject } = require('../helpers/saveToMongo');
 
+
+const convertResourcesValues = container => {
+  if (container.resources.requests && container.resources.current) {
+    container.resources.requests.cpu = Number(
+        container.resources.requests.cpu.replace(/\D/g, "")
+    );
+    container.resources.requests.memory = Number(
+        container.resources.requests.memory.replace(/\D/g, "")
+    );
+    container.resources.current.cpu = Number(
+        container.resources.current.cpu.replace(/\D/g, "")
+    );
+    container.resources.current.memory = Number(
+        container.resources.current.memory.replace(/\D/g, "")
+    );
+  }
+  return container;
+};
+
+
+
 const getDeploymentsJson = async () => {
   let command = "kubectl get deployments -n apps -o json";
   let deploymentsJson;
@@ -17,16 +38,47 @@ const getDeploymentsJson = async () => {
   return deploymentsJson;
 };
 
-const buildContainerJson = (deployment, newPodObject, currentUsageMap) => {
+
+const populateCurrentUsage = async () => {
+  let count = 0;
+  const command = "kubectl top pods  -n apps --containers";
+  try {
+    // make a list of pods current resources usage
+    let PodsCurrentUsageList = await exec(command);
+    PodsCurrentUsageList = PodsCurrentUsageList.stdout.split("\n");
+    // remove first and last object;
+    PodsCurrentUsageList.pop();
+    PodsCurrentUsageList.shift();
+
+    // create pod current resources usage objects and push into the array
+    for (let pod of PodsCurrentUsageList) {
+      pod = pod.split(/(\s+)/);
+
+      let podObject = {
+        pod_name: pod[0],
+        containers_name: pod[2],
+        cpu: pod[4],
+        memory: pod[6]
+      };
+      count += await saveCurrentUsageObject(podObject); // save to mongo
+    }
+    logger.info(`Got current usage state to mongo collection, count:`, count);
+  } catch (e) {
+    logger.error(e.message);
+  }
+};
+
+const buildContainerJson = (deployment, newPodObject) => {
   for (let container of deployment.spec.template.spec.containers) {
     let newContainerObject = {
       name: container.name,
       resources: container.resources
     };
 
+    // TODO - get and delete matching current usage data by regex deployment-name* from mongo
     // get matching current usage object to the pod_name-container_name key
-    const key = `${newPodObject.name}-${newContainerObject.name}`;
-    const currentUsageContainer = currentUsageMap.get(key);
+    // const key = `${newPodObject.name}-${newContainerObject.name}`;
+    // const currentUsageContainer = currentUsageMap.get(key);
 
     if (currentUsageContainer) {
       // put the values
@@ -46,25 +98,6 @@ const buildContainerJson = (deployment, newPodObject, currentUsageMap) => {
   return newPodObject;
 };
 
-const convertResourcesValues = container => {
-  if (container.resources.requests && container.resources.current) {
-    container.resources.requests.cpu = Number(
-      container.resources.requests.cpu.replace(/\D/g, "")
-    );
-    container.resources.requests.memory = Number(
-      container.resources.requests.memory.replace(/\D/g, "")
-    );
-    container.resources.current.cpu = Number(
-      container.resources.current.cpu.replace(/\D/g, "")
-    );
-    container.resources.current.memory = Number(
-      container.resources.current.memory.replace(/\D/g, "")
-    );
-  }
-
-  return container;
-};
-
 const buildState = async () => {
   let state = [];
   let deploymentsJson;
@@ -73,7 +106,7 @@ const buildState = async () => {
   // get configs of resources and the current resources usage
   try {
     deploymentsJson = await getDeploymentsJson();
-    currentUsageMap = await getCurrentUsage();
+    await populateCurrentUsage();
   } catch (e) {
     logger.error(e.message);
     return;
@@ -101,37 +134,6 @@ const buildState = async () => {
     `a build of new state was ended successfully, length: ${state.length}`
   );
   return state;
-};
-
-const getCurrentUsage = async () => {
-  let currentUsageState = [];
-  const command = "kubectl top pods  -n apps --containers";
-
-  try {
-    // make a list of pods current resources usage
-    let PodsCurrentUsageList = await exec(command);
-    PodsCurrentUsageList = PodsCurrentUsageList.stdout.split("\n");
-    // remove first and last object;
-    PodsCurrentUsageList.pop();
-    PodsCurrentUsageList.shift();
-
-    // create pod current resources usage objects and push into the array
-    for (let pod of PodsCurrentUsageList) {
-      pod = pod.split(/(\s+)/);
-
-      let podObject = {
-        pod_name: pod[0],
-        containers_name: pod[2],
-        cpu: pod[4],
-        memory: pod[6]
-      };
-      await saveCurrentUsageObject(podObject); // save to mongo
-    }
-    logger.info(`Got current usage state of ${currentUsageState.length}`);
-  } catch (e) {
-    logger.error(e.message);
-  }
-
 };
 
 module.exports = { buildState };
