@@ -11,7 +11,7 @@ class App extends React.Component {
 
 
   getMainState = async () => {
-    const url =  "http://localhost:3001/state?stateType=demo";
+    const url =  "http://localhost:3001/state";
     try {
       const response = await axios.get(url);
       console.log(response.data);
