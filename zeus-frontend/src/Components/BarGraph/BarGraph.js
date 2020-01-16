@@ -1,6 +1,6 @@
 import React from "react";
 import { Chart } from "react-google-charts";
-import barGraph from './BarGraph.module.scss'
+// import barGraph from './BarGraph.module.scss'
 
 
 const BarGraph = (props) => {
@@ -13,7 +13,7 @@ const BarGraph = (props) => {
 
     return (
         <div className="App">
-          <Chart className={barGraph.grapBarMarginLeft} chartType="BarChart" width={"95vw"} height={"12rem"}
+          <Chart chartType="BarChart" width={"95vw"} height={"12rem"}
                  data={data}/>
         </div>
     );
