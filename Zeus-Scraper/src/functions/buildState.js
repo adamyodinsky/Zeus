@@ -1,14 +1,14 @@
-const { exec } = require('../helpers/exec');
-const logger = require('../helpers/logger');
+const { exec } = require("../helpers/exec");
+const logger = require("../helpers/logger");
 
-const getPodsJson = async() => {
-  let command =  'kubectl get pods -n apps -o json';
+const getPodsJson = async () => {
+  let command = "kubectl get pods -n apps -o json";
   let podsJson;
 
   try {
     podsJson = await exec(command);
     podsJson = JSON.parse(podsJson.stdout);
-    logger.info(`Got Pods Json, length=${podsJson.items.length}`)
+    logger.info(`Got Pods Json, length=${podsJson.items.length}`);
   } catch (err) {
     logger.error(err.message);
   }
@@ -16,8 +16,55 @@ const getPodsJson = async() => {
   return podsJson;
 };
 
+const buildContainerJson = (pod, newPodObject, currentUsageMap) => {
+  for (let container of pod.spec.containers) {
+    let newContainerObject = {
+      name: container.name,
+      resources: container.resources
+    };
 
-const buildState = async() => {
+    // get matching current usage object to the pod_name-container_name key
+    const key = `${newPodObject.name}-${newContainerObject.name}`;
+    const currentUsageContainer = currentUsageMap.get(key);
+
+    if (currentUsageContainer) {
+      // put the values
+
+      container.resources.current = {
+        cpu: currentUsageContainer.cpu,
+        memory: currentUsageContainer.memory
+      };
+
+      container = convertResourcesValues(container);
+    } else {
+      logger.debug("Could not found current state for key:", key);
+    }
+    // push the object to the new container object
+    newPodObject.containers.push(newContainerObject);
+  }
+  return newPodObject;
+};
+
+const convertResourcesValues = container => {
+  if (container.resources.requests && container.resources.current) {
+    container.resources.requests.cpu = Number(
+      container.resources.requests.cpu.replace(/\D/g, "")
+    );
+    container.resources.requests.memory = Number(
+      container.resources.requests.memory.replace(/\D/g, "")
+    );
+    container.resources.current.cpu = Number(
+      container.resources.current.cpu.replace(/\D/g, "")
+    );
+    container.resources.current.memory = Number(
+      container.resources.current.memory.replace(/\D/g, "")
+    );
+  }
+
+  return container;
+};
+
+const buildState = async () => {
   let state = [];
   let podsJson;
   let currentUsageMap;
@@ -34,9 +81,8 @@ const buildState = async() => {
   // build the state by iterating over all the pods in a namespace
   for (const pod of podsJson.items) {
     try {
-
       // build initial object
-      const newPodObject = {
+      let newPodObject = {
         name: pod.metadata.name,
         uid: pod.metadata.uid,
         namespace: pod.metadata.namespace,
@@ -44,44 +90,26 @@ const buildState = async() => {
       };
 
       // build the containers inner objects and push to the containers array
-      for (const container of pod.spec.containers) {
-        let newContainerObject = {
-          name: container.name,
-          resources: container.resources
-        };
-
-        // get matching current usage object to the pod_name-container_name key
-        const key = `${newPodObject.name}-${newContainerObject.name}`;
-        const currentUsageContainer = currentUsageMap.get(key);
-
-        if (currentUsageContainer) { // put the values
-          container.resources.current = {
-            cpu: currentUsageContainer.cpu,
-            memory: currentUsageContainer.memory
-          };
-        } else {
-          logger.debug('Could not found current state for key:', key);
-        }
-        // push the object to the new container object
-        newPodObject.containers.push(newContainerObject);
-      }
+      newPodObject = buildContainerJson(pod, newPodObject, currentUsageMap);
       state.push(newPodObject); // push the new pod object to the state
     } catch (e) {
       logger.error(e.message);
     }
   }
-  logger.info(`a build of new state was ended successfully, length: ${state.length}`);
+  logger.info(
+    `a build of new state was ended successfully, length: ${state.length}`
+  );
   return state;
 };
 
-const getCurrentUsage = async() => {
+const getCurrentUsage = async () => {
   let currentUsageState = [];
-  const command = 'kubectl top pods  -n apps --containers';
+  const command = "kubectl top pods  -n apps --containers";
 
   try {
     // make a list of pods current resources usage
     let PodsCurrentUsageList = await exec(command);
-    PodsCurrentUsageList = (PodsCurrentUsageList.stdout).split('\n');
+    PodsCurrentUsageList = PodsCurrentUsageList.stdout.split("\n");
     // remove first and last object;
     PodsCurrentUsageList.pop();
     PodsCurrentUsageList.shift();
@@ -103,8 +131,9 @@ const getCurrentUsage = async() => {
   }
   // convert the array to hash-map and return it
   // TODO - just make it a map from the start, no need to make array and than convert
-  return  (new Map(currentUsageState.map(obj => [`${obj.pod_name}-${obj.container_name}`, obj])));
+  return new Map(
+    currentUsageState.map(obj => [`${obj.pod_name}-${obj.container_name}`, obj])
+  );
 };
 
 module.exports = { buildState };
-
