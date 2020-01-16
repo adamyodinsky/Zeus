@@ -1,23 +1,24 @@
 const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
+const { saveCurrentUsageObject } = require('../helpers/saveToMongo');
 
-const getPodsJson = async () => {
-  let command = "kubectl get pods -n apps -o json";
-  let podsJson;
+const getDeploymentsJson = async () => {
+  let command = "kubectl get deployments -n apps -o json";
+  let deploymentsJson;
 
   try {
-    podsJson = await exec(command);
-    podsJson = JSON.parse(podsJson.stdout);
-    logger.info(`Got Pods Json, length=${podsJson.items.length}`);
+    deploymentsJson = await exec(command);
+    deploymentsJson = JSON.parse(deploymentsJson.stdout);
+    logger.info(`Got Deployments Json, length=${deploymentsJson.items.length}`);
   } catch (err) {
     logger.error(err.message);
   }
 
-  return podsJson;
+  return deploymentsJson;
 };
 
-const buildContainerJson = (pod, newPodObject, currentUsageMap) => {
-  for (let container of pod.spec.containers) {
+const buildContainerJson = (deployment, newPodObject, currentUsageMap) => {
+  for (let container of deployment.spec.template.spec.containers) {
     let newContainerObject = {
       name: container.name,
       resources: container.resources
@@ -66,31 +67,31 @@ const convertResourcesValues = container => {
 
 const buildState = async () => {
   let state = [];
-  let podsJson;
+  let deploymentsJson;
   let currentUsageMap;
 
   // get configs of resources and the current resources usage
   try {
-    podsJson = await getPodsJson();
+    deploymentsJson = await getDeploymentsJson();
     currentUsageMap = await getCurrentUsage();
   } catch (e) {
     logger.error(e.message);
     return;
   }
 
-  // build the state by iterating over all the pods in a namespace
-  for (const pod of podsJson.items) {
+  // build the state by iterating over all the deployments in a namespace
+  for (const deployment of deploymentsJson.items) {
     try {
       // build initial object
       let newPodObject = {
-        name: pod.metadata.name,
-        uid: pod.metadata.uid,
-        namespace: pod.metadata.namespace,
+        name: deployment.metadata.name,
+        uid: deployment.metadata.uid,
+        namespace: deployment.metadata.namespace,
         containers: []
       };
 
       // build the containers inner objects and push to the containers array
-      newPodObject = buildContainerJson(pod, newPodObject, currentUsageMap);
+      newPodObject = buildContainerJson(deployment, newPodObject, currentUsageMap);
       state.push(newPodObject); // push the new pod object to the state
     } catch (e) {
       logger.error(e.message);
@@ -117,23 +118,20 @@ const getCurrentUsage = async () => {
     // create pod current resources usage objects and push into the array
     for (let pod of PodsCurrentUsageList) {
       pod = pod.split(/(\s+)/);
-      const podObject = {
+
+      let podObject = {
         pod_name: pod[0],
-        container_name: pod[2],
+        containers_name: pod[2],
         cpu: pod[4],
         memory: pod[6]
       };
-      currentUsageState.push(podObject);
+      await saveCurrentUsageObject(podObject); // save to mongo
     }
     logger.info(`Got current usage state of ${currentUsageState.length}`);
   } catch (e) {
     logger.error(e.message);
   }
-  // convert the array to hash-map and return it
-  // TODO - just make it a map from the start, no need to make array and than convert
-  return new Map(
-    currentUsageState.map(obj => [`${obj.pod_name}-${obj.container_name}`, obj])
-  );
+
 };
 
 module.exports = { buildState };
