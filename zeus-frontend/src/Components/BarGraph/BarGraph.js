@@ -13,7 +13,7 @@ const BarGraph = (props) => {
 
     return (
         <div className="App">
-          <Chart chartType="BarChart" width={"95vw"} height={"10rem"}
+          <Chart chartType="BarChart" width={"95vw"} height={"12rem"}
                  data={data}/>
         </div>
     );

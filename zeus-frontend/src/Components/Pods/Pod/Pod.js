@@ -12,7 +12,7 @@ const Pod = (props) => {
   return(
       <div>
         <div className={pod.pod}>
-          <span className={pod.spanText}> Pod: {props.state.name} </span>
+          <span className={pod.spanText}><strong>Pod:</strong> {props.state.name} </span>
             {renderedContainers}
         </div>
       </div>

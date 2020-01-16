@@ -32,6 +32,7 @@ class App extends React.Component {
     render () {
     return (
         <div className="App">
+          <h1>Porus</h1>
           {this.state.mainState && <Pods state={ this.state.mainState } />}
         </div>
     );
