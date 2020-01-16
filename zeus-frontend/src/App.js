@@ -2,7 +2,6 @@ import React from 'react';
 import './App.css';
 import Pods from './Components/Pods/Pods'
 import axios from 'axios'
-import BarGraph from './Components/BarGraph/BarGraph';
 
 class App extends React.Component {
 
@@ -33,8 +32,7 @@ class App extends React.Component {
     render () {
     return (
         <div className="App">
-          {/*{this.state.mainState && <Pods state={ this.state.mainState } />}*/}
-          {this.state.mainState  && <BarGraph state={ this.state.mainState }/>}
+          {this.state.mainState && <Pods state={ this.state.mainState } />}
         </div>
     );
   }

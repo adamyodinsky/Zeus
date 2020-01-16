@@ -1,10 +1,12 @@
 import React from 'react';
 import container from './Container.module.scss'
+import BarGraph from '../../BarGraph/BarGraph';
 
 const Container = (props) => {
   return(
       <div>
         <span className={container.spanText}> Container: {props.state.name} </span>
+        <BarGraph resources={props.state.resources} />
       </div>
   );
 };
