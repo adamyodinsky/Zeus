@@ -35,29 +35,40 @@ const DeploymentSchema = new mongoose.Schema(
       expires: 0,
       default: Date.now() + 1000 * 60 * 10 // 15 minutes
     },
-    pods: [
+    replicas: {
+      type: Number,
+      required: true
+    },
+    containers: [
       {
-        pod_name: String,
-        containers: [
+        container_name: String,
+        resources: {
+          txt: Object,
+          num: Object
+        },
+        usage_samples: [
           {
-            container_name: String,
-            resources: {
-              txt: Object,
-              num: Object
+            date: Date,
+            txt: {
+              memory: String,
+              cpu: String
             },
-            usage_samples: [
-              {
-                date: Date,
-                txt: {
-                  memory: String,
-                  cpu: String,
-                },
-                num:  {
-                  memory: Number,
-                  cpu: Number
-                }
-              }
-            ]
+            num: {
+              memory: Number,
+              cpu: Number
+            },
+            sum: {
+              memory: Number,
+              cpu: Number
+            },
+            avg: {
+              memory: Number,
+              cpu: Number
+            },
+            range: {
+              high: Number,
+              low: Number
+            }
           }
         ]
       }
