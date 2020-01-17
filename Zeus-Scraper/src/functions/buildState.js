@@ -23,6 +23,7 @@ const convertResourcesValues = container => {
   return container;
 };
 
+
 const buildPodJson = async(deployment, newDeploymentObject) => {
   let currentUsageObject = true;
   let deploymentResourceMap = (
@@ -130,6 +131,7 @@ const fetchDeploymentsJson = async () => {
 
   return deploymentsJson;
 };
+
 const buildState = async () => {
   let state = [];
   let deploymentsJson;

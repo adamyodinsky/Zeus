@@ -20,7 +20,7 @@ const saveCurrentUsageObject = async curr_usage => {
           ...curr_usage,
           updated: true,
           updates_counter: exist.updates_counter + 1,
-          expirationDate: Date.now() + 1000 * 120
+          expirationDate: Date.now() + 1000 * 60 * 2
         },
         { new: true }
       );
