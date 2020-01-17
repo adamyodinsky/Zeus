@@ -2,31 +2,28 @@ const mongoose = require('mongoose');
 const config = require('../config/config');
 
 const CurrentUsageSchema = new mongoose.Schema({
-  hash: {
-    type: String,
-    required: true
-  },
   pod_name: {
     type: String,
     required: true
   },
-  container_name: {
-    type: String,
+  updates_counter: {
+    type: Number,
+    required: true,
+    default: 0
+  },
+  containers: {
+    type: [Object],
     required: true
   },
-  cpu: {
-    type: String,
-    required: true
-  },
-  memory: {
-    type: String,
-    required: true
+  date: {
+    type: Date,
+    required: true,
+    default: Date.now()
   },
   expirationDate: {
     type: Date,
     expires: 0,
-    default: (Date.now() + 1000*60),
-    // index: { expires: 10 }
+    default: (Date.now() + 1000*60*2),
   }
 }, {strict: false});
 

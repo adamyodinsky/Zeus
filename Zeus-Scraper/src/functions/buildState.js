@@ -1,7 +1,6 @@
 const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
 const { saveCurrentUsageObject } = require("../helpers/saveToMongo");
-const sum = require('hash-sum');
 
 const convertResourcesValues = container => {
   if (container.resources.requests && container.resources.current) {
@@ -52,18 +51,38 @@ const populateCurrentUsage = async () => {
       let pod = PodsCurrentUsageList[i].split(/(\s+)/);
 
       let podObject = {
-        hash: sum(`${pod[0]}${pod[2]}`),
         pod_name: pod[0],
+        containers: []
+      };
+
+      podObject.containers.push({
         container_name: pod[2],
         cpu: pod[4],
         memory: pod[6]
-      };
+      });
+
+      // push containers to the same pod object
+      while (PodsCurrentUsageList[i+1]) {
+        let nextPod = PodsCurrentUsageList[i+1].split(/(\s+)/);
+        if(pod[0] === nextPod[0]) {
+          podObject.containers.push({
+            container_name: nextPod[2],
+            cpu: nextPod[4],
+            memory: nextPod[6]
+          });
+          i++;
+        } else {
+          break;
+        }
+      }
+
       count += await saveCurrentUsageObject(podObject); // save to mongo
     }
     logger.info(`Got current usage state to mongo collection, count:`, count);
   } catch (e) {
     logger.error(e.message);
   }
+  return count;
 };
 
 const buildContainerJson = (deployment, newPodObject) => {

@@ -1,7 +1,4 @@
-const {
-  CurrentUsage,
-  modelName
-} = require("../models/CurrentUsage");
+const { CurrentUsage, modelName } = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(modelName);
 
 const logger = require("../helpers/logger");
@@ -11,18 +8,21 @@ const saveCurrentUsageObject = async curr_usage => {
   let count;
   try {
     const newUsageObject = new CurrentUsage({ ...curr_usage });
-    let exist = await CurrentUsage.findOne({ hash: curr_usage.hash });
+    let exist = await CurrentUsage.findOne({ pod_name: curr_usage.pod_name });
     if (!exist) {
       count = await newUsageObject.save();
     } else {
       count = await CurrentUsageModel.updateOne(
-        { hash: curr_usage.hash },
-        { ...curr_usage, expirationDate: (Date.now() + 1000*60) },
+        { pod_name: curr_usage.pod_name },
+        {
+          ...curr_usage,
+          updates_counter: exist.updates_counter + 1,
+          expirationDate: Date.now() + 1000 * 120
+        },
         { new: true }
       );
     }
-
-    logger.info(`Stored new Object in DB`);
+    logger.debug("Stored new Object in DB", null);
   } catch (err) {
     logger.error(err.message);
   }
