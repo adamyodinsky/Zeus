@@ -37,16 +37,16 @@ const saveCurrentUsageObject = async curr_usage => {
 const saveDeployment = async(newDeployment) => {
   let count;
   let newDeploymentDoc;
-  const conditions = { deployment_name: newDeployment.pod_name };
+  const conditions = { deployment_name: newDeployment.deployment_name };
 
   try {
-    let exist = await DeploymentModel.findOne(conditions);
+    let exist = await Deployment.findOne(conditions);
     if (!exist) {
-      newDeploymentDoc = new CurrentUsage({ ...newDeployment });
+      newDeploymentDoc = new Deployment({ ...newDeployment });
       count = await newDeploymentDoc.save();
     } else {
       count = await DeploymentModel.updateOne(
-          `${conditions}`,
+          conditions,
           {
             ...newDeployment,
             updated: true,

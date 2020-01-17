@@ -5,22 +5,17 @@ const { currentUsageModelName } = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
 const config = require("../config/config");
 
-const convertResourcesValues = container => {
-  if (container.resources.requests && container.resources.current) {
-    container.resources.requests.cpu = Number(
-      container.resources.requests.cpu.replace(/\D/g, "")
-    );
-    container.resources.requests.memory = Number(
-      container.resources.requests.memory.replace(/\D/g, "")
-    );
-    container.resources.current.cpu = Number(
-      container.resources.current.cpu.replace(/\D/g, "")
-    );
-    container.resources.current.memory = Number(
-      container.resources.current.memory.replace(/\D/g, "")
-    );
+const convertToNumber = (str) => {
+  return Number(str.replace(/\D/g, ""));
+};
+
+const convertResourcesValues = resources => {
+  let result = {};
+  for (let [key, value] of Object.entries(resources)) {
+    result[key] = convertToNumber(resources[key]);
   }
-  return container;
+
+  return result;
 };
 
 const buildDeploymentObject = async (deployment, newDeploymentObject) => {
@@ -57,18 +52,26 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
             txt: {
               memory: container.memory,
               cpu: container.cpu
-            }
+            },
+            num: {}
           }
         ]
       };
 
       if (container.container_name === config.sideCar.name) {
-        newContainer.resources = config.sideCar.resources;
+        newContainer.resources.txt = config.sideCar.resources;
       } else {
-        newContainer.resources = deploymentResourceMap.get(
+        newContainer.resources.txt = deploymentResourceMap.get(
           container.container_name
         );
       }
+
+      newContainer.resources.num = {};
+      newContainer.resources.num.requests = convertResourcesValues(newContainer.resources.txt.requests);
+      newContainer.usage_samples[0].num = convertResourcesValues(newContainer.usage_samples[0].txt);
+
+      console.log(JSON.stringify(newContainer));
+      process.exit(0);
       newPod.containers.push(newContainer);
     } // for loop ended
     newDeploymentObject.pods.push(newPod);
@@ -161,7 +164,6 @@ const fetchDeploymentsJson = async () => {
 
 const buildState = async () => {
   let count = 0;
-  let state = [];
   let deploymentsJson;
 
   try {
@@ -193,7 +195,7 @@ const buildState = async () => {
   logger.info(
     `a build of new state was ended successfully, length: ${state.length}, modified: ${count}`
   );
-  return state;
+  return count;
 };
 
 module.exports = { buildState };

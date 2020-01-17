@@ -13,7 +13,7 @@ const DeploymentSchema = new mongoose.Schema(
       default: true
     },
     uid: {
-      type: Number,
+      type: String,
       required: true
     },
     updates_counter: {
