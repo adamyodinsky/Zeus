@@ -1,8 +1,7 @@
 const { CurrentUsage, modelName } = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(modelName);
-
 const logger = require("../helpers/logger");
-const config = require("../config/config");
+
 
 const saveCurrentUsageObject = async curr_usage => {
   let count;
@@ -16,6 +15,7 @@ const saveCurrentUsageObject = async curr_usage => {
         { pod_name: curr_usage.pod_name },
         {
           ...curr_usage,
+          updated: true,
           updates_counter: exist.updates_counter + 1,
           expirationDate: Date.now() + 1000 * 120
         },
