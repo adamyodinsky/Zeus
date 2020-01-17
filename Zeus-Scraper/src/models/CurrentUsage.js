@@ -10,6 +10,10 @@ const CurrentUsageSchema = new mongoose.Schema({
     type: [Object],
     required: true
   },
+  namespace: {
+    type: String,
+    required: true
+  },
   updates_counter: {
     type: Number,
     required: true,

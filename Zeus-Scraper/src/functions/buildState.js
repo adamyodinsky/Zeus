@@ -2,6 +2,7 @@ const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
 const { saveCurrentUsageObject } = require("../helpers/saveToMongo");
 const CurrentUsageModel = require("mongoose").model(modelName);
+const config = require('../config/config');
 
 const convertResourcesValues = container => {
   if (container.resources.requests && container.resources.current) {
@@ -72,6 +73,7 @@ const populateCurrentUsage = async () => {
 
       let podObject = {
         pod_name: pod[0],
+        namespace: config.NAMESPACE,
         containers: []
       };
 

@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+  NAMESPACE: process.env.NAMESPACE || 'apps',
   Host: process.env.CONSUL_HOST || 'localhost',
   Port: Number(process.env.CONSUL_PORT || 3002),
   logLevel: process.env.LOG_LEVEL || 'info',

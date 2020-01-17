@@ -10,10 +10,6 @@ const DeploymentSchema = new mongoose.Schema({
     type: Number,
     required: true
   },
-  containers: {
-        type: [Object],
-    required: true
-  },
   updates_counter: {
     type: Number,
     required: true,
@@ -26,9 +22,10 @@ const DeploymentSchema = new mongoose.Schema({
   expirationDate: {
     type: Date,
     expires: 0,
-    default: (Date.now() + 1000*60*10),
+    default: (Date.now() + 1000*60*10), // 15 minutes
   }
 }, {strict: false});
+
 
 const deploymentModelName = 'deployment';
 const Deployment = mongoose.model(deploymentModelName, DeploymentSchema);
