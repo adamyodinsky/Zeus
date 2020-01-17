@@ -1,7 +1,5 @@
 const { buildState } = require('./buildState');
-const { saveStateToS3 } = require('../helpers/S3state');
 const logger = require('../helpers/logger');
-// const moment = require('moment');
 
 
 const executeStateBuilder = async() => {
@@ -19,7 +17,7 @@ const executeStateBuilder = async() => {
 
 const mainStateBuilder = () => {
   executeStateBuilder();
-  setInterval(executeStateBuilder, 1000*30);
+  setInterval(executeStateBuilder, 1000*20);
 };
 
 module.exports = { mainStateBuilder };

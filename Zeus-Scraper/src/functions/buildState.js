@@ -9,17 +9,22 @@ const convertToNumber = (str) => {
   return Number(str.replace(/\D/g, ""));
 };
 
-const convertResourcesValues = resources => {
+const convertResourcesValues = (resources) => {
   let result = {};
-  for (let [key, value] of Object.entries(resources)) {
-    result[key] = convertToNumber(resources[key]);
-  }
+
+    for (let [key, value] of Object.entries(resources)) {
+      result[key] = convertToNumber(value);
+    }
 
   return result;
 };
 
 const buildDeploymentObject = async (deployment, newDeploymentObject) => {
   let currentUsageObject = true;
+  let regex = new RegExp( '^' + deployment.metadata.name + '.*');
+  let condition = {
+    pod_name: { $regex: regex }
+  };
   let deploymentResourceMap = new Map(
     deployment.spec.template.spec.containers.map(container => {
       return [container.name, container.resources];
@@ -28,9 +33,7 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
 
   // iterating over live pods matching a deployment
   while (currentUsageObject) {
-    currentUsageObject = await CurrentUsageModel.findOneAndDelete({
-      pod_name: { $regex: deployment.metadata.name }
-    });
+    currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition);
 
     if (!currentUsageObject) {
       continue;
@@ -66,17 +69,17 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
         );
       }
 
-      newContainer.resources.num = {};
-      newContainer.resources.num.requests = convertResourcesValues(newContainer.resources.txt.requests);
-      newContainer.usage_samples[0].num = convertResourcesValues(newContainer.usage_samples[0].txt);
+      try {
 
-      console.log(JSON.stringify(newContainer));
-      process.exit(0);
-      newPod.containers.push(newContainer);
+        newContainer.resources.num = { requests: {}};
+        newContainer.resources.num.requests = convertResourcesValues(newContainer.resources.txt.requests);
+        newContainer.usage_samples[0].num = convertResourcesValues(newContainer.usage_samples[0].txt);
+        newPod.containers.push(newContainer);
+      } catch (e) {
+        logger.error(e.message);
+      }
     } // for loop ended
     newDeploymentObject.pods.push(newPod);
-
-    // TODO - CONVERT STRINGS TO NUMBERS, CPU MEM
   } // while loop ended
 
   return newDeploymentObject;
@@ -137,7 +140,6 @@ const buildPodsCurrentUsageList = async () => {
           break;
         }
       }
-
       podsCurrentUsage.push(newPodObject);
     }
     logger.info(`Got current usage state to mongo collection, count:`, count);
@@ -193,7 +195,7 @@ const buildState = async () => {
     }
   }
   logger.info(
-    `a build of new state was ended successfully, length: ${state.length}, modified: ${count}`
+    `a build of new state was ended successfully, modified: ${count}`
   );
   return count;
 };

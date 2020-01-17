@@ -41,7 +41,10 @@ const DeploymentSchema = new mongoose.Schema(
         containers: [
           {
             container_name: String,
-            resources: Object,
+            resources: {
+              txt: Object,
+              num: Object
+            },
             usage_samples: [
               {
                 date: Date,
