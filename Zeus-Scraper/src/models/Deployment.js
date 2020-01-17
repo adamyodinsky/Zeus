@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const config = require('../config/config');
 
 const DeploymentSchema = new mongoose.Schema({
-  name: {
+  deployment_name: {
     type: String,
     required: true
   },
@@ -14,12 +14,23 @@ const DeploymentSchema = new mongoose.Schema({
         type: [Object],
     required: true
   },
+  updates_counter: {
+    type: Number,
+    required: true,
+    default: 0
+  },
   date: {
     type: Date,
     default: Date.now
+  },
+  expirationDate: {
+    type: Date,
+    expires: 0,
+    default: (Date.now() + 1000*60*10),
   }
 }, {strict: false});
 
-const Deployment = mongoose.model('deployment', DeploymentSchema);
+const deploymentModelName = 'deployment';
+const Deployment = mongoose.model(deploymentModelName, DeploymentSchema);
 
-module.exports = Deployment;
+module.exports = { deploymentModelName, DeploymentSchema, Deployment };

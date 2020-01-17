@@ -6,14 +6,14 @@ const CurrentUsageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
+  containers: {
+    type: [Object],
+    required: true
+  },
   updates_counter: {
     type: Number,
     required: true,
     default: 0
-  },
-  containers: {
-    type: [Object],
-    required: true
   },
   date: {
     type: Date,
@@ -27,7 +27,7 @@ const CurrentUsageSchema = new mongoose.Schema({
   }
 }, {strict: false});
 
-const modelName = 'current_usage';
-const CurrentUsage = mongoose.model(modelName, CurrentUsageSchema);
+const currentUsageModelName = 'current_usage';
+const CurrentUsage = mongoose.model(currentUsageModelName, CurrentUsageSchema);
 
-module.exports = { modelName, CurrentUsage, CurrentUsageSchema };
+module.exports = { currentUsageModelName, CurrentUsage, CurrentUsageSchema };

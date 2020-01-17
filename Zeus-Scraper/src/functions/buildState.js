@@ -1,6 +1,7 @@
 const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
 const { saveCurrentUsageObject } = require("../helpers/saveToMongo");
+const CurrentUsageModel = require("mongoose").model(modelName);
 
 const convertResourcesValues = container => {
   if (container.resources.requests && container.resources.current) {
@@ -20,20 +21,39 @@ const convertResourcesValues = container => {
   return container;
 };
 
-const getDeploymentsJson = async () => {
-  let command = "kubectl get deployments -n apps -o json";
-  let deploymentsJson;
+const buildPodJson = (deployment, newPodObject) => {
+  for (let container of deployment.spec.template.spec.containers) {
+    let newContainerObject = {
+      name: container.name,
+      resources: container.resources
+    };
 
-  try {
-    deploymentsJson = await exec(command);
-    deploymentsJson = JSON.parse(deploymentsJson.stdout);
-    logger.info(`Got Deployments Json, length=${deploymentsJson.items.length}`);
-  } catch (err) {
-    logger.error(err.message);
+    // TODO - get matching current usage data by regex deployment-name* from mongo
+    // mutate data with the newContainerObject
+    // and put the container
+    let currentUsageObject = 1;
+    while(currentUsageObject) {
+      const conditions = {};
+      currentUsageObject = CurrentUsageModel.findOneAndDelete();
+      if (currentUsageObject) {
+        container.resources.current = {
+          cpu: currentUsageObject.cpu,
+          memory: currentUsageObject.memory
+        };
+
+        container = convertResourcesValues(container);
+      } else {
+        logger.debug("Could not found current state for key:", key);
+      }
+
+    }
+
+    // push the object to the new container object
+    newPodObject.containers.push(newContainerObject);
   }
-
-  return deploymentsJson;
+  return newPodObject;
 };
+
 
 const populateCurrentUsage = async () => {
   let count = 0;
@@ -85,36 +105,20 @@ const populateCurrentUsage = async () => {
   return count;
 };
 
-const buildContainerJson = (deployment, newPodObject) => {
-  for (let container of deployment.spec.template.spec.containers) {
-    let newContainerObject = {
-      name: container.name,
-      resources: container.resources
-    };
+const getDeploymentsJson = async () => {
+  let command = "kubectl get deployments -n apps -o json";
+  let deploymentsJson;
 
-    // TODO - get and delete matching current usage data by regex deployment-name* from mongo
-    // get matching current usage object to the pod_name-container_name key
-    // const key = `${newPodObject.name}-${newContainerObject.name}`;
-    // const currentUsageContainer = currentUsageMap.get(key);
-
-    if (currentUsageContainer) {
-      // put the values
-
-      container.resources.current = {
-        cpu: currentUsageContainer.cpu,
-        memory: currentUsageContainer.memory
-      };
-
-      container = convertResourcesValues(container);
-    } else {
-      logger.debug("Could not found current state for key:", key);
-    }
-    // push the object to the new container object
-    newPodObject.containers.push(newContainerObject);
+  try {
+    deploymentsJson = await exec(command);
+    deploymentsJson = JSON.parse(deploymentsJson.stdout);
+    logger.info(`Got Deployments Json, length=${deploymentsJson.items.length}`);
+  } catch (err) {
+    logger.error(err.message);
   }
-  return newPodObject;
-};
 
+  return deploymentsJson;
+};
 const buildState = async () => {
   let state = [];
   let deploymentsJson;
@@ -128,26 +132,21 @@ const buildState = async () => {
     logger.error(e.message);
     return;
   }
-  // TODO remove this after testing
-  process.exit(0);
   // build the state by iterating over all the deployments in a namespace
   for (const deployment of deploymentsJson.items) {
     try {
       // build initial object
-      let newPodObject = {
+      let newDeploymentObject = {
         name: deployment.metadata.name,
         uid: deployment.metadata.uid,
         namespace: deployment.metadata.namespace,
-        containers: []
+        pods: []
       };
 
-      // build the containers inner objects and push to the containers array
-      newPodObject = buildContainerJson(
-        deployment,
-        newPodObject,
-        currentUsageMap
-      );
-      state.push(newPodObject); // push the new pod object to the state
+      // build the pod inner objects
+      newDeploymentObject = buildPodJson(deployment, newDeploymentObject);
+
+      //TODO - save newDeploymentObject to mongo
     } catch (e) {
       logger.error(e.message);
     }
