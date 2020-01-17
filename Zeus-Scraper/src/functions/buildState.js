@@ -1,6 +1,6 @@
 const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
-const { saveCurrentUsageObject } = require("../helpers/saveToMongo");
+const { saveCurrentUsageObject, saveDeployment } = require("../helpers/saveToMongo");
 const { currentUsageModelName } = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
 const config = require("../config/config");
@@ -23,7 +23,7 @@ const convertResourcesValues = container => {
   return container;
 };
 
-const buildPodJson = async (deployment, newDeploymentObject) => {
+const buildDeploymentObject = async (deployment, newDeploymentObject) => {
   let currentUsageObject = true;
   let deploymentResourceMap = new Map(
     deployment.spec.template.spec.containers.map(container => {
@@ -160,9 +160,9 @@ const fetchDeploymentsJson = async () => {
 };
 
 const buildState = async () => {
+  let count = 0;
   let state = [];
   let deploymentsJson;
-  let currentUsageMap;
 
   try {
     deploymentsJson = await fetchDeploymentsJson();
@@ -183,15 +183,15 @@ const buildState = async () => {
       };
 
       // build the pod inner objects
-      newDeploymentObject = await buildPodJson(deployment, newDeploymentObject);
-
-      //TODO - save newDeploymentObject to mongo
+      newDeploymentObject = await buildDeploymentObject(deployment, newDeploymentObject);
+      //TODO - save newDeploymentObject to mongo call to function
+      count += await saveDeployment(newDeploymentObject);
     } catch (e) {
       logger.error(e.message);
     }
   }
   logger.info(
-    `a build of new state was ended successfully, length: ${state.length}`
+    `a build of new state was ended successfully, length: ${state.length}, modified: ${count}`
   );
   return state;
 };

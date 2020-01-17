@@ -8,14 +8,16 @@ const logger = require("../helpers/logger");
 
 const saveCurrentUsageObject = async curr_usage => {
   let count;
+  let conditions = { pod_name: curr_usage.pod_name };
+
   try {
     const newUsageObject = new CurrentUsage({ ...curr_usage });
-    let exist = await CurrentUsage.findOne({ pod_name: curr_usage.pod_name });
+    let exist = await CurrentUsage.findOne(conditions);
     if (!exist) {
       count = await newUsageObject.save();
     } else {
       count = await CurrentUsageModel.updateOne(
-        { pod_name: curr_usage.pod_name },
+          `${conditions}`,
         {
           ...curr_usage,
           updated: true,
@@ -25,36 +27,40 @@ const saveCurrentUsageObject = async curr_usage => {
         { new: true }
       );
     }
-    logger.debug("Stored new Object in DB", null);
+    logger.debug("Stored new pod current usage Object in DB", null);
   } catch (err) {
     logger.error(err.message);
   }
   return count.nModified;
 };
 
-const saveDeployment = async(currentUsageObject, newDeploymentObject) => {
+const saveDeployment = async(newDeployment) => {
   let count;
+  let newDeploymentDoc;
+  const conditions = { deployment_name: newDeployment.pod_name };
+
   try {
-    let exist = await DeploymentModel.findOne({ deployment_name: newDeploymentObject.deployment_name});
+    let exist = await DeploymentModel.findOne(conditions);
     if (!exist) {
-      count = await newUsageObject.save();
+      newDeploymentDoc = new CurrentUsage({ ...newDeployment });
+      count = await newDeploymentDoc.save();
     } else {
-      count = await CurrentUsageModel.updateOne(
-          { pod_name: curr_usage.pod_name },
+      count = await DeploymentModel.updateOne(
+          `${conditions}`,
           {
-            ...curr_usage,
+            ...newDeployment,
             updated: true,
             updates_counter: exist.updates_counter + 1,
-            expirationDate: Date.now() + 1000 * 120
+            expirationDate: Date.now() + 1000 * 60 * 7
           },
           { new: true }
       );
     }
-    logger.debug("Stored new Object in DB", null);
+    logger.debug("Stored new Deployment Object in DB", null);
   } catch (err) {
     logger.error(err.message);
   }
   return count.nModified;
 };
 
-module.exports = { saveCurrentUsageObject };
+module.exports = { saveCurrentUsageObject, saveDeployment };
