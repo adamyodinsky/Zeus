@@ -1,27 +1,25 @@
 const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
-const { saveCurrentUsageObject } = require('../helpers/saveToMongo');
-
+const { saveCurrentUsageObject } = require("../helpers/saveToMongo");
+const sum = require('hash-sum');
 
 const convertResourcesValues = container => {
   if (container.resources.requests && container.resources.current) {
     container.resources.requests.cpu = Number(
-        container.resources.requests.cpu.replace(/\D/g, "")
+      container.resources.requests.cpu.replace(/\D/g, "")
     );
     container.resources.requests.memory = Number(
-        container.resources.requests.memory.replace(/\D/g, "")
+      container.resources.requests.memory.replace(/\D/g, "")
     );
     container.resources.current.cpu = Number(
-        container.resources.current.cpu.replace(/\D/g, "")
+      container.resources.current.cpu.replace(/\D/g, "")
     );
     container.resources.current.memory = Number(
-        container.resources.current.memory.replace(/\D/g, "")
+      container.resources.current.memory.replace(/\D/g, "")
     );
   }
   return container;
 };
-
-
 
 const getDeploymentsJson = async () => {
   let command = "kubectl get deployments -n apps -o json";
@@ -38,7 +36,6 @@ const getDeploymentsJson = async () => {
   return deploymentsJson;
 };
 
-
 const populateCurrentUsage = async () => {
   let count = 0;
   const command = "kubectl top pods  -n apps --containers";
@@ -51,12 +48,13 @@ const populateCurrentUsage = async () => {
     PodsCurrentUsageList.shift();
 
     // create pod current resources usage objects and push into the array
-    for (let pod of PodsCurrentUsageList) {
-      pod = pod.split(/(\s+)/);
+    for (let i = 0; i < PodsCurrentUsageList.length; i++) {
+      let pod = PodsCurrentUsageList[i].split(/(\s+)/);
 
       let podObject = {
+        hash: sum(`${pod[0]}${pod[2]}`),
         pod_name: pod[0],
-        containers_name: pod[2],
+        container_name: pod[2],
         cpu: pod[4],
         memory: pod[6]
       };
@@ -111,7 +109,8 @@ const buildState = async () => {
     logger.error(e.message);
     return;
   }
-
+  // TODO remove this after testing
+  process.exit(0);
   // build the state by iterating over all the deployments in a namespace
   for (const deployment of deploymentsJson.items) {
     try {
@@ -124,7 +123,11 @@ const buildState = async () => {
       };
 
       // build the containers inner objects and push to the containers array
-      newPodObject = buildContainerJson(deployment, newPodObject, currentUsageMap);
+      newPodObject = buildContainerJson(
+        deployment,
+        newPodObject,
+        currentUsageMap
+      );
       state.push(newPodObject); // push the new pod object to the state
     } catch (e) {
       logger.error(e.message);

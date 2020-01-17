@@ -12,7 +12,9 @@
     "bunyan": "^1.8.12",
     "exec-sh": "^0.3.4",
     "express": "^4.17.1",
+    "hash-sum": "^2.0.0",
     "moment": "^2.24.0",
+    "mongodb": "^3.5.0",
     "mongoose": "^5.8.7"
   }
 }

@@ -2,11 +2,15 @@ const mongoose = require('mongoose');
 const config = require('../config/config');
 
 const CurrentUsageSchema = new mongoose.Schema({
+  hash: {
+    type: String,
+    required: true
+  },
   pod_name: {
     type: String,
     required: true
   },
-  containers_name: {
+  container_name: {
     type: String,
     required: true
   },
@@ -18,17 +22,15 @@ const CurrentUsageSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  date: {
+  expirationDate: {
     type: Date,
-    default: Date.now
-  },
-  expireAt: {
-    type: Date,
-    default: Date.now,
-    index: { expires: '2m' }
+    expires: 0,
+    default: (Date.now() + 1000*60),
+    // index: { expires: 10 }
   }
 }, {strict: false});
 
-const CurrentUsage = mongoose.model('current_usage', CurrentUsageSchema);
+const modelName = 'current_usage';
+const CurrentUsage = mongoose.model(modelName, CurrentUsageSchema);
 
-module.exports = CurrentUsage;
+module.exports = { modelName, CurrentUsage, CurrentUsageSchema };

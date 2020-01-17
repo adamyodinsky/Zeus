@@ -4,7 +4,7 @@ const express = require('express');
 const config = require('./config/config');
 const logger = require('./helpers/logger');
 const { mainStateBuilder } = require('./functions/main');
-const connectDB = require('./config/mongoDB');
+const connectDB = require('./config/mongoose');
 
 const app = express();
 connectDB();
