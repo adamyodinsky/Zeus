@@ -40,17 +40,23 @@ const saveDeployment = async(newDeployment) => {
   const conditions = { deployment_name: newDeployment.deployment_name };
 
   try {
-    let exist = await Deployment.findOne(conditions);
-    if (!exist) {
+    let deploymentExists = await Deployment.findOne(conditions);
+    if (!deploymentExists) {
       newDeploymentDoc = new Deployment({ ...newDeployment });
       count = await newDeploymentDoc.save();
     } else {
+
+      for (let pod of newDeploymentDoc._doc.pods) {
+
+      };
+
+
       count = await DeploymentModel.updateOne(
           conditions,
           {
             ...newDeployment,
             updated: true,
-            updates_counter: exist.updates_counter + 1,
+            updates_counter: deploymentExists.updates_counter + 1,
             expirationDate: Date.now() + 1000 * 60 * 7
           },
           { new: true }
