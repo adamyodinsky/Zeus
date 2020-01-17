@@ -49,14 +49,19 @@ const buildPodJson = async(deployment, newDeploymentObject) => {
           resources: {}, // how do i know this is the right container resources?
           usage_samples: [
             {
-              memory: currentUsageObject.memory,
-              cpu: currentUsageObject.cpu,
-              date: currentUsageObject.date
+              date: currentUsageObject.date,
+              txt: {
+                memory: currentUsageObject.memory,
+                cpu: currentUsageObject.cpu,
+              }
             }
           ]
         };
-        if (container.container_name === 'istio-proxy') {
+
+        if (container.container_name === config.sideCar.name) {
           newContainer.resources = config.sideCar.resources
+        } else {
+          newContainer.resources = deploymentResourceMap[container.container_name]
         }
       }
     }
