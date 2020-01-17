@@ -1,8 +1,9 @@
 const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
 const { saveCurrentUsageObject } = require("../helpers/saveToMongo");
-const CurrentUsageModel = require("mongoose").model(modelName);
-const config = require('../config/config');
+const { currentUsageModelName } = require("../models/CurrentUsage");
+const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
+const config = require("../config/config");
 
 const convertResourcesValues = container => {
   if (container.resources.requests && container.resources.current) {
@@ -22,39 +23,47 @@ const convertResourcesValues = container => {
   return container;
 };
 
-const buildPodJson = (deployment, newPodObject) => {
-  for (let container of deployment.spec.template.spec.containers) {
-    let newContainerObject = {
-      name: container.name,
-      resources: container.resources
-    };
+const buildPodJson = async(deployment, newDeploymentObject) => {
+  let currentUsageObject = true;
+  let deploymentResourceMap = (
+      new Map(deployment.spec.template.spec.containers.map(container => {
+        return [container.name, container.resources]
+      })));
 
-    // TODO - get matching current usage data by regex deployment-name* from mongo
-    // mutate data with the newContainerObject
-    // and put the container
-    let currentUsageObject = 1;
-    while(currentUsageObject) {
-      const conditions = {};
-      currentUsageObject = CurrentUsageModel.findOneAndDelete();
-      if (currentUsageObject) {
-        container.resources.current = {
-          cpu: currentUsageObject.cpu,
-          memory: currentUsageObject.memory
+  // iterating over live pods matching a deployment
+  while(currentUsageObject) {
+    currentUsageObject = await CurrentUsageModel.findOneAndDelete({
+      pod_name: {$regex: deployment.metadata.name}
+    });
+
+    if (currentUsageObject) {
+      let pod = {
+        pod_name: currentUsageObject.pod_name,
+        containers: []
+      };
+      // iterating over containers inside a live pod
+      for (let container of currentUsageObject.containers) {
+        let newContainer = {
+          container_name: container.container_name,
+          resources: {}, // how do i know this is the right container resources?
+          usage_samples: [
+            {
+              memory: currentUsageObject.memory,
+              cpu: currentUsageObject.cpu,
+              date: currentUsageObject.date
+            }
+          ]
         };
-
-        container = convertResourcesValues(container);
-      } else {
-        logger.debug("Could not found current state for key:", key);
+        if (container.container_name === 'istio-proxy') {
+          newContainer.resources = config.sideCar.resources
+        }
       }
-
     }
-
-    // push the object to the new container object
-    newPodObject.containers.push(newContainerObject);
+    // TODO - CONVERT STRINGS TO NUMBERS, CPU MEM
   }
+
   return newPodObject;
 };
-
 
 const populateCurrentUsage = async () => {
   let count = 0;
@@ -84,9 +93,9 @@ const populateCurrentUsage = async () => {
       });
 
       // push containers to the same pod object
-      while (PodsCurrentUsageList[i+1]) {
-        let nextPod = PodsCurrentUsageList[i+1].split(/(\s+)/);
-        if(pod[0] === nextPod[0]) {
+      while (PodsCurrentUsageList[i + 1]) {
+        let nextPod = PodsCurrentUsageList[i + 1].split(/(\s+)/);
+        if (pod[0] === nextPod[0]) {
           podObject.containers.push({
             container_name: nextPod[2],
             cpu: nextPod[4],
@@ -107,7 +116,7 @@ const populateCurrentUsage = async () => {
   return count;
 };
 
-const getDeploymentsJson = async () => {
+const fetchDeploymentsJson = async () => {
   let command = `kubectl get deployments -n ${config.NAMESPACE} -o json`;
   let deploymentsJson;
 
@@ -126,27 +135,25 @@ const buildState = async () => {
   let deploymentsJson;
   let currentUsageMap;
 
-  // get configs of resources and the current resources usage
   try {
-    deploymentsJson = await getDeploymentsJson();
+    deploymentsJson = await fetchDeploymentsJson();
     await populateCurrentUsage();
   } catch (e) {
     logger.error(e.message);
     return;
   }
-  // build the state by iterating over all the deployments in a namespace
+
   for (const deployment of deploymentsJson.items) {
     try {
-      // build initial object
       let newDeploymentObject = {
-        name: deployment.metadata.name,
+        deployment_name: deployment.metadata.name,
         uid: deployment.metadata.uid,
-        namespace: deployment.metadata.namespace,
+        updated: true,
         pods: []
       };
 
       // build the pod inner objects
-      newDeploymentObject = buildPodJson(deployment, newDeploymentObject);
+      newDeploymentObject = await buildPodJson(deployment, newDeploymentObject);
 
       //TODO - save newDeploymentObject to mongo
     } catch (e) {
