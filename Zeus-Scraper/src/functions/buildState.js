@@ -19,71 +19,91 @@ const convertResourcesValues = (resources) => {
   return result;
 };
 
+const CreateInitialContainers = (deployment, newDeploymentObject, memSumDictionary, cpuSumDictionary) => {
+  let newContainersArray = {};
+  for (let container of deployment.spec.template.spec.containers) {
+    // create empty array  keys of container names, array as value
+    memSumDictionary[container.name] = [];
+    cpuSumDictionary[container.name] = [];
+
+    // set initial container values, all but sample values
+    newContainersArray[container.name] = {
+      container_name: container.name,
+      resources: {
+        txt: container.resources,
+        num: {},
+        sum: {}
+      },
+      usage_samples: []
+    };
+  }
+
+  // inject sidecar intial values
+  if(config.SIDE_CAR_ACTIVE) {
+    newContainersArray[config.sideCar.name] = config.sideCar;
+  }
+
+  // make numeric conversions
+  for (let [key, newContainer] of Object.entries(newContainersArray)) {
+    try {
+      newContainersArray[key] = newContainer.resources.num = { requests: {} };
+      newContainersArray[key] = convertResourcesValues(newContainer.resources.txt.requests);
+      newContainersArray[key] = {
+        cpu: newContainer.resources.num.requests.cpu * newDeploymentObject.replicas,
+        memory: newContainer.resources.num.requests.memory * newDeploymentObject.replicas
+      };
+    } catch (e) {
+      logger.error(e.message);
+    }
+  }
+
+  return newContainersMap;
+
+};
+
+
 const buildDeploymentObject = async (deployment, newDeploymentObject) => {
+  // init basic variables
+  let countPods = 0;
   let currentUsageObject = true;
+
+  // init data structures
+  let podNames = [];
+  let usageObjectsMap = {};
+  let memSumMap = {};
+  let cpuSumMap = {};
+
+  // init complex variables
   let regex = new RegExp( '^' + deployment.metadata.name + '.*');
   let condition = {
     pod_name: { $regex: regex }
   };
-  let deploymentResourceMap = new Map(
-    deployment.spec.template.spec.containers.map(container => {
-      return [container.name, container.resources];
-    })
-  );
 
-  // iterating over live pods matching a deployment
+  // make a map of containers with initial data
+  let newContainersMap = CreateInitialContainers(deployment, newDeploymentObject, memSumMap, cpuSumMap);
+
+  // loop over matching current usage objects from mongo
   while (currentUsageObject) {
     currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition);
 
-    if (!currentUsageObject) {
-      continue;
+    // make map of current usage objects for later use
+    if (currentUsageObject) {
+      usageObjectsMap[currentUsageObject.container_name] = currentUsageObject;
     }
+    // push and count pods names for validation
+    podNames.push(currentUsageObject.pod_name);
+    countPods++;
+  }
 
-    let newPod = {
-      pod_name: currentUsageObject.pod_name,
-      containers: []
-    };
-
-    // iterating over containers inside a live pod
-    for (let container of currentUsageObject.containers) {
-      let newContainer = {
-        container_name: container.container_name,
-        resources: {}, // how do i know this is the right container resources?
-        usage_samples: [
-          {
-            date: currentUsageObject.date,
-            txt: {
-              memory: container.memory,
-              cpu: container.cpu
-            },
-            num: {}
-          }
-        ]
-      };
-
-      if (container.container_name === config.sideCar.name) {
-        newContainer.resources.txt = config.sideCar.resources;
-      } else {
-        newContainer.resources.txt = deploymentResourceMap.get(
-          container.container_name
-        );
-      }
-
-      try {
-
-        newContainer.resources.num = { requests: {}};
-        newContainer.resources.num.requests = convertResourcesValues(newContainer.resources.txt.requests);
-        newContainer.usage_samples[0].num = convertResourcesValues(newContainer.usage_samples[0].txt);
-        newPod.containers.push(newContainer);
-      } catch (e) {
-        logger.error(e.message);
-      }
-    } // for loop ended
-    newDeploymentObject.pods.push(newPod);
-  } // while loop ended
+  // compute sum of cpu and mem
+  for (let [key, newContainer] of Object.entries(currentUsageObject)) {
+    memSumMap[key].push(convertToNumber(newContainer.memory));
+    cpuSumMap[key].push(convertToNumber(newContainer.cpu));
+  }
 
   return newDeploymentObject;
 };
+
 
 const populateCurrentUsage = async podsCurrentUsage => {
   let count = 0;
@@ -183,7 +203,8 @@ const buildState = async () => {
         deployment_name: deployment.metadata.name,
         uid: deployment.metadata.uid,
         updated: true,
-        pods: []
+        replicas: deployment.spec.replicas,
+        containers: []
       };
 
       // build the pod inner objects

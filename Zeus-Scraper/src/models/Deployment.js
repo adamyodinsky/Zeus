@@ -44,7 +44,8 @@ const DeploymentSchema = new mongoose.Schema(
         container_name: String,
         resources: {
           txt: Object,
-          num: Object
+          num: Object,
+          sum: Object
         },
         usage_samples: [
           {
@@ -53,10 +54,6 @@ const DeploymentSchema = new mongoose.Schema(
               memory: String,
               cpu: String
             },
-            num: {
-              memory: Number,
-              cpu: Number
-            },
             sum: {
               memory: Number,
               cpu: Number
@@ -64,10 +61,6 @@ const DeploymentSchema = new mongoose.Schema(
             avg: {
               memory: Number,
               cpu: Number
-            },
-            range: {
-              high: Number,
-              low: Number
             }
           }
         ]
