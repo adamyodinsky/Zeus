@@ -15,6 +15,11 @@ const DeploymentSchema = new mongoose.Schema({
     required: true,
     default: 0
   },
+  namespace: {
+    type: String,
+    required: true,
+    default: config.NAMESPACE
+  },
   date: {
     type: Date,
     default: Date.now

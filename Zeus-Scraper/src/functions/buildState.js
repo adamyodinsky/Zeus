@@ -58,7 +58,7 @@ const buildPodJson = (deployment, newPodObject) => {
 
 const populateCurrentUsage = async () => {
   let count = 0;
-  const command = "kubectl top pods  -n apps --containers";
+  const command = `kubectl top pods  -n ${config.NAMESPACE} --containers`;
   try {
     // make a list of pods current resources usage
     let PodsCurrentUsageList = await exec(command);
@@ -108,7 +108,7 @@ const populateCurrentUsage = async () => {
 };
 
 const getDeploymentsJson = async () => {
-  let command = "kubectl get deployments -n apps -o json";
+  let command = `kubectl get deployments -n ${config.NAMESPACE} -o json`;
   let deploymentsJson;
 
   try {

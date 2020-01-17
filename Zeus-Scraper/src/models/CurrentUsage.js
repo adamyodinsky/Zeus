@@ -12,7 +12,8 @@ const CurrentUsageSchema = new mongoose.Schema({
   },
   namespace: {
     type: String,
-    required: true
+    required: true,
+    default: config.NAMESPACE
   },
   updates_counter: {
     type: Number,
