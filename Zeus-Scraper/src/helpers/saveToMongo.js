@@ -1,10 +1,12 @@
-const { CurrentUsage, currentUsageModelName } = require("../models/CurrentUsage");
+const {
+  CurrentUsage,
+  currentUsageModelName
+} = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
-const { Deployment, deploymentModelName} = require('../models/Deployment');
-const DeploymentModel = require('mongoose').model(deploymentModelName);
+const { Deployment, deploymentModelName } = require("../models/Deployment");
+const DeploymentModel = require("mongoose").model(deploymentModelName);
 
 const logger = require("../helpers/logger");
-
 
 const saveCurrentUsageObject = async curr_usage => {
   let count;
@@ -17,7 +19,7 @@ const saveCurrentUsageObject = async curr_usage => {
       count = await newUsageObject.save();
     } else {
       count = await CurrentUsageModel.updateOne(
-          `${conditions}`,
+        `${conditions}`,
         {
           ...curr_usage,
           updated: true,
@@ -34,10 +36,13 @@ const saveCurrentUsageObject = async curr_usage => {
   return count.nModified;
 };
 
-const saveDeployment = async(newDeployment) => {
+const saveDeployment = async newDeployment => {
   let count;
   let newDeploymentDoc;
-  const conditions = { deployment_name: newDeployment.deployment_name };
+  let conditions = [
+    { deployment_name: newDeployment.deployment_name },
+    { namespace: { $eq: newDeployment.namespace } }
+  ];
 
   try {
     let deploymentExists = await Deployment.findOne(conditions);
@@ -45,22 +50,29 @@ const saveDeployment = async(newDeployment) => {
       newDeploymentDoc = new Deployment({ ...newDeployment });
       count = await newDeploymentDoc.save();
     } else {
+      // updated containers
+      for (let container of newDeploymentDoc._doc.containers) {
+        // match containers name to the right element in containers array
+        let ContainerConditions = {
+          $and: [
+            conditions,
+            { "containers.container_name": { $eq: container.container_name } }
+          ]
+        };
 
-      for (let pod of newDeploymentDoc._doc.pods) {
-
-      };
-
-
-      count = await DeploymentModel.updateOne(
+        await DeploymentModel.updateOne(
           conditions,
           {
-            ...newDeployment,
+            replicas: newDeployment.replica,
+            uid: newDeployment.uid,
             updated: true,
+            namespace: newDeployment.namespace,
             updates_counter: deploymentExists.updates_counter + 1,
             expirationDate: Date.now() + 1000 * 60 * 7
           },
           { new: true }
-      );
+        );
+      }
     }
     logger.debug("Stored new Deployment Object in DB", null);
   } catch (err) {
