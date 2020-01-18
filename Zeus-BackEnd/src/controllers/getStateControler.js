@@ -15,7 +15,7 @@ const getState = async (req, res) => {
     const regexOptions = req.query.regexOpt || 'i';
 
     // set regex
-    let regex = req.query.regex || "account-activations-deployment";
+    let regex = req.query.regex || "";
     regex = new RegExp(`${regex}`);
 
     // set conditions
@@ -27,7 +27,11 @@ const getState = async (req, res) => {
       .skip(page * limit)
       .sort(sort);
 
-    res.status(200).json(response);
+    res.status(200).json({
+      length: response.length,
+      data: response
+    });
+
     logger.info("get state controller success");
   } catch (e) {
     logger.error(e.message);
