@@ -45,40 +45,49 @@ const saveDeployment = async newDeployment => {
   ];
 
   try {
-    let deploymentExists = await Deployment.findOne(conditions);
+    let deploymentExists = await Deployment.findOne({ $and: conditions });
     if (!deploymentExists) {
       newDeploymentDoc = new Deployment({ ...newDeployment });
       count = await newDeploymentDoc.save();
     } else {
-      // updated containers
-      for (let container of newDeploymentDoc._doc.containers) {
-        // match containers name to the right element in containers array
-        let ContainerConditions = {
-          $and: [
-            conditions,
-            { "containers.container_name": { $eq: container.container_name } }
-          ]
-        };
-
-        await DeploymentModel.updateOne(
-          conditions,
-          {
-            replicas: newDeployment.replica,
+      // update surface objects
+      count = await DeploymentModel.updateOne(
+        { $and: conditions },
+        {
+          $set: {
+            replicas: newDeployment.replicas,
             uid: newDeployment.uid,
             updated: true,
             namespace: newDeployment.namespace,
             updates_counter: deploymentExists.updates_counter + 1,
             expirationDate: Date.now() + 1000 * 60 * 7
-          },
-          { new: true }
+          }
+        },
+        { new: true }
+      );
+
+      // updated nested objects
+      for (let container of newDeployment.containers) {
+        conditions.push({
+          "containers.container_name": { $eq: container.container_name }
+        });
+        count = await DeploymentModel.updateOne(
+          { $and: conditions },
+          {
+            $set: {
+              "containers.$.resources": container.resources
+            },
+            $push: { "containers.$.usage_samples": container.usage_samples[0] }
+          }
         );
+        conditions.pop();
       }
     }
     logger.debug("Stored new Deployment Object in DB", null);
   } catch (err) {
     logger.error(err.message);
   }
-  return count.nModified;
+  return 1;
 };
 
 module.exports = { saveCurrentUsageObject, saveDeployment };

@@ -7,6 +7,10 @@ const DeploymentSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    pod_names: {
+      type: [String],
+      required: true
+    },
     updated: {
       type: Boolean,
       required: true,

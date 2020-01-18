@@ -74,7 +74,7 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
 
   // init data structures
   let podNames = [];
-  let usageObjectsMap = {};
+  let sampleMap = {};
   let memSumMap = {};
   let cpuSumMap = {};
 
@@ -90,7 +90,6 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
   // loop over matching current usage objects from mongo
   let currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition);
   while (currentUsageObject) {
-
     if (currentUsageObject) {
       // gather sum of memory and cpu
       for (let container of currentUsageObject._doc.containers) {
@@ -114,11 +113,11 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
     newContainersMap[key].usage_samples[0].sum.cpu    = cpuSumMap[key];
     newContainersMap[key].usage_samples[0].avg.memory = memSumMap[key] / newDeploymentObject.replicas;
     newContainersMap[key].usage_samples[0].avg.cpu    = cpuSumMap[key] / newDeploymentObject.replicas;
+    newContainersMap[key].usage_samples[0].date       = Date.now();
+
     newDeploymentObject.containers.push(newContainersMap[key]);
   }
-    console.log('bla');
-    console.log();
-
+  newDeploymentObject.pod_names = podNames;
   return newDeploymentObject;
 };
 
@@ -219,6 +218,7 @@ const buildState = async () => {
     try {
       let newDeploymentObject = {
         deployment_name: deployment.metadata.name,
+        namespace: config.NAMESPACE,
         uid: deployment.metadata.uid,
         updated: true,
         replicas: deployment.spec.replicas,
