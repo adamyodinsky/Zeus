@@ -12,10 +12,8 @@ const Deployment = (props) => {
   return(
       <div className={deployment.background}>
         <div className={deployment.deployment}>
-          <div>
-            <span className={deployment.spanText}><strong>Deployment:</strong> {props.state.deployment_name} </span>
-          </div>
           <div className={deployment.info_box}>
+            <span className={deployment.spanText}><strong>Deployment:</strong> {props.state.deployment_name} </span>
             <div><strong>Cluster:</strong> {props.state.cluster}</div>
             <div><strong>Namespace:</strong> {props.state.namespace}</div>
             <div><strong>Replicas:</strong> {props.state.replicas}</div>

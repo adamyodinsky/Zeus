@@ -6,7 +6,7 @@ const Icon = props => {
   return (
       <img className={icon.icon}
           src={iconSvg}
-          style={{ height: '15rem' }}
+          style={{ height: '10vh' }}
           alt="icon_logo"
       />
   );

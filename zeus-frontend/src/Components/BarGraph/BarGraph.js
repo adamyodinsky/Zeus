@@ -5,7 +5,7 @@ import barGraph from './BarGraph.module.scss'
 const BarGraph = props => {
 
   const data = [
-    ["","Request", "Usage"],
+    ['', "Request", "Usage"],
     [
       "CPU",
       props.state.resources.sum.requests.cpu,
@@ -24,7 +24,7 @@ const BarGraph = props => {
   console.log(props.resources);
   return (
     <div className={barGraph.box}>
-      <Chart chartType="Bar" width={"65vw"} height={"10rem"} data={data} options={opt} />
+      <Chart chartType="Bar" width={"50vw"} height={"8rem"} data={data} options={opt} />
     </div>
   );
 };
