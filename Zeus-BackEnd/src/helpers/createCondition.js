@@ -7,13 +7,13 @@ const createConditions = (regex, fields, options) => {
   for(let field of fields) {
     conditions.push(
     {
-      field: {
+      [field]: {
         $regex: regex,
             '$options': options
       }
     });
 }
-  return { '$match': {'$or': conditions}}
+  return ({'$or': conditions});
 };
 
 module.exports = { createConditions };

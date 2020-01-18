@@ -9,13 +9,13 @@ const DeploymentModel = require("mongoose").model(
 
 const getState = async (req, res) => {
   try {
-    const limit = req.query.limit || 25;
+    const limit = req.query.limit || 10;
     const page = req.query.page || 0;
     const sort = req.query.sort || "";
     const regexOptions = req.query.regexOpt || 'i';
 
     // set regex
-    let regex = req.query.regex || "";
+    let regex = req.query.regex || "account-activations-deployment";
     regex = new RegExp(`${regex}`);
 
     // set conditions
