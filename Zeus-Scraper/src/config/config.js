@@ -19,7 +19,15 @@ module.exports = {
           cpu: process.env.SIDECAR_CPU_REQUESTS || '100m',
           memory: process.env.SIDECAR_MEM_REQUESTS || '128Mi'
         }
+      },
+      num: {},
+      sum: {}
+    },
+    usage_samples: [
+      {
+        sum: {},
+        avg: {}
       }
-    }
+    ]
   }
 };

@@ -19,36 +19,42 @@ const convertResourcesValues = (resources) => {
   return result;
 };
 
-const CreateInitialContainers = (deployment, newDeploymentObject, memSumDictionary, cpuSumDictionary) => {
-  let newContainersArray = {};
+const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpuSumMap) => {
+  let newContainersMap = {};
   for (let container of deployment.spec.template.spec.containers) {
     // create empty array  keys of container names, array as value
-    memSumDictionary[container.name] = [];
-    cpuSumDictionary[container.name] = [];
+    memSumMap[container.name] = [];
+    cpuSumMap[container.name] = [];
 
     // set initial container values, all but sample values
-    newContainersArray[container.name] = {
+    newContainersMap[container.name] = {
       container_name: container.name,
       resources: {
         txt: container.resources,
         num: {},
         sum: {}
       },
-      usage_samples: []
+      usage_samples: [
+        {
+          sum: {},
+          avg: {}
+        }
+      ]
     };
   }
 
   // inject sidecar intial values
   if(config.SIDE_CAR_ACTIVE) {
-    newContainersArray[config.sideCar.name] = config.sideCar;
+    newContainersMap[config.sideCar.container_name] = config.sideCar;
+    memSumMap[config.sideCar.container_name] = [];
+    cpuSumMap[config.sideCar.container_name] = [];
   }
 
   // make numeric conversions
-  for (let [key, newContainer] of Object.entries(newContainersArray)) {
+  for (let [key, newContainer] of Object.entries(newContainersMap)) {
     try {
-      newContainersArray[key] = newContainer.resources.num = { requests: {} };
-      newContainersArray[key] = convertResourcesValues(newContainer.resources.txt.requests);
-      newContainersArray[key] = {
+      newContainersMap[key].resources.num.requests = convertResourcesValues(newContainer.resources.txt.requests);
+      newContainersMap[key].resources.sum.requests = {
         cpu: newContainer.resources.num.requests.cpu * newDeploymentObject.replicas,
         memory: newContainer.resources.num.requests.memory * newDeploymentObject.replicas
       };
@@ -65,7 +71,6 @@ const CreateInitialContainers = (deployment, newDeploymentObject, memSumDictiona
 const buildDeploymentObject = async (deployment, newDeploymentObject) => {
   // init basic variables
   let countPods = 0;
-  let currentUsageObject = true;
 
   // init data structures
   let podNames = [];
@@ -83,23 +88,36 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
   let newContainersMap = CreateInitialContainers(deployment, newDeploymentObject, memSumMap, cpuSumMap);
 
   // loop over matching current usage objects from mongo
+  let currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition);
   while (currentUsageObject) {
-    currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition);
 
-    // make map of current usage objects for later use
     if (currentUsageObject) {
-      usageObjectsMap[currentUsageObject.container_name] = currentUsageObject;
+      // gather sum of memory and cpu
+      for (let container of currentUsageObject._doc.containers) {
+        memSumMap[container.container_name].push(convertToNumber(container.cpu));
+        cpuSumMap[container.container_name].push(convertToNumber(container.memory));
+      }
+
+      // gather and count pods names
+      podNames.push(currentUsageObject.pod_name);
+      countPods++;
+      currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition); // for next iteration
     }
-    // push and count pods names for validation
-    podNames.push(currentUsageObject.pod_name);
-    countPods++;
   }
 
   // compute sum of cpu and mem
-  for (let [key, newContainer] of Object.entries(currentUsageObject)) {
-    memSumMap[key].push(convertToNumber(newContainer.memory));
-    cpuSumMap[key].push(convertToNumber(newContainer.cpu));
+  for (let [key, newContainer] of Object.entries(newContainersMap)) {
+    memSumMap[key] = memSumMap[key].reduce((a, b) => a + b,0);
+    cpuSumMap[key] = cpuSumMap[key].reduce((a, b) => a + b,0);
+
+    newContainersMap[key].usage_samples[0].sum.memory = memSumMap[key];
+    newContainersMap[key].usage_samples[0].sum.cpu    = cpuSumMap[key];
+    newContainersMap[key].usage_samples[0].avg.memory = memSumMap[key] / newDeploymentObject.replicas;
+    newContainersMap[key].usage_samples[0].avg.cpu    = cpuSumMap[key] / newDeploymentObject.replicas;
+    newDeploymentObject.containers.push(newContainersMap[key]);
   }
+    console.log('bla');
+    console.log();
 
   return newDeploymentObject;
 };
