@@ -11,11 +11,9 @@ const convertToNumber = (str) => {
 
 const convertResourcesValues = (resources) => {
   let result = {};
-
     for (let [key, value] of Object.entries(resources)) {
       result[key] = convertToNumber(value);
     }
-
   return result;
 };
 
@@ -220,7 +218,6 @@ const buildState = async () => {
         deployment_name: deployment.metadata.name,
         namespace: config.NAMESPACE,
         uid: deployment.metadata.uid,
-        updated: true,
         replicas: deployment.spec.replicas,
         containers: []
       };

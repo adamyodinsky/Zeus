@@ -22,7 +22,7 @@ const saveCurrentUsageObject = async curr_usage => {
         `${conditions}`,
         {
           ...curr_usage,
-          updated: true,
+          last_update: Date.now(),
           updates_counter: exist.updates_counter + 1,
           expirationDate: Date.now() + 1000 * 60 * 2
         },
@@ -35,6 +35,7 @@ const saveCurrentUsageObject = async curr_usage => {
   }
   return count.nModified;
 };
+
 
 const saveDeployment = async newDeployment => {
   let count;
@@ -57,7 +58,7 @@ const saveDeployment = async newDeployment => {
           $set: {
             replicas: newDeployment.replicas,
             uid: newDeployment.uid,
-            updated: true,
+            last_update: Date.now(),
             namespace: newDeployment.namespace,
             updates_counter: deploymentExists.updates_counter + 1,
             expirationDate: Date.now() + 1000 * 60 * 7

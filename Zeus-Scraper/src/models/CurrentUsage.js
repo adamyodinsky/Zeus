@@ -20,7 +20,10 @@ const CurrentUsageSchema = new mongoose.Schema({
     required: true,
     default: 0
   },
-  date: {
+  last_update: {
+    type: Date
+  },
+  created: {
     type: Date,
     required: true,
     default: Date.now()

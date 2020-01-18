@@ -1,6 +1,6 @@
-const { buildState } = require('./buildState');
-const logger = require('../helpers/logger');
-const config = require('../config/config');
+const { buildState } = require('./state/buildState');
+const logger = require('./helpers/logger');
+const config = require('./config/config');
 
 
 const executeStateBuilder = async() => {

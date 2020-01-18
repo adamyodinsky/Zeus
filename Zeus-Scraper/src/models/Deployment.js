@@ -11,11 +11,6 @@ const DeploymentSchema = new mongoose.Schema(
       type: [String],
       required: true
     },
-    updated: {
-      type: Boolean,
-      required: true,
-      default: true
-    },
     uid: {
       type: String,
       required: true
@@ -30,9 +25,13 @@ const DeploymentSchema = new mongoose.Schema(
       required: true,
       default: config.NAMESPACE
     },
-    date: {
+    last_update: {
+      type: Date
+    },
+    created: {
       type: Date,
-      default: Date.now
+      default: Date.now,
+      required: true,
     },
     expirationDate: {
       type: Date,
