@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import Deployments from './Components/Deployments/Deployments'
 import axios from 'axios'
+import Header from './Components/Header/Header';
 
 class App extends React.Component {
 
@@ -28,11 +29,10 @@ class App extends React.Component {
     this.getMainState();
   }
 
-
     render () {
     return (
         <div className="App">
-          <h1>Porus</h1>
+          <Header/>
           {this.state.mainState && <Deployments state={ this.state.mainState } />}
         </div>
     );
