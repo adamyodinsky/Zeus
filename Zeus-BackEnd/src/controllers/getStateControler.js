@@ -1,7 +1,5 @@
 const logger = require('../helpers/logger');
 const config = require('../config/config');
-const fs = require('fs');
-const { exec } = require('../helpers/exec');
 
 
 const getState = async(req, res) => {
