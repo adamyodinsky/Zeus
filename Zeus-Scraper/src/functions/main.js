@@ -1,5 +1,6 @@
 const { buildState } = require('./buildState');
 const logger = require('../helpers/logger');
+const config = require('../config/config');
 
 
 const executeStateBuilder = async() => {
@@ -17,7 +18,7 @@ const executeStateBuilder = async() => {
 
 const mainStateBuilder = () => {
   executeStateBuilder();
-  setInterval(executeStateBuilder, 1000*20);
+  setInterval(executeStateBuilder, 1000 * config.METRIC_INTERVAL);
 };
 
 module.exports = { mainStateBuilder };

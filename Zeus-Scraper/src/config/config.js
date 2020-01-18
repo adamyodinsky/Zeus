@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+  METRIC_INTERVAL: Number(process.env.METRIC_INTERVAL) || 30,
   NAMESPACE: process.env.NAMESPACE || 'apps',
   Host: process.env.CONSUL_HOST || 'localhost',
   Port: Number(process.env.CONSUL_PORT || 3002),
