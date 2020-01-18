@@ -5,7 +5,6 @@ const logger   = require('../helpers/logger');
 const connectDB = async () => {
   // remove deprecation warnings
   mongoose.set('useNewUrlParser', true);
-  mongoose.set('useFindAndModify', false);
   mongoose.set('useCreateIndex', true);
   mongoose.set('useUnifiedTopology', true);
 
