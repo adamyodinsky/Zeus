@@ -9,7 +9,7 @@ const DeploymentModel = require("mongoose").model(
 
 const getState = async (req, res) => {
   try {
-    const limit = req.query.limit || 10;
+    const limit = req.query.limit || config.DEFAULT_LIMIT;
     const page = req.query.page || 0;
     const sort = req.query.sort || "";
     const regexOptions = req.query.regexOpt || 'i';

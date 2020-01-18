@@ -1,9 +1,10 @@
 'use strict';
 
 module.exports = {
+  DEFAULT_LIMIT: Number(process.env.DEFAULT_LIMIT) || 10,
   deploymentModelName: process.env.DEPLOYMENT_MODEL || 'deployments',
   Host: process.env.HOST || 'localhost',
-  Port: Number(process.env.PORT || 3001),
+  Port: Number(process.env.PORT) || 3001,
   logLevel: process.env.LOG_LEVEL || 'info',
   DEBUG: process.env.DEBUG === "true",
   //----------FRONT-END----------------------------
