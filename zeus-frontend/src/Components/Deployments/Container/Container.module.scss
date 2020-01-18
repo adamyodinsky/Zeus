@@ -1,4 +1,34 @@
-.spanText {
+.box {
+  margin: 1rem;
+  padding: 1rem;
+  background-color: rgba(4, 1, 129, 0.05);
+  border-radius: 5rem;
+}
+
+.requests_txt_block div {
+  display: inline-block;
+}
+
+.title_container {
   font-size: 1.6rem;
-  margin: 5rem 5rem;
+  margin: 0 5rem 0 3rem;
+}
+
+.title_request {
+  font-size: 1.4rem;
+  margin: 0 5px 0 4rem;
+  font-weight: bold;
+}
+
+.resources_block div{
+  font-size: 1.3rem;
+  margin: 0 2rem 0 0;
+}
+
+.blue {
+  color: royalblue;
+}
+
+.red {
+
 }
