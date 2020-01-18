@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Pods from './Components/Pods/Pods'
+import Deployments from './Components/Deployments/Deployments'
 import axios from 'axios'
 
 class App extends React.Component {
@@ -11,7 +11,7 @@ class App extends React.Component {
 
 
   getMainState = async () => {
-    const url =  "http://localhost:3001/state?stateType=demo";
+    const url =  "http://localhost:3001/state";
     try {
       const response = await axios.get(url);
       console.log(response.data);
@@ -33,7 +33,7 @@ class App extends React.Component {
     return (
         <div className="App">
           <h1>Porus</h1>
-          {this.state.mainState && <Pods state={ this.state.mainState } />}
+          {this.state.mainState && <Deployments state={ this.state.mainState } />}
         </div>
     );
   }
