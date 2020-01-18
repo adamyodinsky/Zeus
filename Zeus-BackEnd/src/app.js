@@ -6,8 +6,11 @@ const logger = require('./helpers/logger');
 const bodyParser = require('body-parser');
 const { downloadFromS3Interval } = require('./controllers/getStateControler');
 const cors = require('cors');
+const connectDB = require('./config/mongoose');
 // const corsOptions = require('./config/corsConfig');
 
+
+connectDB();
 const app = express();
 const apiRouter = require('./routes/apiRouter')();
 
