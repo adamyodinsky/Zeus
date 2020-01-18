@@ -24,7 +24,7 @@ const BarGraph = props => {
   console.log(props.resources);
   return (
     <div className={barGraph.box}>
-      <Chart chartType="Bar" width={"50vw"} height={"8rem"} data={data} options={opt} />
+      <Chart className={barGraph.chart} chartType="Bar" width={"50vw"} height={"8rem"} data={data} options={opt} />
     </div>
   );
 };
