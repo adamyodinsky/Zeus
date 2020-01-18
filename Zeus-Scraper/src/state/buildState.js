@@ -216,6 +216,7 @@ const buildState = async () => {
     try {
       let newDeploymentObject = {
         deployment_name: deployment.metadata.name,
+        cluster: config.CLUSTER,
         namespace: config.NAMESPACE,
         uid: deployment.metadata.uid,
         replicas: deployment.spec.replicas,

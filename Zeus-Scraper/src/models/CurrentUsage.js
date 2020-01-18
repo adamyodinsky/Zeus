@@ -2,6 +2,16 @@ const mongoose = require('mongoose');
 const config = require('../config/config');
 
 const CurrentUsageSchema = new mongoose.Schema({
+  cluster: {
+    type: String,
+    required: true,
+    default: config.CLUSTER
+  },
+  namespace: {
+    type: String,
+    required: true,
+    default: config.NAMESPACE
+  },
   pod_name: {
     type: String,
     required: true
@@ -9,11 +19,6 @@ const CurrentUsageSchema = new mongoose.Schema({
   containers: {
     type: [Object],
     required: true
-  },
-  namespace: {
-    type: String,
-    required: true,
-    default: config.NAMESPACE
   },
   updates_counter: {
     type: Number,

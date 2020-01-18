@@ -7,6 +7,16 @@ const DeploymentSchema = new mongoose.Schema(
       type: String,
       required: true
     },
+    cluster: {
+      type: String,
+      required: true,
+      default: config.CLUSTER
+    },
+    namespace: {
+      type: String,
+      required: true,
+      default: config.NAMESPACE
+    },
     pod_names: {
       type: [String],
       required: true
@@ -20,11 +30,6 @@ const DeploymentSchema = new mongoose.Schema(
       required: true,
       default: 0
     },
-    namespace: {
-      type: String,
-      required: true,
-      default: config.NAMESPACE
-    },
     last_update: {
       type: Date
     },
@@ -36,7 +41,7 @@ const DeploymentSchema = new mongoose.Schema(
     expirationDate: {
       type: Date,
       expires: 0,
-      default: Date.now() + 1000 * 60 * 10 // 15 minutes
+      default: Date.now() + 1000 * 60 * 15 // 15 minutes
     },
     replicas: {
       type: Number,

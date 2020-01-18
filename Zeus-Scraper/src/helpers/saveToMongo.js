@@ -7,6 +7,7 @@ const { Deployment, deploymentModelName } = require("../models/Deployment");
 const DeploymentModel = require("mongoose").model(deploymentModelName);
 
 const logger = require("../helpers/logger");
+const config = require('../config/config');
 
 const saveCurrentUsageObject = async curr_usage => {
   let count;
@@ -23,6 +24,8 @@ const saveCurrentUsageObject = async curr_usage => {
         {
           ...curr_usage,
           last_update: Date.now(),
+          cluster: config.CLUSTER,
+          namespace: config.NAMESPACE,
           updates_counter: exist.updates_counter + 1,
           expirationDate: Date.now() + 1000 * 60 * 2
         },
@@ -58,6 +61,7 @@ const saveDeployment = async newDeployment => {
           $set: {
             replicas: newDeployment.replicas,
             uid: newDeployment.uid,
+            cluster: newDeployment.cluster,
             last_update: Date.now(),
             namespace: newDeployment.namespace,
             updates_counter: deploymentExists.updates_counter + 1,
