@@ -1,10 +1,12 @@
 'use strict';
 
-const express = require('express');
 const config = require('./config/config');
+const connectDB = require('./config/mongoose');
+connectDB();
+
+const express = require('express');
 const logger = require('./helpers/logger');
 const bodyParser = require('body-parser');
-const { downloadFromS3Interval } = require('./controllers/getStateControler');
 const cors = require('cors');
 // const corsOptions = require('./config/corsConfig');
 
@@ -16,7 +18,6 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use('/', apiRouter); // use router api
 
-downloadFromS3Interval();
 
 // run server
 app.listen(config.Port, () => {

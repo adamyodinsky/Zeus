@@ -1,52 +1,41 @@
-const logger = require('../helpers/logger');
-const config = require('../config/config');
-const fs = require('fs');
-const { exec } = require('../helpers/exec');
+const config = require("../config/config");
+const logger = require("../helpers/logger");
+const { createConditions } = require('../helpers/createCondition');
+const { DeploymentSchema } = require("../models/Deployment");
+const DeploymentModel = require("mongoose").model(
+  config.deploymentModelName,
+  DeploymentSchema
+);
 
-
-const getState = async(req, res) => {
+const getState = async (req, res) => {
   try {
-    const statePath = req.query.stateType === 'demo'? `${config.STATE_FILE_PATH}/demo_state.json` : `${config.STATE_FILE_PATH}/${config.STATE_FILE_NAME}`;
-    const state = JSON.parse(fs.readFileSync(statePath));
-    res.status(200).json(state);
-    logger.info('get state controller success');
+    const limit = req.query.limit || config.DEFAULT_LIMIT;
+    const page = req.query.page || 0;
+    const sort = req.query.sort || "";
+    const regexOptions = req.query.regexOpt || 'i';
+
+    // set regex
+    let regex = req.query.regex || "";
+    regex = new RegExp(`${regex}`);
+
+    // set conditions
+    const fields = ['cluster', 'namespace', 'deployment_name', 'containers.container_name'];
+    const conditions = createConditions(regex, fields, regexOptions);
+
+    const response = await DeploymentModel.find(conditions)
+      .limit(limit)
+      .skip(page * limit)
+      .sort(sort);
+
+    res.status(200).json({
+      length: response.length,
+      data: response
+    });
+
+    logger.info("get state controller success");
   } catch (e) {
-    logger.error(e.message)
+    logger.error(e.message);
   }
 };
 
-
-const health = async(req, res) => {
-  try {
-    res.status(200).json("OK");
-    logger.info('OK');
-  } catch (e) {
-    logger.error(e.message)
-  }
-};
-
-
-const downloadFromS3 = async() => {
-  logger.info(`- Loading State File: '${config.STATE_FILE_NAME}' From S3 Bucket...`);
-
-  try {
-    await exec(
-        `aws  --profile=zooz-dev s3 ls s3://${config.S3_BUCKET}/${config.STATE_FILE_NAME}`,
-        true);
-    await exec(
-        `aws  --profile=zooz-dev s3 cp s3://${config.S3_BUCKET}/${config.STATE_FILE_NAME} ${config.STATE_FILE_PATH}/${config.STATE_FILE_NAME}`,
-        true);
-    console.log('Loaded state file successfully!');
-  } catch (e) {
-    console.log('Could not load state file from s3 bucket. Creating new local state file');
-    await exec(`echo '[]' > ${config.STATE_FILE_PATH}/${config.STATE_FILE_NAME}`);
-  }
-};
-
-const downloadFromS3Interval = () => {
-  downloadFromS3();
-  setInterval(downloadFromS3, 1000*30);
-};
-
-
-module.exports = { health, getState, downloadFromS3Interval };
+module.exports = { getState };

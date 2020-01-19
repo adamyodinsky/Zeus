@@ -65,7 +65,7 @@ const saveDeployment = async newDeployment => {
             last_update: Date.now(),
             namespace: newDeployment.namespace,
             updates_counter: deploymentExists.updates_counter + 1,
-            expirationDate: Date.now() + 1000 * 60 * 7
+            expirationDate: Date.now() + 1000 * 60 * config.SAVE_DOC
           }
         },
         { new: true }

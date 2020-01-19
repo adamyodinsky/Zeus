@@ -1,25 +1,32 @@
 import React from "react";
 import { Chart } from "react-google-charts";
-// import barGraph from './BarGraph.module.scss'
+import barGraph from './BarGraph.module.scss'
 
+const BarGraph = props => {
 
-const BarGraph = (props) => {
-  if( props.resources.requests && props.resources.current ) {
-    const data = [
-      ["Container", "Request", "Usage"],
-      ["CPU", props.resources.requests.cpu, props.resources.current.cpu],
-      ["Memory", props.resources.requests.memory, props.resources.current.memory]
-    ];
+  const data = [
+    ['', "Request", "Usage"],
+    [
+      "CPU",
+      props.state.resources.sum.requests.cpu,
+      props.state.usage_samples[0].sum.cpu
+    ],
+    [
+      "RAM",
+      props.state.resources.sum.requests.memory,
+      props.state.usage_samples[0].sum.memory
+    ]
+  ];
+  let opt = {
+    bars: 'horizontal'
+  };
 
-    return (
-        <div className="App">
-          <Chart chartType="BarChart" width={"95vw"} height={"12rem"}
-                 data={data}/>
-        </div>
-    );
-  } else {
-    return <div></div>
-  }
+  console.log(props.resources);
+  return (
+    <div className={barGraph.box}>
+      <Chart className={barGraph.chart} chartType="Bar" width={"50vw"} height={"8rem"} data={data} options={opt} />
+    </div>
+  );
 };
 
 export default BarGraph;
