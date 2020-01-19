@@ -3,6 +3,12 @@ import './App.css';
 import Deployments from './Components/Deployments/Deployments'
 import axios from 'axios'
 import Header from './Components/Header/Header';
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link
+} from "react-router-dom";
 
 class App extends React.Component {
 
