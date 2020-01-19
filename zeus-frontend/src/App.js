@@ -6,8 +6,8 @@ import Header from './Components/Header/Header';
 import {
   BrowserRouter as Router,
   Switch,
-  Route,
-  Link
+  Route
+  // Link
 } from "react-router-dom";
 import NoMatch from './Components/noMatch/NoMatch';
 
@@ -19,6 +19,7 @@ class App extends React.Component {
       author: ''
     }
   };
+
 
   getQuote = async () => {
     const url = 'https://quotes.rest/qod';
@@ -35,9 +36,10 @@ class App extends React.Component {
   };
 
   getMainState = async () => {
-    const url =  "http://localhost:3001/state";
+
+    const url =  `http://localhost:3001/state`;
     try {
-      const response = await axios.get(url);
+      const response = await axios.get(`${url}`);
       console.log(response.data);
       this.setState({
         mainState :response.data
@@ -53,7 +55,7 @@ class App extends React.Component {
     this.getQuote();
   }
 
-    render () {
+  render () {
     return (
         <div className="App">
           <Header/>
