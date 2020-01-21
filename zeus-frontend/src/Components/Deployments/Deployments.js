@@ -9,7 +9,6 @@ class Deployments extends React.Component {
   // init state
   state = {};
 
-
   getDeploymentsState = async () => {
     const url =  `http://localhost:3001/state`;
     try {
