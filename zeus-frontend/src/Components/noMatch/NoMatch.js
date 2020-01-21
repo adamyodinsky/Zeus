@@ -3,10 +3,8 @@ import noMatch from './noMatch.module.css'
 import axios from 'axios';
 
 class NoMatch extends React.Component {
-  state = {
-      quote: '',
-      author: ''
-  };
+  // init state
+  state = {};
 
   getQuote = async () => {
     const url = 'https://quotes.rest/qod';
