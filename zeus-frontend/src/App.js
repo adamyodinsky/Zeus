@@ -13,30 +13,6 @@ import NoMatch from './Components/noMatch/NoMatch';
 
 
 class App extends React.Component {
-  state = {
-    quote: {
-      quote: '',
-      author: ''
-    }
-  };
-
-  getQuote = async () => {
-    const url = 'https://quotes.rest/qod';
-    try {
-      const response = await axios.get(url);
-      this.setState({
-        quote: {
-          quote: response.data.contents.quotes[0].quote,
-          author: response.data.contents.quotes[0].author
-        }});
-    } catch (e) {
-      console.log("ERROR, can't get quote!");
-    }
-  };
-
-  componentDidMount() {
-    this.getQuote();
-  }
 
   render () {
     return (
@@ -45,7 +21,9 @@ class App extends React.Component {
           <Router>
             <Switch>
               <Route exact path="/" name="PORUS"> <Deployments/> </Route>
-              <Route render={(props) => (<NoMatch {...props} quote={this.state.quote} />)}/>
+              <Route name="PORUS">
+                <NoMatch/>
+              </Route>
             </Switch>
           </Router>
         </div>
