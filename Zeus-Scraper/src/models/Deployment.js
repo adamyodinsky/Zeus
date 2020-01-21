@@ -40,8 +40,9 @@ const DeploymentSchema = new mongoose.Schema(
     },
     expirationDate: {
       type: Date,
-      expires: 0,
-      default: Date.now() + 1000 * 60 * 15 // 15 minutes
+      // TODO - uncomment in prod
+      // expires: 0,
+      // default: Date.now() + 1000 * 60 * 15 // 15 minutes
     },
     replicas: {
       type: Number,
