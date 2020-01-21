@@ -19,6 +19,7 @@ const convertResourcesValues = (resources) => {
 
 const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpuSumMap) => {
   let newContainersMap = {};
+  let sideCarInjected = !(deployment.spec.template.metadata.annotations["sidecar.istio.io/inject"] === "false");
   for (let container of deployment.spec.template.spec.containers) {
     // create empty array  keys of container names, array as value
     memSumMap[container.name] = [];
@@ -42,7 +43,7 @@ const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpu
   }
 
   // inject sidecar intial values
-  if(config.SIDE_CAR_ACTIVE) {
+  if(config.SIDE_CAR_ACTIVE && sideCarInjected) {
     newContainersMap[config.sideCar.container_name] = config.sideCar;
     memSumMap[config.sideCar.container_name] = [];
     cpuSumMap[config.sideCar.container_name] = [];
@@ -72,7 +73,6 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
 
   // init data structures
   let podNames = [];
-  let sampleMap = {};
   let memSumMap = {};
   let cpuSumMap = {};
 
@@ -113,7 +113,7 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
     newContainersMap[key].usage_samples[0].avg.cpu    = cpuSumMap[key] / newDeploymentObject.replicas;
     newContainersMap[key].usage_samples[0].date       = Date.now();
 
-    newDeploymentObject.containers.push(newContainersMap[key]);
+    newDeploymentObject.containers.push(newContainer);
   }
   newDeploymentObject.pod_names = podNames;
   return newDeploymentObject;
