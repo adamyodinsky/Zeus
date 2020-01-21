@@ -17,8 +17,9 @@ const executeStateBuilder = async() => {
 };
 
 const mainStateBuilder = () => {
-  executeStateBuilder();
-  setInterval(executeStateBuilder, 1000 * config.METRIC_INTERVAL);
+  executeStateBuilder().then(()=>{
+    setInterval(executeStateBuilder, 1000 * config.METRIC_INTERVAL);
+  });
 };
 
 module.exports = { mainStateBuilder };
