@@ -14,10 +14,11 @@ app.get('/', async(req, res) => {
 
 app.get('/compute', async(req, res) => {
     const num = Number(req.query.num) || 35;
+    let level = Number(req.query.level) || 0;
     let result;
 
     const options = {
-        uri: `${config.targetHost}:${config.targetPort}/compute?num=${num}`,
+        uri: `http://${config.targetHost}:${config.targetPort}/compute?num=${num}&level=${level + 1}`,
         body: {
             some: 'payload'
         },
@@ -25,16 +26,16 @@ app.get('/compute', async(req, res) => {
     };
 
     try {
-        logger.info(`start computing ficonnaci of ${num}`);
         result = fibonacci(num);
 
         if (config.nonLeaf) {
-            const response = request(options);
-            result = response.body;
+            const response = await request(options);
+            result = response.result;
+            level = response.level;
         }
 
-        logger.info(`fibonacci number of ${num} is ${result}`);
-        res.status(200).json(`fibonacci number of ${num} is ${result}`);
+        logger.info(`num: ${num}, result: ${result}, level: ${level}`);
+        res.status(200).json({num: num, result: result, level: level});
     } catch (e) {
         logger.error(e.message);
         res.status(500).json(e.stack);
