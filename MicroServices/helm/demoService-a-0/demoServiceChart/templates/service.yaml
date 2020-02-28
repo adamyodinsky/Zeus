@@ -1,0 +1,13 @@
+---
+# Source: demoServiceChart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: demoservice-a-0
+spec:
+  type: ClusterIP
+  selector:
+    app: demoservice-a-0
+  ports:
+    - protocol: TCP
+      port: 3000

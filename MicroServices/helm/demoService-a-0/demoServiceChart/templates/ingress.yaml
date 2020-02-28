@@ -1,0 +1,16 @@
+---
+# Source: demoServiceChart/templates/ingress.yaml
+#apiVersion: networking.k8s.io/v1beta1
+#kind: Ingress
+#metadata:
+#  name: demoService-Ingress
+#  annotations:
+#    nginx.ingress.kubernetes.io/rewrite-target: /
+#spec:
+#  rules:
+#    - http:
+#        paths:
+#          - path: /demoService-Ingress
+#            backend:
+#              serviceName: test
+#              servicePort: 80

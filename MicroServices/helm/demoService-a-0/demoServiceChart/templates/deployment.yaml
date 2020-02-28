@@ -1,0 +1,38 @@
+---
+# Source: demoServiceChart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demoservice-deployment-a-0
+  labels:
+    app: demoservice-a-0
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demoservice-a-0
+  template:
+    metadata:
+      labels:
+        app: demoservice-a-0
+    spec:
+      containers:
+        - name: demoservice
+          image: adamyo/public:demoService-v1.0.1
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 2
+          env:
+            - name: TARGET_HOST
+              value: "blabla"
+            - name: TARGET_PORT
+              value: "3001"
+            - name: NON_LEAF
+              value: "false"
