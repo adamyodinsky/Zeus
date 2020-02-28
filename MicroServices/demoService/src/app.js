@@ -22,10 +22,12 @@ app.get('/compute', async(req, res) => {
         body: {
             some: 'payload'
         },
+
         json: true
     };
 
     try {
+        logger.info(`level=${level} num=${num}, computing fibonacci...`);
         result = fibonacci(num);
 
         if (config.nonLeaf) {

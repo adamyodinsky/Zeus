@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: demoservice
-          image: adamyo/public:demoService-v1.0.1
+          image: adamyo/public:demoService-v1.0.3
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -31,6 +31,6 @@ spec:
             - name: TARGET_HOST
               value: "{{ .Values.target_host }}"
             - name: TARGET_PORT
-              value: "{{ .Values.target_port }}"
+              value: "3000"
             - name: NON_LEAF
               value: "{{ .Values.non_leaf }}"
