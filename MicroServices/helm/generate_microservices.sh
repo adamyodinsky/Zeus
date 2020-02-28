@@ -1,6 +1,9 @@
 #!/bin/bash -e
 #set -x
 
+mem="${3}"
+cpu="${4}"
+replicas="${5}"
 
 helm_template() {
   local letter="${1}"
@@ -14,6 +17,9 @@ helm_template() {
                                   --set host_port=3000 \
                                   --set target_port=3000 \
                                   --set non_leaf="${non_leaf}" \
+                                  --set mem="${mem}" \
+                                  --set cpu="${cpu}" \
+                                  --set replicas="${replicas}" \
                                   --output-dir "manifests/demoService-${letter}-${host_num}"
 }
 
@@ -26,7 +32,7 @@ prompt_for_action() {
   while true; do
       read -p "${msg}" yn
       case $yn in
-          [Yy]* ) command; break;;
+          [Yy]* ) set -x && $command && set +x; break;;
           [Nn]* ) echo "exiting script.." && exit;;
           * ) echo "Please answer yes or no.";;
       esac
@@ -61,5 +67,9 @@ generate_chain_templates(){
 
 }
 
-generate_chain_templates "${1}" "${2}"
-apply_resources
+if [[ ${1} == "delete" ]]; then
+  delete_resources && delete_manifests
+else
+  generate_chain_templates "${1}" "${2}"
+  apply_resources
+fi
