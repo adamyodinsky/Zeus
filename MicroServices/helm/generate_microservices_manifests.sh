@@ -17,29 +17,34 @@ helm_template() {
                                   --output-dir "manifests/demoService-${letter}-${host_num}"
 }
 
-apply_manifests() {
+
+prompt_for_action() {
+  msg="${1}"
+  command="${2}"
+
   echo ''
   while true; do
-      read -p "Do you wish to apply manifests?  " yn
+      read -p "${msg}" yn
       case $yn in
-          [Yy]* ) kubectl -n apps apply --recursive -f ./manifests; break;;
+          [Yy]* ) command; break;;
           [Nn]* ) echo "exiting script.." && exit;;
           * ) echo "Please answer yes or no.";;
       esac
   done
 }
 
-delete_manifests() {
-  echo ''
-    while true; do
-      read -p "Do you wish to delete manifests?  " yn
-      case $yn in
-          [Yy]* ) rm -rf ./manifests/* | echo 'yes'; break;;
-          [Nn]* ) echo "exiting script.." && exit;;
-          * ) echo "Please answer yes or no.";;
-      esac
-  done
+apply_resources() {
+  prompt_for_action "Do you wish to apply resources?  " "kubectl -n apps apply --recursive -f ./manifests"
 }
+
+delete_manifests() {
+  prompt_for_action "Do you wish to delete manifests?  " "rm -rf ./manifests/* | echo 'yes'"
+}
+
+delete_resources() {
+  prompt_for_action "Do you wish to delete resources?  " "kubectl -n apps delete --recursive -f ./manifests"
+}
+
 
 generate_chain_templates(){
   local letter="${1}"
@@ -57,5 +62,4 @@ generate_chain_templates(){
 }
 
 generate_chain_templates "${1}" "${2}"
-apply_manifests
-#delete_manifests
+apply_resources
