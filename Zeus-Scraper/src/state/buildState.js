@@ -19,7 +19,13 @@ const convertResourcesValues = (resources) => {
 
 const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpuSumMap) => {
   let newContainersMap = {};
-  let sideCarInjected = !(deployment.spec.template.metadata.annotations["sidecar.istio.io/inject"] === "false");
+  let sideCarInjected;
+
+  // TODO - should be more system agnostic, this is to specific
+  if (config.SIDE_CAR_ACTIVE) {
+    let sideCarInjected = !(deployment.spec.template.metadata.annotations["sidecar.istio.io/inject"] === "false");
+  }
+
   for (let container of deployment.spec.template.spec.containers) {
     // create empty array  keys of container names, array as value
     memSumMap[container.name] = [];
