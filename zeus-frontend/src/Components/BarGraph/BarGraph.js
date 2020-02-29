@@ -3,7 +3,13 @@ import { Chart } from "react-google-charts";
 import barGraph from './BarGraph.module.scss'
 
 const BarGraph = props => {
+  if(!props.state.resources) {
+    return (
+        <div>
 
+        </div>
+    );
+  }
   const requestSum  = props.state.resources.sum.requests;
   const usageSum    = props.state.usage_samples[0].sum;
 
