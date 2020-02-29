@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const config = require('../config/config');
 
-const CurrentUsageSchema = new mongoose.Schema({
+const CurrentDeploymentsUsageSchema = new mongoose.Schema({
   cluster: {
     type: String,
     required: true,
@@ -41,6 +41,6 @@ const CurrentUsageSchema = new mongoose.Schema({
 }, {strict: false});
 
 const currentUsageModelName = 'current_usage';
-const CurrentUsage = mongoose.model(currentUsageModelName, CurrentUsageSchema);
+const CurrentUsage = mongoose.model(currentUsageModelName, CurrentDeploymentsUsageSchema);
 
-module.exports = { currentUsageModelName, CurrentUsage, CurrentUsageSchema };
+module.exports = { currentUsageModelName, CurrentUsage, CurrentUsageSchema: CurrentDeploymentsUsageSchema };
