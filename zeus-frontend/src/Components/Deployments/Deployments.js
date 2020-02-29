@@ -1,23 +1,30 @@
 import React from 'react';
 import Deployment from './Deployment/Deployment'
 import axios from 'axios';
-import * as qs from 'querystring'
+// import * as qs from 'querystring'
 import Pagination from "./Pagination/Pagination";
+import SearchBar from "./SearchBar/SearchBar";
 
 
 class Deployments extends React.Component {
-  // init state
-  state = {
-    page: 0,
-    data: null,
-    length: 0
-  };
+
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      page: 0,
+      data: null,
+      length: 0,
+      search: ""
+    };
+
+    this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
+  }
 
   getDeploymentsState = async () => {
-    const url =  `http://localhost:3001/state?page=${this.state.page}`;
+    const url =  `http://localhost:3001/state?page=${this.state.page}&regex=${this.state.search}`;
     try {
       const response = await axios.get(`${url}`);
-      // console.log(qs.parse(`${this.props.location.search.slice(1)}`));
       return response.data;
     } catch (e) {
       console.log('ERROR: could not get main state object');
@@ -25,14 +32,33 @@ class Deployments extends React.Component {
     }
   };
 
-  getQueryParams = () => {
-    const query_params = qs.parse(`${this.props.location.search.slice(1)}`);
+  // TODO query params (url) integration
+  // getQueryParams = () => {
+  //   const query_params = qs.parse(`${this.props.location.search.slice(1)}`);
+  //
+  //   if (query_params.page) {
+  //     return query_params.page
+  //   } else {
+  //     return 0
+  //   }
+  // };
 
-    if (query_params.page) {
-      return query_params.page
-    } else {
-      return 0
-    }
+  handleSearchSubmit(data) {
+    console.log('in handle submit func');
+    console.log(data);
+
+    (async() => {
+      this.setState({
+        search: data.search
+      });
+    })().then(()=>{
+      this.getDeploymentsState().then((data)=> {
+        this.setState({
+          data: data.data,
+          length: data.length
+        })
+      });
+    });
   };
 
   pageUp = () => {
@@ -50,9 +76,7 @@ class Deployments extends React.Component {
         })
       });
     });
-
   };
-
 
   pageDown = () => {
     console.log('Page Down');
@@ -74,13 +98,6 @@ class Deployments extends React.Component {
   };
 
   componentDidMount() {
-
-    const page = this.getQueryParams();
-    console.log(page);
-    this.setState({
-      page: page
-    });
-
     this.getDeploymentsState().then((data)=> {
       this.setState({
         data: data.data,
@@ -89,11 +106,10 @@ class Deployments extends React.Component {
     });
   }
 
-
-  shouldComponentUpdate(nextProps, nextState, nextContext) {
-    console.warn('nextState', nextState);
-    return nextState.page !== this.state.page || nextState.data !== this.state.data;
-  }
+  // shouldComponentUpdate(nextProps, nextState, nextContext) {
+  //   console.warn('nextState', nextState);
+  //   return nextState.page !== this.state.page || nextState.data !== this.state.data;
+  // }
 
   render() {
     let renderedDeployments = [];
@@ -107,11 +123,15 @@ class Deployments extends React.Component {
 
     return(
         <div>
-        <Pagination
-          page={this.state.page}
-          pageUp={this.pageUp}
-          pageDown={this.pageDown}
-        />
+          <div>
+            <Pagination
+              page={this.state.page}
+              pageUp={this.pageUp}
+              pageDown={this.pageDown}
+            />
+            <SearchBar
+            onSubmit={this.handleSearchSubmit}/>
+          </div>
           {renderedDeployments}
         </div>
     );
