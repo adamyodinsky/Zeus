@@ -205,7 +205,7 @@ const fetchDeploymentsJson = async () => {
   return deploymentsJson;
 };
 
-const buildState = async () => {
+const buildDeploymentsState = async () => {
   let count = 0;
   let deploymentsJson;
 
@@ -243,4 +243,4 @@ const buildState = async () => {
   return count;
 };
 
-module.exports = { buildState };
+module.exports = { buildState: buildDeploymentsState };

@@ -1,4 +1,4 @@
-const { buildState } = require('./state/buildState');
+const { buildState } = require('./state/buildDeploymentsState');
 const logger = require('./helpers/logger');
 const config = require('./config/config');
 
