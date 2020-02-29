@@ -3,30 +3,76 @@ const logger = require("../helpers/logger");
 const config = require("../config/config");
 const _ = require('lodash/array');
 
+const parsePodsResources = (resourceArray) => {
+    const pods = [];
 
-const parseResources = (nodeLines, i) => {
-
-    // create resource Array
-    const resourceArray = [];
-    while(!nodeLines[i].match(/^Events:/)) {
-        resourceArray.push(nodeLines[i]);
-        i++;
+    for(let i=3; i<resourceArray.length; i++) {
+        const podLineArray = _.compact(resourceArray[i].split(/\s+/));
+        let pod = {
+            namespace: podLineArray[0],
+            name: podLineArray[1],
+            cpu: {
+                request: [podLineArray[2], podLineArray[3]],
+                limit: [podLineArray[4], podLineArray[5]]
+            },
+            mem: {
+                request: [podLineArray[6], podLineArray[7]],
+                limit: [podLineArray[8], podLineArray[9]],
+            },
+            age: podLineArray[10]
+        };
+        pods.push(pod);
+    //    TODO - put pod of in mongo db node collection
     }
+    return pods;
+};
 
-    console.log(resourceArray);
+const parseNodeResources = (resourceArray) => {
 
     let cpu = resourceArray.filter(line => line.match(/cpu/));
     cpu = _.compact(cpu[0].split(/\s+/));
     let cpuRequest = [cpu[1], cpu[2]];
     let cpuLimits  = [cpu[3], cpu[4] ];
-    console.log(cpuRequest, cpuLimits);
 
     let memory = resourceArray.filter(line => line.match(/memory/));
     memory = _.compact(memory[0].split(/\s+/));
     let memRequest = [memory[1], memory[2]];
     let memLimits  = [memory[3], memory[4] ];
-    console.log(memRequest, memLimits);
+
+
+    return {
+        cpu: {
+            request: cpuRequest,
+            limit: cpuLimits
+        },
+        mem: {
+            request: memRequest,
+            limit: memLimits
+        }
+    };
     // TODO put mem and cpu in mongo collection
+
+};
+
+const parseResources = (nodeLines, i) => {
+    // create resource Array for pods resources
+    let resourceArray = [];
+    while(!nodeLines[i].match(/^Allocated resources:/)) {
+        resourceArray.push(nodeLines[i]);
+        i++;
+    }
+
+    const Pods = parsePodsResources(resourceArray);
+    console.log(Pods);
+    // create resource Array for node resources
+    resourceArray = [];
+    while(!nodeLines[i].match(/^Events:/)) {
+        resourceArray.push(nodeLines[i]);
+        i++;
+    }
+
+    const Nodes = parseNodeResources(resourceArray);
+    console.log(Nodes);
 };
 
 const parseNode = (node) => {
@@ -35,18 +81,18 @@ const parseNode = (node) => {
         // Get Name
         let Name = nodeLines.filter(line => line.match(/^Name:/));
         Name = Name[0].split(/\s+/)[1];
-        console.log(Name);
+        // console.log(Name);
         // TODO - put name in mongo collection
 
         // Get Roles
         let Roles = nodeLines.filter(line => line.match(/^Roles:/));
         Roles = Roles[0].split(/\s+/)[1];
-        console.log(Roles);
+        // console.log(Roles);
         // TODO - put roles in mongo collection
 
         // parse resources allocation
         for (let i=0; i<nodeLines.length; i++) {
-            if (nodeLines[i].match(/Allocated resources:/)) {
+            if (nodeLines[i].match(/^Non-terminated Pods:/)) {
                 parseResources(nodeLines, i);
             }
         }
