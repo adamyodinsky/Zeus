@@ -3,7 +3,7 @@ import pagination from './Pagination.module.scss'
 
 const Pagination = props => {
     return (
-        <div className={pagination.pagination_box}>
+        <section className={pagination.pagination_box}>
             <div className={[pagination.page_box, pagination.btn].join(' ')} onClick={props.pageUp}>
                 Page Up
             </div>
@@ -13,7 +13,7 @@ const Pagination = props => {
             <div className={pagination.page_box}>
                 Page: {props.page}
             </div>
-        </div>
+        </section>
     );
 };
 

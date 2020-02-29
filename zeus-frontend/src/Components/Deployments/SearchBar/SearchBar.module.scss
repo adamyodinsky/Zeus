@@ -1,0 +1,12 @@
+.search_box {
+  & input {
+    border-radius: 0.5rem;
+    padding: 2px 8px;
+    font-size: 1.6rem;
+  }
+  margin: 0 5rem;
+  font-size: 2rem;
+  font-weight: 700;
+  display: inline-block;
+  filter: drop-shadow(0 1.2rem 0.5rem rgba(0, 0, 0, 0.2));
+}

@@ -4,6 +4,7 @@ import axios from 'axios';
 // import * as qs from 'querystring'
 import Pagination from "./Pagination/Pagination";
 import SearchBar from "./SearchBar/SearchBar";
+import deployment from './Deployments.module.scss'
 
 
 class Deployments extends React.Component {
@@ -106,10 +107,6 @@ class Deployments extends React.Component {
     });
   }
 
-  // shouldComponentUpdate(nextProps, nextState, nextContext) {
-  //   console.warn('nextState', nextState);
-  //   return nextState.page !== this.state.page || nextState.data !== this.state.data;
-  // }
 
   render() {
     let renderedDeployments = [];
@@ -123,7 +120,7 @@ class Deployments extends React.Component {
 
     return(
         <div>
-          <div>
+          <section className={deployment.options_bar}>
             <Pagination
               page={this.state.page}
               pageUp={this.pageUp}
@@ -131,7 +128,7 @@ class Deployments extends React.Component {
             />
             <SearchBar
             onSubmit={this.handleSearchSubmit}/>
-          </div>
+          </section>
           {renderedDeployments}
         </div>
     );
