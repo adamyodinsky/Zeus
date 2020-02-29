@@ -1,0 +1,33 @@
+.page_box {
+  display: inline-block;
+  margin: 0 5rem;
+  padding: 0.2rem 2rem;
+  text-align: center;
+  font-size: 1.6rem;
+  border-radius: 1rem;
+  filter: drop-shadow(0 1.2rem 0.5rem rgba(0, 0, 0, 0.2));
+}
+
+.btn,
+.btn:link,
+.btn:visited
+{
+  box-shadow: 0 0.5rem 0.5rem rgba(0, 0, 0, 0.1);
+
+  background-color: rgba(0 ,0, 0, 0.05);
+  display: inline-block;
+  position: relative;
+  transition: all 0.2s;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+.btn:active {
+  transform: translateY(0px);
+}
+
+.pagination_box {
+  margin: 2rem;
+}

@@ -18,7 +18,6 @@ const Deployment = (props) => {
             <div><strong>Namespace:</strong> {props.state.namespace}</div>
             <div><strong>Replicas:</strong> {props.state.replicas}</div>
           </div>
-          <div className={deployment.box}></div>
           {renderedContainers}
         </div>
       </div>
