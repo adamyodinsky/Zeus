@@ -33,9 +33,9 @@ spec:
         args:
           - --cert-dir=/tmp
           - --secure-port=4443
-          - --kubelet-preferred-address-types=InternalIP
-          - --kubelet-insecure-tls
-          - --v=2
+          - --kubelet-preferred-address-types=InternalIP # for local minikube
+          - --kubelet-insecure-tls # for local minikube
+          - --v=2 # for local minikube
         ports:
         - name: main-port
           containerPort: 4443
