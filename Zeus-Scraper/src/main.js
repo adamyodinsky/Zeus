@@ -10,7 +10,6 @@ const executeStateBuilder = async() => {
   try {
     await buildState();
     await mainNodesStateBuilder();
-
     logger.info("State Build Iteration Ended Successfully");
   } catch (err) {
     logger.error(err.message);

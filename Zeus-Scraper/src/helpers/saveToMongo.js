@@ -91,7 +91,7 @@ const saveDeployment = async newDeployment => {
         conditions.pop();
       }
     }
-    logger.debug("Stored new Deployment Object in DB", null);
+    logger.debug("Stored Deployment Object in DB", null);
   } catch (err) {
     logger.error(err.message);
   }
@@ -128,7 +128,7 @@ const saveNode = async newNode => {
       );
 
     }
-    logger.debug("Stored new Node Object in DB", null);
+    logger.debug("Stored Node Object in DB", null);
   } catch (err) {
     logger.error(err.message);
   }
@@ -158,7 +158,7 @@ const saveNodeUsage = async newNodeUsage => {
       );
 
     }
-    logger.debug("Stored new Node Object in DB", null);
+    logger.debug("Stored Node Usage Object in DB", null);
   } catch (err) {
     logger.error(err.message);
   }

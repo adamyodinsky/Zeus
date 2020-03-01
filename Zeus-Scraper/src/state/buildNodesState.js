@@ -134,7 +134,7 @@ const parseNode = (node) => {
     };
 
     // console.log(JSON.stringify(nodeObject, null, 2));
-
+    logger.info(`Node ${nodeObject.name} was parsed`);
     return nodeObject;
 };
 
@@ -167,7 +167,6 @@ const parseNodesUsage = (nodesUsageArray) => {
     for (let node of nodesUsageArray) {
         try {
             nodesUsageObj = deepParseNodeUsage(node);
-            console.log(nodesUsageObj);
             saveNodeUsage(nodesUsageObj);
         } catch (e) {
             logger.error(e.message);
