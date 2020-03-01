@@ -9,6 +9,7 @@ import {
   // Link
 } from "react-router-dom";
 import NoMatch from './Components/noMatch/NoMatch';
+import Nodes from "./Components/Nodes/Nodes";
 
 
 class App extends React.Component {
@@ -20,6 +21,7 @@ class App extends React.Component {
           <Router>
             <Switch>
               <Route exact path="/" name="PORUS"  component={Deployments}/>
+              <Route exact path="/nodes" name="PORUS" component={Nodes}/>
               <Route name="PORUS">
                 <NoMatch/>
               </Route>

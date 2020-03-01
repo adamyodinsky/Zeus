@@ -54,10 +54,12 @@ class Deployments extends React.Component {
             });
         })().then(() => {
             this.getDeploymentsState().then((data) => {
-                this.setState({
-                    data: data.data,
-                    length: data.length
-                })
+                if (data) {
+                    this.setState({
+                        data: data.data,
+                        length: data.length
+                    })
+                }
             });
         });
     };
@@ -71,10 +73,12 @@ class Deployments extends React.Component {
             });
         })().then(() => {
             this.getDeploymentsState().then((data) => {
-                this.setState({
-                    data: data.data,
-                    length: data.length
-                })
+                if (data) {
+                    this.setState({
+                        data: data.data,
+                        length: data.length
+                    })
+                }
             });
         });
     };
@@ -90,10 +94,12 @@ class Deployments extends React.Component {
             });
         })().then(() => {
             this.getDeploymentsState().then((data) => {
-                this.setState({
-                    data: data.data,
-                    length: data.length
-                })
+                if (data) {
+                    this.setState({
+                        data: data.data,
+                        length: data.length
+                    })
+                }
             });
         });
     };
