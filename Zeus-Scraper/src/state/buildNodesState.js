@@ -54,28 +54,69 @@ const parseNodeResources = (resourceArray) => {
 
 };
 
-const parseResources = (nodeLines, i) => {
-    // create resource Array for pods resources
+const parseAddresses = (addressesArray) => {
+    let addressesObjArray =[];
+
+    for (let i=1; i<addressesArray.length; i++) {
+        addressesObjArray.push(_.compact(addressesArray[i].split(/\s+/)));
+    }
+
+    return addressesObjArray;
+};
+
+const parseDeep = (nodeLines) => {
+    let i=0;
+
+    // ### PARSE ADDRESS ###
+    // reset array and skip
     let resourceArray = [];
-    while(!nodeLines[i].match(/^Allocated resources:/)) {
+    while (!nodeLines[i].match(/^Addresses:/)) {
+        i++
+    }
+    // fill array with relevant content
+    while(!nodeLines[i].match(/^Capacity:/)) {
         resourceArray.push(nodeLines[i]);
         i++;
     }
 
+    // parse relevant content
+    const Addresses = parseAddresses(resourceArray);
+
+    // ### PARSE PODS RESOURCES ###
+    // reset array and skip
+    resourceArray = [];
+    while (!nodeLines[i].match(/^Non-terminated Pods:/)) {
+        i++
+    }
+    // fill array with relevant content
+    while(!nodeLines[i].match(/^Allocated resources:/)) {
+        resourceArray.push(nodeLines[i]);
+        i++;
+    }
+    // parse relevant content
     const Pods = parsePodsResources(resourceArray);
-    console.log(Pods);
-    // create resource Array for node resources
+
+    // ### PARSE NODE RESOURCES ###
+    // reset array, no need to skip
     resourceArray = [];
     while(!nodeLines[i].match(/^Events:/)) {
         resourceArray.push(nodeLines[i]);
         i++;
     }
 
-    const Nodes = parseNodeResources(resourceArray);
-    console.log(Nodes);
+    const Node = parseNodeResources(resourceArray);
+
+    return [Node, Pods, Addresses]
+
 };
 
+
+
+
 const parseNode = (node) => {
+        let addressesObjArray;
+        let nodeObject;
+        let resources;
         const nodeLines = node.split(/\n/);
 
         // Get Name
@@ -90,13 +131,17 @@ const parseNode = (node) => {
         // console.log(Roles);
         // TODO - put roles in mongo collection
 
-        // parse resources allocation
-        for (let i=0; i<nodeLines.length; i++) {
-            if (nodeLines[i].match(/^Non-terminated Pods:/)) {
-                parseResources(nodeLines, i);
-            }
-        }
+        let objects = parseDeep(nodeLines);
 
+        nodeObject = {
+            name: Name,
+            roles: Roles,
+            node: objects[0],
+            addresses: objects[2],
+            pods: objects[1]
+        };
+
+        console.log(JSON.stringify(nodeObject,null,2));
 };
 
 const parseNodes = (nodeArray) => {
