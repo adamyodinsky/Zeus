@@ -1,12 +1,13 @@
-const { exec } = require("../helpers/exec");
+const {exec} = require("../helpers/exec");
 const logger = require("../helpers/logger");
 const config = require("../config/config");
 const _ = require('lodash/array');
+const {saveNode, saveNodeUsage} = require("../helpers/saveToMongo");
 
 const parsePodsResources = (resourceArray) => {
     const pods = [];
 
-    for(let i=3; i<resourceArray.length; i++) {
+    for (let i = 3; i < resourceArray.length; i++) {
         const podLineArray = _.compact(resourceArray[i].split(/\s+/));
         let pod = {
             namespace: podLineArray[0],
@@ -22,7 +23,6 @@ const parsePodsResources = (resourceArray) => {
             age: podLineArray[10]
         };
         pods.push(pod);
-    //    TODO - put pod of in mongo db node collection
     }
     return pods;
 };
@@ -32,12 +32,12 @@ const parseNodeResources = (resourceArray) => {
     let cpu = resourceArray.filter(line => line.match(/cpu/));
     cpu = _.compact(cpu[0].split(/\s+/));
     let cpuRequest = [cpu[1], cpu[2]];
-    let cpuLimits  = [cpu[3], cpu[4] ];
+    let cpuLimits = [cpu[3], cpu[4]];
 
     let memory = resourceArray.filter(line => line.match(/memory/));
     memory = _.compact(memory[0].split(/\s+/));
     let memRequest = [memory[1], memory[2]];
-    let memLimits  = [memory[3], memory[4] ];
+    let memLimits = [memory[3], memory[4]];
 
 
     return {
@@ -50,14 +50,13 @@ const parseNodeResources = (resourceArray) => {
             limit: memLimits
         }
     };
-    // TODO put mem and cpu in mongo collection
 
 };
 
 const parseAddresses = (addressesArray) => {
-    let addressesObjArray =[];
+    let addressesObjArray = [];
 
-    for (let i=1; i<addressesArray.length; i++) {
+    for (let i = 1; i < addressesArray.length; i++) {
         addressesObjArray.push(_.compact(addressesArray[i].split(/\s+/)));
     }
 
@@ -65,7 +64,7 @@ const parseAddresses = (addressesArray) => {
 };
 
 const parseDeep = (nodeLines) => {
-    let i=0;
+    let i = 0;
 
     // ### PARSE ADDRESS ###
     // reset array and skip
@@ -74,7 +73,7 @@ const parseDeep = (nodeLines) => {
         i++
     }
     // fill array with relevant content
-    while(!nodeLines[i].match(/^Capacity:/)) {
+    while (!nodeLines[i].match(/^Capacity:/)) {
         resourceArray.push(nodeLines[i]);
         i++;
     }
@@ -89,7 +88,7 @@ const parseDeep = (nodeLines) => {
         i++
     }
     // fill array with relevant content
-    while(!nodeLines[i].match(/^Allocated resources:/)) {
+    while (!nodeLines[i].match(/^Allocated resources:/)) {
         resourceArray.push(nodeLines[i]);
         i++;
     }
@@ -99,7 +98,7 @@ const parseDeep = (nodeLines) => {
     // ### PARSE NODE RESOURCES ###
     // reset array, no need to skip
     resourceArray = [];
-    while(!nodeLines[i].match(/^Events:/)) {
+    while (!nodeLines[i].match(/^Events:/)) {
         resourceArray.push(nodeLines[i]);
         i++;
     }
@@ -111,46 +110,87 @@ const parseDeep = (nodeLines) => {
 };
 
 
-
-
 const parseNode = (node) => {
-        let addressesObjArray;
-        let nodeObject;
-        let resources;
-        const nodeLines = node.split(/\n/);
+    let nodeObject;
+    const nodeLines = node.split(/\n/);
 
-        // Get Name
-        let Name = nodeLines.filter(line => line.match(/^Name:/));
-        Name = Name[0].split(/\s+/)[1];
-        // console.log(Name);
-        // TODO - put name in mongo collection
+    // Get Name
+    let Name = nodeLines.filter(line => line.match(/^Name:/));
+    Name = Name[0].split(/\s+/)[1];
 
-        // Get Roles
-        let Roles = nodeLines.filter(line => line.match(/^Roles:/));
-        Roles = Roles[0].split(/\s+/)[1];
-        // console.log(Roles);
-        // TODO - put roles in mongo collection
+    // Get Roles
+    let Roles = nodeLines.filter(line => line.match(/^Roles:/));
+    Roles = Roles[0].split(/\s+/)[1];
 
-        let objects = parseDeep(nodeLines);
+    let objects = parseDeep(nodeLines);
 
-        nodeObject = {
-            name: Name,
-            roles: Roles,
-            node: objects[0],
-            addresses: objects[2],
-            pods: objects[1]
-        };
+    nodeObject = {
+        name: Name,
+        roles: Roles,
+        node: objects[0],
+        addresses: objects[2],
+        pods: objects[1]
+    };
 
-        console.log(JSON.stringify(nodeObject,null,2));
+    // console.log(JSON.stringify(nodeObject, null, 2));
+
+    return nodeObject;
 };
 
-const parseNodes = (nodeArray) => {
-    for(let node of nodeArray) {
-        parseNode(node);
+const parseNodes = (nodesArray) => {
+    let nodeObject = {};
+    for (let node of nodesArray) {
+        try {
+            nodeObject = parseNode(node);
+            saveNode(nodeObject);
+        } catch (e) {
+            logger.error(e.message);
+        }
     }
 };
 
-const fetchNodesArray = async() => {
+const deepParseNodeUsage = (node) => {
+    const arrUsage = _.compact(node.split(/\s+/));
+
+    return {
+        name: arrUsage[0],
+        cpu: [arrUsage[1], arrUsage[2]],
+        mem: [arrUsage[3], arrUsage[4]],
+        date: Date.now()
+    }
+};
+
+
+const parseNodesUsage = (nodesUsageArray) => {
+    let nodesUsageObj = {};
+    for (let node of nodesUsageArray) {
+        try {
+            nodesUsageObj = deepParseNodeUsage(node);
+            console.log(nodesUsageObj);
+            saveNodeUsage(nodesUsageObj);
+        } catch (e) {
+            logger.error(e.message);
+        }
+    }
+};
+
+const fetchNodesUsage = async() => {
+    let nodesUsageArray = [];
+    let command = 'kubectl top nodes';
+
+    try {
+        nodesUsageArray = await exec(command);
+        nodesUsageArray = _.compact(nodesUsageArray.stdout.split(/\n/));
+        nodesUsageArray.shift();
+        logger.info(`Fetched ${nodesUsageArray.length} Nodes Usage Data`);
+    } catch (err) {
+        logger.error(err.stack);
+    }
+
+    return nodesUsageArray;
+};
+
+const fetchNodesArray = async () => {
     let command = `kubectl describe nodes`;
     let nodesArray = [];
 
@@ -165,14 +205,17 @@ const fetchNodesArray = async() => {
 };
 
 
-
-const mainNodesState = async() => {
-    const nodeArray = await fetchNodesArray();
-    parseNodes(nodeArray);
+const mainNodesStateBuilder = async () => {
+    const nodesArray = await fetchNodesArray();
+    const nodesUsageArray = await fetchNodesUsage();
+    parseNodes(nodesArray);
+    parseNodesUsage(nodesUsageArray);
 };
 
+//
+// mainNodesStateBuilder().catch((e) => {
+//     console.log(e.stack);
+//     process.exit(1);
+// });
 
-mainNodesState().catch((e) =>{
-    console.log(e.stack);
-    process.exit(1);
-});
+module.exports = { mainNodesStateBuilder };
