@@ -1,4 +1,5 @@
 const { buildState } = require('./state/buildDeploymentsState');
+const { mainNodesStateBuilder } = require('./state/buildNodesState');
 const logger = require('./helpers/logger');
 const config = require('./config/config');
 
@@ -8,6 +9,7 @@ const executeStateBuilder = async() => {
   let startTime = Date.now();
   try {
     await buildState();
+    await mainNodesStateBuilder();
     logger.info("State Build Iteration Ended Successfully");
   } catch (err) {
     logger.error(err.message);
