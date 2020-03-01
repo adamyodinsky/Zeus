@@ -1,9 +1,13 @@
 import React from 'react';
 
-const Nodes = (props) => {
-    return(
-        <div></div>
-    )
+class Nodes extends React.Component  {
+    render () {
+        return (
+            <div>
+                NodesPage
+            </div>
+        )
+    }
 };
 
 export default Nodes;
