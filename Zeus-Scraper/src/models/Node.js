@@ -11,10 +11,19 @@ const NodeSchema = new mongoose.Schema(
             type: [String],
             required: true
         },
-        node: {
-            type: Object,
-            required: true
-        },
+        node: [
+            {
+                cpu: {
+                    request: [String],
+                    limit: [String]
+                },
+                mem: {
+                    request: [String],
+                    limit: [String]
+                },
+                date: Date
+            }
+        ],
         addresses: {
             type: Array,
             required: true

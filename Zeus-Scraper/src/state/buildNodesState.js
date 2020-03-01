@@ -48,7 +48,8 @@ const parseNodeResources = (resourceArray) => {
         mem: {
             request: memRequest,
             limit: memLimits
-        }
+        },
+        date: Date.now()
     };
 
 };
@@ -127,7 +128,7 @@ const parseNode = (node) => {
     nodeObject = {
         name: Name,
         roles: Roles,
-        node: objects[0],
+        node: [objects[0]],
         addresses: objects[2],
         pods: objects[1]
     };

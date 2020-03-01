@@ -119,10 +119,10 @@ const saveNode = async newNode => {
             $set: {
               last_update: Date.now(),
               updates_counter: nodeExists.updates_counter + 1,
-              node: newNode.node,
               pods: newNode.pods
               // TODO expirationDate: Date.now() + 1000 * 60 * config.SAVE_DOC
-            }
+            },
+            $push: { "node": newNode.node[0] }
           },
           { new: true }
       );
