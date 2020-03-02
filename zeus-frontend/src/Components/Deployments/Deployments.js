@@ -23,7 +23,7 @@ class Deployments extends React.Component {
     }
 
     getDeploymentsState = async () => {
-        const url = `http://localhost:3001/state?page=${this.state.page}&regex=${this.state.search}`;
+        const url = `http://localhost:3001/deployments?page=${this.state.page}&regex=${this.state.search}`;
         try {
             const response = await axios.get(`${url}`);
             return response.data;
