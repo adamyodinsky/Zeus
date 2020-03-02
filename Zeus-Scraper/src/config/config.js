@@ -4,6 +4,7 @@ module.exports = {
   METRIC_INTERVAL: Number(process.env.METRIC_INTERVAL) || 30,
   SAVE_DOC: Number(process.env.SAVE_DOC) ||  60,
   NAMESPACE: process.env.NAMESPACE || 'apps',
+  ALL_NAMESPACES: process.env.ALL_NAMESPACES === "true",
   Host: process.env.HOST || 'localhost',
   Port: Number(process.env.PORT || 3002),
   logLevel: process.env.LOG_LEVEL || 'info',

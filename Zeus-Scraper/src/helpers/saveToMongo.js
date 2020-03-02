@@ -14,21 +14,21 @@ const config = require('../config/config');
 
 const saveCurrentUsageObject = async curr_usage => {
   let count;
-  let conditions = { pod_name: curr_usage.pod_name };
+  let conditions = [ { pod_name: curr_usage.pod_name }, { namespace: curr_usage.namespace} ];
 
   try {
     const newUsageObject = new CurrentUsage({ ...curr_usage });
-    let exist = await CurrentUsage.findOne(conditions);
+    let exist = await CurrentUsage.findOne({ $and: conditions });
     if (!exist) {
       count = await newUsageObject.save();
     } else {
       count = await CurrentUsageModel.updateOne(
-        `${conditions}`,
+          { $and: conditions },
         {
           ...curr_usage,
           last_update: Date.now(),
           cluster: config.CLUSTER,
-          namespace: config.NAMESPACE,
+          namespace: curr_usage.namespace,
           updates_counter: exist.updates_counter + 1
           // TODO expirationDate: Date.now() + 1000 * 60 * 2
         },
@@ -37,7 +37,7 @@ const saveCurrentUsageObject = async curr_usage => {
     }
     logger.debug("Stored new pod current usage Object in DB", null);
   } catch (err) {
-    logger.error(err.message);
+    logger.error(err.stack);
   }
   return count.nModified;
 };
@@ -93,7 +93,7 @@ const saveDeployment = async newDeployment => {
     }
     logger.debug("Stored Deployment Object in DB", null);
   } catch (err) {
-    logger.error(err.message);
+    logger.error(err.stack);
   }
   return 1;
 };
@@ -130,7 +130,7 @@ const saveNode = async newNode => {
     }
     logger.debug("Stored Node Object in DB", null);
   } catch (err) {
-    logger.error(err.message);
+    logger.error(err.stack);
   }
   return 1;
 };
@@ -138,7 +138,6 @@ const saveNode = async newNode => {
 
 const saveNodeUsage = async newNodeUsage => {
   let count;
-  let newNodeDoc;
   let conditions = [
     { name: newNodeUsage.name }
   ];
@@ -160,7 +159,7 @@ const saveNodeUsage = async newNodeUsage => {
     }
     logger.debug("Stored Node Usage Object in DB", null);
   } catch (err) {
-    logger.error(err.message);
+    logger.error(err.stack);
   }
   return 1;
 };

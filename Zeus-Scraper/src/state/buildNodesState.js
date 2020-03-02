@@ -145,7 +145,7 @@ const parseNodes = (nodesArray) => {
             nodeObject = parseNode(node);
             saveNode(nodeObject);
         } catch (e) {
-            logger.error(e.message);
+            logger.error(e.stack);
         }
     }
 };
@@ -169,7 +169,7 @@ const parseNodesUsage = (nodesUsageArray) => {
             nodesUsageObj = deepParseNodeUsage(node);
             saveNodeUsage(nodesUsageObj);
         } catch (e) {
-            logger.error(e.message);
+            logger.error(e.stack);
         }
     }
 };

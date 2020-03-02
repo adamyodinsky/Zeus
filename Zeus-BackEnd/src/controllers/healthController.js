@@ -6,7 +6,7 @@ const health = async(req, res) => {
     res.status(200).json('OK');
     logger.info('OK');
   } catch (e) {
-    logger.error(e.message)
+    logger.error(e.stack)
   }
 };
 

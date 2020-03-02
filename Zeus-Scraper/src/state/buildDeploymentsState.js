@@ -4,6 +4,7 @@ const { saveCurrentUsageObject, saveDeployment } = require("../helpers/saveToMon
 const { currentUsageModelName } = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
 const config = require("../config/config");
+const _ = require('lodash/array');
 
 const convertToNumber = (str) => {
   return Number(str.replace(/\D/g, ""));
@@ -23,7 +24,7 @@ const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpu
 
   // TODO - should be more system agnostic, this is to specific
   if (config.SIDE_CAR_ACTIVE) {
-    let sideCarInjected = !(deployment.spec.template.metadata.annotations["sidecar.istio.io/inject"] === "false");
+    sideCarInjected = !(deployment.spec.template.metadata.annotations["sidecar.istio.io/inject"] === "false");
   }
 
   for (let container of deployment.spec.template.spec.containers) {
@@ -48,7 +49,7 @@ const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpu
     };
   }
 
-  // inject sidecar intial values
+  // inject sidecar initial values
   if(config.SIDE_CAR_ACTIVE && sideCarInjected) {
     newContainersMap[config.sideCar.container_name] = config.sideCar;
     memSumMap[config.sideCar.container_name] = [];
@@ -64,7 +65,7 @@ const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpu
         memory: newContainer.resources.num.requests.memory * newDeploymentObject.replicas
       };
     } catch (e) {
-      logger.error(e.message);
+      logger.error(e.stack);
     }
   }
 
@@ -84,42 +85,50 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
 
   // init complex variables
   let regex = new RegExp( '^' + deployment.metadata.name + '.*');
-  let condition = {
-    pod_name: { $regex: regex }
-  };
+  let conditions = [
+    { pod_name: { $regex: regex }},
+    { namespace: { $eq: deployment.metadata.namespace }}
+  ];
 
   // make a map of containers with initial data
   let newContainersMap = CreateInitialContainers(deployment, newDeploymentObject, memSumMap, cpuSumMap);
+  try {
+    // loop over matching current usage objects from mongo
+    let currentUsageObject = await CurrentUsageModel.findOneAndDelete({ $and: conditions});
+    while (currentUsageObject) {
+      if (currentUsageObject) {
+        // gather sum of memory and cpu
+        for (let container of currentUsageObject._doc.containers) {
+          memSumMap[container.container_name].push(convertToNumber(container.cpu));
+          cpuSumMap[container.container_name].push(convertToNumber(container.memory));
+        }
 
-  // loop over matching current usage objects from mongo
-  let currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition);
-  while (currentUsageObject) {
-    if (currentUsageObject) {
-      // gather sum of memory and cpu
-      for (let container of currentUsageObject._doc.containers) {
-        memSumMap[container.container_name].push(convertToNumber(container.cpu));
-        cpuSumMap[container.container_name].push(convertToNumber(container.memory));
+        // gather and count pods names
+        podNames.push(currentUsageObject.pod_name);
+        countPods++;
+        currentUsageObject = await CurrentUsageModel.findOneAndDelete({ $and: conditions}); // for next iteration
       }
-
-      // gather and count pods names
-      podNames.push(currentUsageObject.pod_name);
-      countPods++;
-      currentUsageObject = await CurrentUsageModel.findOneAndDelete(condition); // for next iteration
     }
+  } catch (e) {
+    logger.error(e.stack);
   }
 
-  // compute sum of cpu and mem
-  for (let [key, newContainer] of Object.entries(newContainersMap)) {
-    memSumMap[key] = memSumMap[key].reduce((a, b) => a + b,0);
-    cpuSumMap[key] = cpuSumMap[key].reduce((a, b) => a + b,0);
+  try {
+    // compute sum of cpu and mem
+    for (let [key, newContainer] of Object.entries(newContainersMap)) {
+      memSumMap[key] = memSumMap[key].reduce((a, b) => a + b, 0);
+      cpuSumMap[key] = cpuSumMap[key].reduce((a, b) => a + b, 0);
 
-    newContainersMap[key].usage_samples[0].sum.memory = memSumMap[key];
-    newContainersMap[key].usage_samples[0].sum.cpu    = cpuSumMap[key];
-    newContainersMap[key].usage_samples[0].avg.memory = memSumMap[key] / newDeploymentObject.replicas;
-    newContainersMap[key].usage_samples[0].avg.cpu    = cpuSumMap[key] / newDeploymentObject.replicas;
-    newContainersMap[key].usage_samples[0].date       = Date.now();
+      newContainersMap[key].usage_samples[0].sum.memory = memSumMap[key];
+      newContainersMap[key].usage_samples[0].sum.cpu = cpuSumMap[key];
+      newContainersMap[key].usage_samples[0].avg.memory = memSumMap[key] / newDeploymentObject.replicas;
+      newContainersMap[key].usage_samples[0].avg.cpu = cpuSumMap[key] / newDeploymentObject.replicas;
+      newContainersMap[key].usage_samples[0].date = Date.now();
 
-    newDeploymentObject.containers.push(newContainer);
+      newDeploymentObject.containers.push(newContainer);
+    }
+  } catch (e) {
+    logger.error(e.stack);
   }
   newDeploymentObject.pod_names = podNames;
   return newDeploymentObject;
@@ -138,43 +147,68 @@ const populateCurrentUsage = async podsCurrentUsage => {
   return count;
 };
 
+const parsePodUsage = (PodsCurrentUsage) => {
+  let pod = {};
+  try {
+    pod = _.compact(PodsCurrentUsage.split(/\s+/));
+    if (config.ALL_NAMESPACES) {
+      let namespace = pod.shift();
+      pod.push(namespace);
+    } else if (config.NAMESPACE) {
+      pod.push(config.NAMESPACE);
+    } else {
+      logger.error('FATAL ERROR IN CONFIGURATION. config.NAMESPACE config.ALL_NAMESPACES');
+    }
+  } catch (e) {
+    logger.error(e.stack);
+  }
+
+  return pod;
+};
+
 const buildPodsCurrentUsageList = async () => {
   let count = 0;
   const podsCurrentUsage = [];
+  let command;
 
-  const command = `kubectl top pods  -n ${config.NAMESPACE} --containers`;
+  if (config.ALL_NAMESPACES) {
+    command = `kubectl top pods -A --containers`;
+  } else if (config.NAMESPACE) {
+    command = `kubectl top pods  -n ${config.NAMESPACE} --containers`;
+  } else {
+    logger.error('FATAL CONFIGURATION ERROR!');
+  }
+
   try {
     // make a list of pods current resources usage
     let PodsCurrentUsageList = await exec(command);
-    PodsCurrentUsageList = PodsCurrentUsageList.stdout.split("\n");
-    // remove first and last object;
-    PodsCurrentUsageList.pop();
-    PodsCurrentUsageList.shift();
+    PodsCurrentUsageList = _.compact(PodsCurrentUsageList.stdout.split("\n"));
+    PodsCurrentUsageList.shift(); // remove title;
 
     // create pod current resources usage objects and push into the array
     for (let i = 0; i < PodsCurrentUsageList.length; i++) {
-      let pod = PodsCurrentUsageList[i].split(/(\s+)/);
+      let pod = parsePodUsage(PodsCurrentUsageList[i]);
 
       let newPodObject = {
         pod_name: pod[0],
-        namespace: config.NAMESPACE,
+        namespace: pod[4],
         containers: []
       };
 
       newPodObject.containers.push({
-        container_name: pod[2],
-        cpu: pod[4],
-        memory: pod[6]
+        container_name: pod[1],
+        cpu: pod[2],
+        memory: pod[3]
       });
 
       // push containers to the same pod object
-      while (PodsCurrentUsageList[i + 1]) {
-        let nextPod = PodsCurrentUsageList[i + 1].split(/(\s+)/);
-        if (pod[0] === nextPod[0]) {
+      while (PodsCurrentUsageList[i+1]) {
+        let nextPod = parsePodUsage(PodsCurrentUsageList[i+1]);
+        if (pod[0] === nextPod[0] && pod[4] === nextPod[4]) {
           newPodObject.containers.push({
-            container_name: nextPod[2],
-            cpu: nextPod[4],
-            memory: nextPod[6]
+            container_name: nextPod[1],
+            cpu: nextPod[2],
+            memory: nextPod[3]
           });
           i++;
         } else {
@@ -185,13 +219,19 @@ const buildPodsCurrentUsageList = async () => {
     }
     logger.info(`Got current usage state to mongo collection, count:`, count);
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e.stack);
   }
   return podsCurrentUsage;
 };
 
 const fetchDeploymentsJson = async () => {
-  let command = `kubectl get deployments -n ${config.NAMESPACE} -o json`;
+  let command;
+
+  if(config.ALL_NAMESPACES){
+    command = `kubectl get deployments -A -o json`;
+  } else {
+    command = `kubectl get deployments -n ${config.NAMESPACE} -o json`;
+  }
   let deploymentsJson;
 
   try {
@@ -199,7 +239,7 @@ const fetchDeploymentsJson = async () => {
     deploymentsJson = JSON.parse(deploymentsJson.stdout);
     logger.info(`Got Deployments Json, length=${deploymentsJson.items.length}`);
   } catch (err) {
-    logger.error(err.message);
+    logger.error(err.stack);
   }
 
   return deploymentsJson;
@@ -214,7 +254,7 @@ const buildDeploymentsState = async () => {
     const podsCurrentUsage = await buildPodsCurrentUsageList();
     await populateCurrentUsage(podsCurrentUsage);
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e.stack);
     return;
   }
 
@@ -223,7 +263,7 @@ const buildDeploymentsState = async () => {
       let newDeploymentObject = {
         deployment_name: deployment.metadata.name,
         cluster: config.CLUSTER,
-        namespace: config.NAMESPACE,
+        namespace: deployment.metadata.namespace,
         uid: deployment.metadata.uid,
         replicas: deployment.spec.replicas,
         containers: []
@@ -234,7 +274,7 @@ const buildDeploymentsState = async () => {
       //TODO - save newDeploymentObject to mongo call to function
       count += await saveDeployment(newDeploymentObject);
     } catch (e) {
-      logger.error(e.message);
+      logger.error(e.stack);
     }
   }
   logger.info(

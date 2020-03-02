@@ -34,7 +34,7 @@ const getState = async (req, res) => {
 
     logger.info("get state controller success");
   } catch (e) {
-    logger.error(e.message);
+    logger.error(e.stack);
   }
 };
 

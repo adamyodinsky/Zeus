@@ -14,8 +14,7 @@ const DeploymentSchema = new mongoose.Schema(
     },
     namespace: {
       type: String,
-      required: true,
-      default: config.NAMESPACE
+      required: true
     },
     pod_names: {
       type: [String],

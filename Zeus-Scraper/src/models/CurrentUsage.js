@@ -9,8 +9,7 @@ const CurrentDeploymentsUsageSchema = new mongoose.Schema({
   },
   namespace: {
     type: String,
-    required: true,
-    default: config.NAMESPACE
+    required: true
   },
   pod_name: {
     type: String,

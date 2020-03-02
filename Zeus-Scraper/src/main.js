@@ -12,7 +12,7 @@ const executeStateBuilder = async() => {
     await mainNodesStateBuilder();
     logger.info("State Build Iteration Ended Successfully");
   } catch (err) {
-    logger.error(err.message);
+    logger.error(err.stack);
   }
   let interval =  (Date.now() - startTime) / 1000;
   logger.info("Build Iteration Time in seconds:", interval);
