@@ -28,8 +28,8 @@ class Deployments extends React.Component {
             const response = await axios.get(`${url}`);
             return response.data;
         } catch (e) {
-            console.log('ERROR: could not get main state object');
-            console.log(e)
+            console.log('ERROR: could not get deployments state object');
+            console.log(e.stack)
         }
     };
 
