@@ -10,6 +10,7 @@ const Node = (props) => {
                 formal={props.state.node}
                 real={props.state.usage}
                 name={props.state.name}
+                dataType="CPU"
             />
 
         </div>

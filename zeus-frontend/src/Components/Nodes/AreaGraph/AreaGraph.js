@@ -10,22 +10,22 @@ const dataLength = 419;
 const columns = [
     {
         type: "number",
-        label: "time"
+        label: "Time"
     },
     {
-        label: "request",
+        label: "Request",
         type: "number"
     },
     {
-        label: "capacity",
+        label: "Capacity",
         type: "number"
     },
     {
-        label: "usage",
+        label: "Usage",
         type: "number"
     },
     {
-        label: "limit",
+        label: "Limit",
         type: "number"
     }
 ];
@@ -33,9 +33,20 @@ const columns = [
 const AreaGraph = (props) => {
 
     const options = {
-        title: `Node: ${props.name}`,
-        curveType: "function",
-        legend: { position: "bottom" }
+        // chart: {
+        //     title: `${props.name}`,
+        //     subtitle: 'CPU Consumption in Percentage',
+        // },
+        series: {
+            // Gives each series an axis name that matches the Y-axis below.
+            0: { axis: 'CPU' }
+        },
+        axes: {
+            // Adds labels to each axis; they don't have to match the axis names.
+            y: {
+                CPU: { label: 'CPU %' },
+            },
+        },
     };
 
     const data = [];
@@ -51,22 +62,21 @@ const AreaGraph = (props) => {
             limitArr.push(tmpFormal.cpu.limit);
             usageArr.push((props.real.pop()).cpu);
         }
-        console.log(limitArr[158]);
 
         for (let i=0; i<dataLength; i++) {
             data.push([i, convertToNumber(requestArr.pop()[1]), capacity, convertToNumber(usageArr.pop()[1]), convertToNumber(limitArr.pop()[1])]);
         }
     } else {
-        return <div> There is not enough data</div>
+        return <div> Node: {props.name} - There is not enough data </div>
     }
 
 
     return (
         <div>
             <Chart
-                chartType="LineChart"
-                width="100%"
-                height="400px"
+                chartType="Line"
+                width={"40vw"}
+                height={"20rem"}
                 data={data}
                 options={options}
                 loader={<div>Loading Graph...</div>}
