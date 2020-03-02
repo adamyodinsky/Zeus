@@ -9,7 +9,7 @@ const dataLength = 419;
 
 const columns = [
     {
-        type: "number",
+        type: "datetime",
         label: "Time"
     },
     {
@@ -37,22 +37,23 @@ const AreaGraph = (props) => {
         //     title: `${props.name}`,
         //     subtitle: 'CPU Consumption in Percentage',
         // },
-        series: {
-            // Gives each series an axis name that matches the Y-axis below.
-            0: { axis: 'CPU' }
-        },
-        axes: {
-            // Adds labels to each axis; they don't have to match the axis names.
-            y: {
-                CPU: { label: 'CPU %' },
-            },
-        },
+        // series: {
+        //     // Gives each series an axis name that matches the Y-axis below.
+        //     0: { axis: 'CPU' }
+        // },
+        // axes: {
+        //     // Adds labels to each axis; they don't have to match the axis names.
+        //     y: {
+        //         CPU: { label: 'CPU %' },
+        //     },
+        // },
     };
 
     const data = [];
     const usageArr = [];
     const requestArr = [];
     const limitArr = [];
+    const dateArray = [];
 
     data.push(columns);
     if(props.formal.length >= dataLength && props.real.length >= dataLength) {
@@ -60,11 +61,12 @@ const AreaGraph = (props) => {
             let tmpFormal  = props.formal.pop();
             requestArr.push(tmpFormal.cpu.request);
             limitArr.push(tmpFormal.cpu.limit);
+            dateArray.push(tmpFormal.date);
             usageArr.push((props.real.pop()).cpu);
         }
 
         for (let i=0; i<dataLength; i++) {
-            data.push([i, convertToNumber(requestArr.pop()[1]), capacity, convertToNumber(usageArr.pop()[1]), convertToNumber(limitArr.pop()[1])]);
+            data.push([new Date(dateArray.pop()), convertToNumber(requestArr.pop()[1]), capacity, convertToNumber(usageArr.pop()[1]), convertToNumber(limitArr.pop()[1])]);
         }
     } else {
         return <div> Node: {props.name} - There is not enough data </div>
