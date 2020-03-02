@@ -1,9 +1,8 @@
 import React from 'react';
 import axios from "axios";
-import Deployment from "../Deployments/Deployment/Deployment";
-import deployment from "../Deployments/Deployments.module.scss";
 import Pagination from "../Pagination/Pagination";
 import SearchBar from "../SearchBar/SearchBar";
+import Node from "./Node/Node";
 
 class Nodes extends React.Component  {
 
@@ -24,6 +23,7 @@ class Nodes extends React.Component  {
         const url = `http://localhost:3001/nodes?page=${this.state.page}&regex=${this.state.search}`;
         try {
             const response = await axios.get(`${url}`);
+            console.log(response.data);
             return response.data;
         } catch (e) {
             console.log('ERROR: could not get nodes state object');
@@ -107,9 +107,9 @@ class Nodes extends React.Component  {
 
         let renderedNodes = [];
         if (this.state.data) {
-            renderedNodes = this.state.data.map((nodes, i) => {
+            renderedNodes = this.state.data.map((node, i) => {
                 return (
-                    <Deployment key={i} state={nodes}/>
+                    <Node key={i} state={node}/>
                 )
             });
         }

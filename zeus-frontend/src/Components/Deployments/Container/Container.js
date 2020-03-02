@@ -1,6 +1,6 @@
 import React from "react";
 import container from "./Container.module.scss";
-import BarGraph from "../../BarGraph/BarGraph";
+import BarGraph from "../BarGraph/BarGraph";
 
 const Container = props => {
   return (

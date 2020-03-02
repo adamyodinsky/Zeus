@@ -32,7 +32,7 @@ const BarGraph = props => {
 
   return (
     <div className={barGraph.box}>
-      <Chart className={barGraph.chart} chartType="Bar" width={"50vw"} height={"8rem"} data={data} options={opt} />
+      <Chart className={barGraph.chart} chartType="Bar" width={"50vw"} height={"8rem"} data={data} options={opt} loader={<div>Loading Chart...</div>} />
     </div>
   );
 };
