@@ -4,7 +4,7 @@ const bunyan = require('bunyan');
 const config = require('../config/config');
 
 const logger = bunyan.createLogger({
-  name: 'Zeus-BackEnd',
+  name: config.Host,
   src: true,
   streams: [
     {

@@ -9,7 +9,6 @@ const routes = () => {
   // API Routes
   apiRouter.get('/', health);
 
-
   return apiRouter;
 };
 
