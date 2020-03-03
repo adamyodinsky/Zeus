@@ -221,12 +221,12 @@ const mainNodesStateBuilder = async () => {
     let startTime = Date.now();
 
     const nodesArray = await fetchNodesArray();
-    const nodesUsageArray = await fetchNodesUsage();
     parseNodes(nodesArray);
+    const nodesUsageArray = await fetchNodesUsage();
     parseNodesUsage(nodesUsageArray);
 
     let interval =  (Date.now() - startTime) / 1000;
-    logger.info("Nodes State Build Iteration Ended Successfully, Nodes modified:", nodesArray.length);
+    logger.info("Nodes State Build Iteration Ended Successfully, Nodes modified:", nodesArray.arr.length);
     logger.info("Nodes Build Iteration Time:", interval + 's');
 };
 
