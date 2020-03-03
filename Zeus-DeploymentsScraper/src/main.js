@@ -1,21 +1,16 @@
-const { buildState } = require('./state/buildDeploymentsState');
+const { buildDeploymentsState } = require('./state/buildDeploymentsState');
 const { mainNodesStateBuilder } = require('./state/buildNodesState');
 const logger = require('./helpers/logger');
 const config = require('./config/config');
 
 
 const executeStateBuilder = async() => {
-  logger.info("State Build Iteration Starting...");
-  let startTime = Date.now();
   try {
-    await buildState();
-    await mainNodesStateBuilder();
-    logger.info("State Build Iteration Ended Successfully");
+    buildDeploymentsState();
+    mainNodesStateBuilder();
   } catch (err) {
     logger.error(err.stack);
   }
-  let interval =  (Date.now() - startTime) / 1000;
-  logger.info("Build Iteration Time in seconds:", interval);
 };
 
 const mainStateBuilder = () => {

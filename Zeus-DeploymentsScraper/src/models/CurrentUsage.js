@@ -24,6 +24,10 @@ const CurrentDeploymentsUsageSchema = new mongoose.Schema({
     required: true,
     default: 0
   },
+  date: {
+    type: Date,
+    required: true
+  },
   last_update: {
     type: Date
   },

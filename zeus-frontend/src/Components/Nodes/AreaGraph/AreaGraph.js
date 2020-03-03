@@ -1,6 +1,7 @@
 import React from 'react';
 import Chart from 'react-google-charts';
 
+// small helpers functions
 const convertToNumber = (str) => {
     return Number(str.replace(/\D/g, ""));
 };
@@ -11,7 +12,7 @@ const min = (a, b) => {
 
 
 const capacity = 100;
-const lengthLimit = 500;
+const lengthLimit = 500; // TODO make it an external config
 
 const columns = [
     {
@@ -45,7 +46,6 @@ const AreaGraph = (props) => {
         dataLength = min(props.formal.length, props.real.length);
     }
 
-    if(props)
 
     const options = {
         chart: {

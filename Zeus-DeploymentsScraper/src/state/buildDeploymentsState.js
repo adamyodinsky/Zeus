@@ -75,6 +75,8 @@ const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpu
 
 
 const buildDeploymentObject = async (deployment, newDeploymentObject) => {
+  let date;
+
   // init basic variables
   let countPods = 0;
 
@@ -96,7 +98,6 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
     // loop over matching current usage objects from mongo
     let currentUsageObject = await CurrentUsageModel.findOneAndDelete({ $and: conditions});
     while (currentUsageObject) {
-      if (currentUsageObject) {
         // gather sum of memory and cpu
         for (let container of currentUsageObject._doc.containers) {
           memSumMap[container.container_name].push(convertToNumber(container.cpu));
@@ -104,10 +105,10 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
         }
 
         // gather and count pods names
-        podNames.push(currentUsageObject.pod_name);
+        podNames.push(currentUsageObject._doc.pod_name);
+        date = currentUsageObject._doc.date;
         countPods++;
         currentUsageObject = await CurrentUsageModel.findOneAndDelete({ $and: conditions}); // for next iteration
-      }
     }
   } catch (e) {
     logger.error(e.stack);
@@ -123,7 +124,7 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
       newContainersMap[key].usage_samples[0].sum.cpu = cpuSumMap[key];
       newContainersMap[key].usage_samples[0].avg.memory = memSumMap[key] / newDeploymentObject.replicas;
       newContainersMap[key].usage_samples[0].avg.cpu = cpuSumMap[key] / newDeploymentObject.replicas;
-      newContainersMap[key].usage_samples[0].date = Date.now();
+      newContainersMap[key].usage_samples[0].date = date;
 
       newDeploymentObject.containers.push(newContainer);
     }
@@ -182,6 +183,7 @@ const buildPodsCurrentUsageList = async () => {
   try {
     // make a list of pods current resources usage
     let PodsCurrentUsageList = await exec(command);
+    let date = Date.now();
     PodsCurrentUsageList = _.compact(PodsCurrentUsageList.stdout.split("\n"));
     PodsCurrentUsageList.shift(); // remove title;
 
@@ -192,13 +194,14 @@ const buildPodsCurrentUsageList = async () => {
       let newPodObject = {
         pod_name: pod[0],
         namespace: pod[4],
-        containers: []
+        containers: [],
+        date: date
       };
 
       newPodObject.containers.push({
         container_name: pod[1],
         cpu: pod[2],
-        memory: pod[3]
+        memory: pod[3],
       });
 
       // push containers to the same pod object
@@ -208,7 +211,8 @@ const buildPodsCurrentUsageList = async () => {
           newPodObject.containers.push({
             container_name: nextPod[1],
             cpu: nextPod[2],
-            memory: nextPod[3]
+            memory: nextPod[3],
+            date: date
           });
           i++;
         } else {
@@ -246,6 +250,8 @@ const fetchDeploymentsJson = async () => {
 };
 
 const buildDeploymentsState = async () => {
+  logger.info("Deployment State Build Iteration Starting...");
+  let startTime = Date.now();
   let count = 0;
   let deploymentsJson;
 
@@ -277,10 +283,11 @@ const buildDeploymentsState = async () => {
       logger.error(e.stack);
     }
   }
-  logger.info(
-    `a build of new state was ended successfully, modified: ${count}`
-  );
+
+  let interval =  (Date.now() - startTime) / 1000;
+  logger.info(`Deployment State Build Iteration Ended Successfully, Modified: ${count} Docs`);
+  logger.info("Deployment Build Iteration Time:", interval + 's');
   return count;
 };
 
-module.exports = { buildState: buildDeploymentsState };
+module.exports = { buildDeploymentsState };

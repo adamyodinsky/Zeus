@@ -27,7 +27,7 @@ const parsePodsResources = (resourceArray) => {
     return pods;
 };
 
-const parseNodeResources = (resourceArray) => {
+const parseNodeResources = (resourceArray, date) => {
 
     let cpu = resourceArray.filter(line => line.match(/cpu/));
     cpu = _.compact(cpu[0].split(/\s+/));
@@ -49,7 +49,7 @@ const parseNodeResources = (resourceArray) => {
             request: memRequest,
             limit: memLimits
         },
-        date: Date.now()
+        date: date
     };
 
 };
@@ -64,7 +64,7 @@ const parseAddresses = (addressesArray) => {
     return addressesObjArray;
 };
 
-const parseDeep = (nodeLines) => {
+const parseDeep = (nodeLines, date) => {
     let i = 0;
 
     // ### PARSE ADDRESS ###
@@ -104,14 +104,14 @@ const parseDeep = (nodeLines) => {
         i++;
     }
 
-    const Node = parseNodeResources(resourceArray);
+    const Node = parseNodeResources(resourceArray, date);
 
-    return [Node, Pods, Addresses]
+    return [Node, Pods, Addresses];
 
 };
 
 
-const parseNode = (node) => {
+const parseNode = (node, date) => {
     let nodeObject;
     const nodeLines = node.split(/\n/);
 
@@ -123,26 +123,25 @@ const parseNode = (node) => {
     let Roles = nodeLines.filter(line => line.match(/^Roles:/));
     Roles = Roles[0].split(/\s+/)[1];
 
-    let objects = parseDeep(nodeLines);
+    let objects = parseDeep(nodeLines, date);
 
     nodeObject = {
         name: Name,
         roles: Roles,
         node: [objects[0]],
         addresses: objects[2],
-        pods: objects[1]
+        pods: objects[1],
     };
 
     // console.log(JSON.stringify(nodeObject, null, 2));
-    logger.info(`Node ${nodeObject.name} was parsed`);
     return nodeObject;
 };
 
 const parseNodes = (nodesArray) => {
     let nodeObject = {};
-    for (let node of nodesArray) {
+    for (let node of nodesArray.arr) {
         try {
-            nodeObject = parseNode(node);
+            nodeObject = parseNode(node, nodesArray.date);
             saveNode(nodeObject);
         } catch (e) {
             logger.error(e.stack);
@@ -150,23 +149,23 @@ const parseNodes = (nodesArray) => {
     }
 };
 
-const deepParseNodeUsage = (node) => {
+const deepParseNodeUsage = (node, date) => {
     const arrUsage = _.compact(node.split(/\s+/));
 
     return {
         name: arrUsage[0],
         cpu: [arrUsage[1], arrUsage[2]],
         memory: [arrUsage[3], arrUsage[4]],
-        date: Date.now()
+        date: date
     }
 };
 
 
 const parseNodesUsage = (nodesUsageArray) => {
     let nodesUsageObj = {};
-    for (let node of nodesUsageArray) {
+    for (let node of nodesUsageArray.arr) {
         try {
-            nodesUsageObj = deepParseNodeUsage(node);
+            nodesUsageObj = deepParseNodeUsage(node, nodesUsageArray.date);
             saveNodeUsage(nodesUsageObj);
         } catch (e) {
             logger.error(e.stack);
@@ -175,11 +174,13 @@ const parseNodesUsage = (nodesUsageArray) => {
 };
 
 const fetchNodesUsage = async() => {
+    let date;
     let nodesUsageArray = [];
     let command = 'kubectl top nodes';
 
     try {
         nodesUsageArray = await exec(command);
+        date = Date.now();
         nodesUsageArray = _.compact(nodesUsageArray.stdout.split(/\n/));
         nodesUsageArray.shift();
         logger.info(`Fetched ${nodesUsageArray.length} Nodes Usage Data`);
@@ -187,35 +188,47 @@ const fetchNodesUsage = async() => {
         logger.error(err.stack);
     }
 
-    return nodesUsageArray;
+    return {
+        arr: nodesUsageArray,
+        date: date
+    }
 };
 
 const fetchNodesArray = async () => {
+    let date;
     let command = `kubectl describe nodes`;
     let nodesArray = [];
 
     try {
         nodesArray = await exec(command);
+        date = Date.now();
         nodesArray = nodesArray.stdout.split(/\n\s*\n/);
-        logger.info(`Fetched ${nodesArray.length} Nodes Data`);
+        nodesArray = {
+            arr: nodesArray,
+            date: date
+        };
+        logger.info(`Fetched ${nodesArray.arr.length} Nodes Data`);
     } catch (err) {
         logger.error(err.stack);
     }
+
     return nodesArray;
 };
 
 
 const mainNodesStateBuilder = async () => {
+    logger.info("Nodes State Build Iteration Starting...");
+    let startTime = Date.now();
+
     const nodesArray = await fetchNodesArray();
     const nodesUsageArray = await fetchNodesUsage();
     parseNodes(nodesArray);
     parseNodesUsage(nodesUsageArray);
+
+    let interval =  (Date.now() - startTime) / 1000;
+    logger.info("Nodes State Build Iteration Ended Successfully, Nodes modified:", nodesArray.length);
+    logger.info("Nodes Build Iteration Time:", interval + 's');
 };
 
-//
-// mainNodesStateBuilder().catch((e) => {
-//     console.log(e.stack);
-//     process.exit(1);
-// });
 
 module.exports = { mainNodesStateBuilder };
