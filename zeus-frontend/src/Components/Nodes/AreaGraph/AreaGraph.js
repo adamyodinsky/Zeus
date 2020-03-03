@@ -1,5 +1,6 @@
 import React from 'react';
 import Chart from 'react-google-charts';
+import areaGraph from './AreaGraph.module.scss'
 
 // small helpers functions
 const convertToNumber = (str) => {
@@ -10,14 +11,13 @@ const min = (a, b) => {
     return a < b ? a : b;
 };
 
-
 const capacity = 100;
 const lengthLimit = 500; // TODO make it an external config
+const options = {};
 
 const columns = [
     {
-        type: "datetime",
-        label: "Time"
+        type: "datetime"
     },
     {
         label: "Request",
@@ -47,23 +47,6 @@ const AreaGraph = (props) => {
     }
 
 
-    const options = {
-        chart: {
-            title: `${props.name}`,
-            subtitle: 'CPU Consumption in Percentage',
-        },
-        // series: {
-        //     // Gives each series an axis name that matches the Y-axis below.
-        //     0: { axis: 'CPU' }
-        // },
-        // axes: {
-        //     // Adds labels to each axis; they don't have to match the axis names.
-        //     y: {
-        //         CPU: { label: 'CPU %' },
-        //     },
-        // },
-    };
-
     const data = [];
     const usageArr = [];
     const requestArr = [];
@@ -73,29 +56,30 @@ const AreaGraph = (props) => {
     data.push(columns);
 
     for (let i=0; i<dataLength; i++) {
-        let tmpFormal  = props.formal.pop();
-        requestArr.push(tmpFormal[props.dataType].request);
-        limitArr.push(tmpFormal[props.dataType].limit);
-        dateArray.push(tmpFormal.date);
-        usageArr.push((props.real.pop())[props.dataType]);
+        let tmpFormal  = props.formal[i];
+
+        requestArr.unshift(tmpFormal[props.dataType].request);
+        limitArr.unshift(tmpFormal[props.dataType].limit);
+        dateArray.unshift(tmpFormal.date);
+        usageArr.unshift((props.real[i])[props.dataType]);
     }
 
     for (let i=0; i<dataLength; i++) {
         data.push([new Date(dateArray.pop()), convertToNumber(requestArr.pop()[1]), capacity, convertToNumber(usageArr.pop()[1]), convertToNumber(limitArr.pop()[1])]);
     }
 
-
-
     return (
-        <div>
+        <div className={areaGraph.box}>
             <Chart
+                className={areaGraph.chart}
                 chartType="Line"
                 width={"40vw"}
-                height={"40rem"}
+                height={"20rem"}
                 data={data}
                 options={options}
                 loader={<div>Loading Graph...</div>}
                 />
+
         </div>
     )
 };

@@ -34,19 +34,12 @@ class Deployments extends React.Component {
     };
 
     // TODO query params (url) integration
-    // getQueryParams = () => {
     //   const query_params = qs.parse(`${this.props.location.search.slice(1)}`);
-    //
-    //   if (query_params.page) {
-    //     return query_params.page
-    //   } else {
-    //     return 0
-    //   }
-    // };
+
 
     handleSearchSubmit(data) {
         console.log('in handle submit func');
-        console.log(data);
+        // console.log(data);
 
         (async () => {
             this.setState({

@@ -1,0 +1,44 @@
+.box {
+  margin: 1rem;
+  padding: 0.5rem;
+  background-color: rgba(4, 1, 129, 0.05);
+  border-radius: 4rem;
+  width: 85vw;
+}
+
+.box_graph {
+  display: flex;
+  margin: 0 0 1rem 1rem;
+  border-radius: 2.2rem;
+  background-color: white;
+  padding: 1rem 0 0.4rem 1rem;
+  width: 82.5vw;
+}
+
+.requests_txt_block div {
+  display: inline-block;
+}
+
+.title_node {
+  font-size: 1.6rem;
+  margin: 0 0 0 3rem;
+}
+
+.title_request {
+  font-size: 1.4rem;
+  margin: 0 5px 0 22.2rem;
+  font-weight: bold;
+}
+
+.resources_block div{
+  font-size: 1.3rem;
+  margin: 0 2rem 0 0;
+}
+
+.blue {
+  color: royalblue;
+}
+
+.red {
+
+}
