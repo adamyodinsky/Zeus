@@ -24,8 +24,8 @@ const saveNode = async newNode => {
             $set: {
               last_update: Date.now(),
               updates_counter: nodeExists.updates_counter + 1,
-              pods: newNode.pods
-              // TODO expirationDate: Date.now() + 1000 * 60 * config.SAVE_DOC
+              pods: newNode.pods,
+              expirationDate: Date.now() + (1000 * 1000 * 60 * config.SAVE_DOC)
             },
             $push: { "node": newNode.node[0] }
           },

@@ -24,8 +24,8 @@ const saveCurrentUsageObject = async curr_usage => {
           last_update: Date.now(),
           cluster: config.CLUSTER,
           namespace: curr_usage.namespace,
-          updates_counter: exist.updates_counter + 1
-          // TODO expirationDate: Date.now() + 1000 * 60 * 2
+          updates_counter: exist.updates_counter + 1,
+          expirationDate: Date.now() + (1000 * 1000 * 60 * config.SAVE_DOC)
         },
         { new: true }
       );
