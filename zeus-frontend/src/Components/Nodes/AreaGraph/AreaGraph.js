@@ -1,11 +1,17 @@
 import React from 'react';
-import Chart from "react-google-charts";
+import Chart from 'react-google-charts';
 
 const convertToNumber = (str) => {
     return Number(str.replace(/\D/g, ""));
 };
+
+const min = (a, b) => {
+    return a < b ? a : b;
+};
+
+
 const capacity = 100;
-const dataLength = 419;
+const lengthLimit = 500;
 
 const columns = [
     {
@@ -31,12 +37,21 @@ const columns = [
 ];
 
 const AreaGraph = (props) => {
+    let dataLength;
+
+    if(props.formal.length > lengthLimit && props.real.length > lengthLimit) {
+        dataLength = lengthLimit;
+    } else {
+        dataLength = min(props.formal.length, props.real.length);
+    }
+
+    if(props)
 
     const options = {
-        // chart: {
-        //     title: `${props.name}`,
-        //     subtitle: 'CPU Consumption in Percentage',
-        // },
+        chart: {
+            title: `${props.name}`,
+            subtitle: 'CPU Consumption in Percentage',
+        },
         // series: {
         //     // Gives each series an axis name that matches the Y-axis below.
         //     0: { axis: 'CPU' }
@@ -56,21 +71,19 @@ const AreaGraph = (props) => {
     const dateArray = [];
 
     data.push(columns);
-    if(props.formal.length >= dataLength && props.real.length >= dataLength) {
-        for (let i=0; i<dataLength; i++) {
-            let tmpFormal  = props.formal.pop();
-            requestArr.push(tmpFormal.cpu.request);
-            limitArr.push(tmpFormal.cpu.limit);
-            dateArray.push(tmpFormal.date);
-            usageArr.push((props.real.pop()).cpu);
-        }
 
-        for (let i=0; i<dataLength; i++) {
-            data.push([new Date(dateArray.pop()), convertToNumber(requestArr.pop()[1]), capacity, convertToNumber(usageArr.pop()[1]), convertToNumber(limitArr.pop()[1])]);
-        }
-    } else {
-        return <div> Node: {props.name} - There is not enough data </div>
+    for (let i=0; i<dataLength; i++) {
+        let tmpFormal  = props.formal.pop();
+        requestArr.push(tmpFormal[props.dataType].request);
+        limitArr.push(tmpFormal[props.dataType].limit);
+        dateArray.push(tmpFormal.date);
+        usageArr.push((props.real.pop())[props.dataType]);
     }
+
+    for (let i=0; i<dataLength; i++) {
+        data.push([new Date(dateArray.pop()), convertToNumber(requestArr.pop()[1]), capacity, convertToNumber(usageArr.pop()[1]), convertToNumber(limitArr.pop()[1])]);
+    }
+
 
 
     return (
@@ -78,7 +91,7 @@ const AreaGraph = (props) => {
             <Chart
                 chartType="Line"
                 width={"40vw"}
-                height={"20rem"}
+                height={"40rem"}
                 data={data}
                 options={options}
                 loader={<div>Loading Graph...</div>}

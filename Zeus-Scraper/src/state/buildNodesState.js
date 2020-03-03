@@ -16,7 +16,7 @@ const parsePodsResources = (resourceArray) => {
                 request: [podLineArray[2], podLineArray[3]],
                 limit: [podLineArray[4], podLineArray[5]]
             },
-            mem: {
+            memory: {
                 request: [podLineArray[6], podLineArray[7]],
                 limit: [podLineArray[8], podLineArray[9]],
             },
@@ -45,7 +45,7 @@ const parseNodeResources = (resourceArray) => {
             request: cpuRequest,
             limit: cpuLimits
         },
-        mem: {
+        memory: {
             request: memRequest,
             limit: memLimits
         },
@@ -156,7 +156,7 @@ const deepParseNodeUsage = (node) => {
     return {
         name: arrUsage[0],
         cpu: [arrUsage[1], arrUsage[2]],
-        mem: [arrUsage[3], arrUsage[4]],
+        memory: [arrUsage[3], arrUsage[4]],
         date: Date.now()
     }
 };

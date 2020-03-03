@@ -17,7 +17,7 @@ const NodeSchema = new mongoose.Schema(
                     request: [String],
                     limit: [String]
                 },
-                mem: {
+                memory: {
                     request: [String],
                     limit: [String]
                 },
@@ -32,7 +32,7 @@ const NodeSchema = new mongoose.Schema(
             {
                 name: String,
                 cpu: [String],
-                mem: [String],
+                memory: [String],
                 date: Date
             }
         ]
