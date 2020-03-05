@@ -16,7 +16,7 @@ const Node = (props) => {
                   name={props.state.name}
                   dataType={"cpu"}
                   stepSizeY={3600}
-                  stepSizeX={10}
+                  stepSizeX={30}
               />
               <div className={nodeStyle.separator}/>
               <AreaGraph2
@@ -25,7 +25,7 @@ const Node = (props) => {
                   name={props.state.name}
                   dataType={"memory"}
                   stepSizeY={16000}
-                  stepSizeX={10}
+                  stepSizeX={30}
               />
             </section>
           </div>

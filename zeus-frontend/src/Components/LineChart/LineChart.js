@@ -8,8 +8,20 @@ class LineChart extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    this.myChart.data.labels = this.props.data.map(d => d.time);
-    this.myChart.data.datasets[0].data = this.props.data.map(d => d.value);
+    this.myChart.data.labels = this.props.time;
+    this.myChart.data.datasets = this.props.datasets.map(dataset => {
+      return {
+        label: dataset.label,
+        backgroundColor: dataset.color,
+        borderColor: dataset.color,
+        fill: false,
+        data: dataset.data.map(data => data),
+        pointRadius: 3,
+        borderWidth: 1,
+        lineTension: 0,
+
+      };
+    });
     this.myChart.update();
   }
 
@@ -24,41 +36,42 @@ class LineChart extends React.Component {
         //   text: this.props.title
         // },
         scales: {
-          xAxes: [{
-            type: 'time',
-            time: {
-              stepSize: this.props.stepSizeX
-            },
-            display: true,
-            // scaleLabel: {
-            //   display: true,
-            //   labelString: 'Time'
-            // },
-            ticks: {
-              source: 'auto',
-              major: {
-                fontStyle: 'bold',
-                fontColor: '#FF0000'
-              }
-            }
-          }],
+          xAxes: [
+            {
+              type: 'time',
+              time: {
+                stepSize: this.props.stepSizeX
+              },
+              display: true,
+              // scaleLabel: {
+              //   display: true,
+              //   labelString: 'Time'
+              // },
+              ticks: {
+                source: 'auto',
+                major: {
+                  fontStyle: 'bold',
+                  fontColor: '#FF0000',
+                },
+              },
+            }],
           yAxes: [
             {
               display: true,
               scaleLabel: {
                 display: true,
-                labelString: this.props.title
+                labelString: this.props.title,
               },
               ticks: {
                 stepSize: this.props.stepSizeY,
                 source: 'auto',
-                suggestedMin: 0,
-                suggestedMax: this.props.capacity,
-                beginAtZero: true
-              }
-            }
-          ]
-        }
+                min: 0,
+                max: this.props.capacity,
+                beginAtZero: true,
+              },
+            },
+          ],
+        },
       },
       data: {
         labels: this.props.time,
