@@ -1,6 +1,7 @@
 import React from 'react';
 import AreaGraph from "../AreaGraph/AreaGraph";
 import nodeStyle from './Node.module.scss'
+import AreaGraph2 from '../AreaGraph/AreaGraph2';
 
 const Node = (props) => {
 
@@ -13,13 +14,13 @@ const Node = (props) => {
               </div>
             </div>
             <section className={nodeStyle.box_graph}>
-              <AreaGraph
+              <AreaGraph2
                   formal={props.state.node}
                   real={props.state.usage}
                   name={props.state.name}
                   dataType={"cpu"}
               />
-              <AreaGraph
+              <AreaGraph2
                   formal={props.state.node}
                   real={props.state.usage}
                   name={props.state.name}
