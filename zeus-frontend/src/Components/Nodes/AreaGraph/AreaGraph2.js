@@ -95,6 +95,8 @@ const AreaGraph2 = (props) => {
             time={data.time}
             capacity={capacity}
             title={title}
+            stepSizeY={props.stepSizeY}
+            stepSizeX={props.stepSizeX}
         />
       </div>
   );

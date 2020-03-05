@@ -19,12 +19,16 @@ const Node = (props) => {
                   real={props.state.usage}
                   name={props.state.name}
                   dataType={"cpu"}
+                  stepSizeY={1200}
+                  stepSizeX={10}
               />
               <AreaGraph2
                   formal={props.state.node}
                   real={props.state.usage}
                   name={props.state.name}
                   dataType={"memory"}
+                  stepSizeY={6000}
+                  stepSizeX={10}
               />
             </section>
           </div>

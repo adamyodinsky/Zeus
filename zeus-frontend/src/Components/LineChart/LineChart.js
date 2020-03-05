@@ -25,12 +25,16 @@ class LineChart extends React.Component {
         scales: {
           xAxes: [{
             type: 'time',
+            time: {
+              stepSize: this.props.stepSizeX
+            },
             display: true,
             scaleLabel: {
               display: true,
               labelString: 'Time'
             },
             ticks: {
+              source: 'auto',
               major: {
                 fontStyle: 'bold',
                 fontColor: '#FF0000'
@@ -45,6 +49,8 @@ class LineChart extends React.Component {
                 labelString: 'value'
               },
               ticks: {
+                stepSize: this.props.stepSizeY,
+                source: 'auto',
                 suggestedMin: 0,
                 suggestedMax: this.props.capacity
               }
