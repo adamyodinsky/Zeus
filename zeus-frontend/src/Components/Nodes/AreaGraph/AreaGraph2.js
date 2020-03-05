@@ -1,5 +1,6 @@
 import React from 'react';
 import LineChart from '../../LineChart/LineChart';
+import areaGraph from './AreaGraph.module.scss';
 
 const lengthLimit = 500; // TODO make it an external config
 
@@ -40,18 +41,25 @@ const createDataSets = (props) => {
   const dataLength = getDataLength(props);
 
   for (let i = 0; i < dataLength; i++) {
-    let tmpFormal = props.formal[i];
-    let date = new Date(tmpFormal.date);
+    const tmpFormal = props.formal[i];
+    const date = new Date(tmpFormal.date);
+
+    let usage = convertToNumber((props.real[i])[props.dataType][0]);
+    let request = convertToNumber(tmpFormal[props.dataType].request[0]);
+
+    if (props.dataType === 'memory') {
+      request = Math.ceil(request / Math.pow(2, 20));
+    }
 
     requestArr.unshift({
           x: date,
-          y: convertToNumber(tmpFormal[props.dataType].request[0]),
+          y: request,
         },
     );
 
     usageArr.unshift({
       x: date,
-      y: convertToNumber((props.real[i])[props.dataType][0]),
+      y: usage,
     });
 
     timeArr.unshift(date);
@@ -81,12 +89,14 @@ const AreaGraph2 = (props) => {
   let title = getTitle(props);
 
   return (
-      <LineChart
-          datasets={data.datasets}
-          time={data.time}
-          capacity={capacity}
-          title={title}
-      />
+      <div className={areaGraph.box}>
+        <LineChart
+            datasets={data.datasets}
+            time={data.time}
+            capacity={capacity}
+            title={title}
+        />
+      </div>
   );
 };
 
