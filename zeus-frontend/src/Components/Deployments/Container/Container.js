@@ -1,6 +1,6 @@
 import React from "react";
 import container from "./Container.module.scss";
-import BarGraph from "../../BarGraph/BarGraph";
+import BarGraph from "../BarGraph/BarGraph";
 
 const Container = props => {
   return (
@@ -8,6 +8,7 @@ const Container = props => {
       <div className={container.requests_txt_block}>
         <div className={container.title_container}>
           <strong>Container:</strong> {props.state.container_name}
+          CPU Consumption in Percentage
         </div>
         {/*<div className={container.title_request}>Requests:</div>*/}
         {/*<div className={container.resources_block}>*/}

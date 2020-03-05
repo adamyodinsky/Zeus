@@ -23,7 +23,6 @@ helm_template() {
                                   --output-dir "manifests/demoService-${letter}-${host_num}"
 }
 
-
 prompt_for_action() {
   msg="${1}"
   command="${2}"
@@ -67,8 +66,22 @@ generate_chain_templates(){
 
 }
 
-if [[ ${1} == "delete" ]]; then
+help() {
+  echo "Arguments:
+  1 - letter / the id of the chain deployment
+  2 - length of deployments chain
+  3 - mem request
+  4 - cpu request
+  5 - replicas
+  if you want to delete enter 'delete' as 1st agrument.
+  "
+  exit 0
+}
+
+if [[ "${1}" == "delete" ]]; then
   delete_resources && delete_manifests
+elif [[ "${1}" == '-h' ]] || [[ "${1}" == '' ]]; then
+  help
 else
   generate_chain_templates "${1}" "${2}"
   apply_resources

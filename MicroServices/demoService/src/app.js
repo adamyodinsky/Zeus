@@ -39,7 +39,7 @@ app.get('/compute', async(req, res) => {
         logger.info(`num: ${num}, result: ${result}, level: ${level}`);
         res.status(200).json({num: num, result: result, level: level});
     } catch (e) {
-        logger.error(e.message);
+        logger.error(e.stack);
         res.status(500).json(e.stack);
     }
 });

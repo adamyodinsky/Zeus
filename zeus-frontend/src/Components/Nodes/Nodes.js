@@ -1,13 +1,10 @@
 import React from 'react';
-import Deployment from './Deployment/Deployment'
-import axios from 'axios';
-// import * as qs from 'querystring'
+import axios from "axios";
 import Pagination from "../Pagination/Pagination";
 import SearchBar from "../SearchBar/SearchBar";
-import deployment from './Deployments.module.scss'
+import Node from "./Node/Node";
 
-
-class Deployments extends React.Component {
+class Nodes extends React.Component  {
 
     constructor(props) {
         super(props);
@@ -22,31 +19,28 @@ class Deployments extends React.Component {
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
     }
 
-    getDeploymentsState = async () => {
-        const url = `http://localhost:3001/deployments?page=${this.state.page}&regex=${this.state.search}`;
+    getNodesState = async () => {
+        const url = `http://localhost:3001/nodes?page=${this.state.page}&regex=${this.state.search}`;
         try {
             const response = await axios.get(`${url}`);
+            // console.log(response.data);
             return response.data;
         } catch (e) {
-            console.log('ERROR: could not get deployments state object');
+            console.log('ERROR: could not get nodes state object');
             console.log(e.stack)
         }
     };
 
-    // TODO query params (url) integration
-    //   const query_params = qs.parse(`${this.props.location.search.slice(1)}`);
-
-
     handleSearchSubmit(data) {
         console.log('in handle submit func');
-        // console.log(data);
+        console.log(data);
 
         (async () => {
             this.setState({
                 search: data.search
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getNodesState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -57,6 +51,7 @@ class Deployments extends React.Component {
         });
     };
 
+
     pageUp = () => {
         console.log('Page Up');
 
@@ -65,7 +60,7 @@ class Deployments extends React.Component {
                 page: this.state.page + 1
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getNodesState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -86,7 +81,7 @@ class Deployments extends React.Component {
                 page: this.state.page - 1
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getNodesState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -98,7 +93,7 @@ class Deployments extends React.Component {
     };
 
     componentDidMount() {
-        this.getDeploymentsState().then((data) => {
+        this.getNodesState().then((data) => {
             if (data) {
                 this.setState({
                     data: data.data,
@@ -108,20 +103,20 @@ class Deployments extends React.Component {
         });
     }
 
+    render () {
 
-    render() {
-        let renderedDeployments = [];
+        let renderedNodes = [];
         if (this.state.data) {
-            renderedDeployments = this.state.data.map((deployment, i) => {
+            renderedNodes = this.state.data.map((node, i) => {
                 return (
-                    <Deployment key={i} state={deployment}/>
+                    <Node key={i} state={node}/>
                 )
             });
         }
 
         return (
             <div>
-                <section className={deployment.options_bar}>
+                <section className=''>
                     <Pagination
                         page={this.state.page}
                         pageUp={this.pageUp}
@@ -130,10 +125,10 @@ class Deployments extends React.Component {
                     <SearchBar
                         onSubmit={this.handleSearchSubmit}/>
                 </section>
-                {renderedDeployments}
+                {renderedNodes}
             </div>
-        );
+        )
     }
-}
+};
 
-export default Deployments;
+export default Nodes;
