@@ -1,7 +1,6 @@
 import React from 'react';
 import axios from "axios";
 import Pagination from "../Pagination/Pagination";
-import SearchBar from "../SearchBar/SearchBar";
 import Node from "./Node/Node";
 
 class Nodes extends React.Component  {

@@ -66,16 +66,6 @@ const createDataSets = (props) => {
     timeArr.unshift(date);
   }
 
-  // const capacityData = [
-  //   {
-  //     x: timeArr[0],
-  //     y: capacity,
-  //   },
-  //   {
-  //     x: timeArr[timeArr.length - 1],
-  //     y: capacity,
-  //   },
-  // ];
 
   return {
     datasets: [
@@ -88,12 +78,7 @@ const createDataSets = (props) => {
         label: 'Usage',
         data: usageArr,
         color: '#ff6666', // red
-      },
-      // {
-      //   label: 'Capacity',
-      //   data: capacityData,
-      //   color: '#808587', // grey
-      // }
+      }
     ],
     time: timeArr,
     capacity: capacity

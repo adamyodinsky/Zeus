@@ -1,5 +1,4 @@
 import React from 'react';
-import AreaGraph from "../AreaGraph/AreaGraph";
 import nodeStyle from './Node.module.scss'
 import AreaGraph2 from '../AreaGraph/AreaGraph2';
 
