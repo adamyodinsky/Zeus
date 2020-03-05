@@ -1,7 +1,6 @@
 import React from 'react';
-// import Chart from 'react-google-charts';
+import Chart from 'react-google-charts';
 import areaGraph from './AreaGraph.module.scss';
-import Chart from 'chart.js';
 
 // small helpers functions
 const convertToNumber = (str) => {

@@ -8,26 +8,23 @@ const Node = (props) => {
     return (
         <div>
           <div className={nodeStyle.box}>
-            <div className={nodeStyle.requests_txt_block}>
-              <div className={nodeStyle.title_node}>
-                <strong>Node:</strong> {props.state.name}
-              </div>
-            </div>
+            <div className={nodeStyle.title_node}>{props.state.name}</div>
             <section className={nodeStyle.box_graph}>
               <AreaGraph2
                   formal={props.state.node}
                   real={props.state.usage}
                   name={props.state.name}
                   dataType={"cpu"}
-                  stepSizeY={1200}
+                  stepSizeY={3600}
                   stepSizeX={10}
               />
+              <div className={nodeStyle.separator}/>
               <AreaGraph2
                   formal={props.state.node}
                   real={props.state.usage}
                   name={props.state.name}
                   dataType={"memory"}
-                  stepSizeY={6000}
+                  stepSizeY={16000}
                   stepSizeX={10}
               />
             </section>

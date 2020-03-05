@@ -17,11 +17,12 @@ class LineChart extends React.Component {
     this.myChart = new Chart(this.chartRef.current, {
       type: 'line',
       options: {
+        maintainAspectRatio: false,
         responsive: true,
-        title: {
-          display: true,
-          text: this.props.title
-        },
+        // title: {
+        //   display: true,
+        //   text: this.props.title
+        // },
         scales: {
           xAxes: [{
             type: 'time',
@@ -29,10 +30,10 @@ class LineChart extends React.Component {
               stepSize: this.props.stepSizeX
             },
             display: true,
-            scaleLabel: {
-              display: true,
-              labelString: 'Time'
-            },
+            // scaleLabel: {
+            //   display: true,
+            //   labelString: 'Time'
+            // },
             ticks: {
               source: 'auto',
               major: {
@@ -46,13 +47,14 @@ class LineChart extends React.Component {
               display: true,
               scaleLabel: {
                 display: true,
-                labelString: 'value'
+                labelString: this.props.title
               },
               ticks: {
                 stepSize: this.props.stepSizeY,
                 source: 'auto',
                 suggestedMin: 0,
-                suggestedMax: this.props.capacity
+                suggestedMax: this.props.capacity,
+                beginAtZero: true
               }
             }
           ]

@@ -1,11 +1,18 @@
 .box {
-  //margin: 0 10rem;
-  //border-radius: 2.2rem;
-  //background-color: white;
-  //padding: 1rem 0 0.4rem 1rem;
+  display: flex;
+  border-radius: 2.2rem;
+  background-color: transparent;
   width: 46.5vw;
 }
 
-.chart svg {
-  border-radius: 0.5rem;
+//.chart svg {
+//   border-radius: 0.5rem;
+// }
+
+.chart canvas {
+  height: 50rem !important;
+
+  &:hover {
+    height: 40rem !important;
+  }
 }

@@ -11,7 +11,7 @@ const computeCapacity = (props) => {
 };
 
 const getTitle = (props) => {
-  return props.dataType === "cpu"? "CPU" : "Memory"
+  return props.dataType === 'cpu' ? 'CPU' : 'Memory';
 };
 
 const getDataLength = (props) => {
@@ -39,6 +39,7 @@ const createDataSets = (props) => {
   const usageArr = [];
   const timeArr = [];
   const dataLength = getDataLength(props);
+  const capacity = computeCapacity(props);
 
   for (let i = 0; i < dataLength; i++) {
     const tmpFormal = props.formal[i];
@@ -65,6 +66,17 @@ const createDataSets = (props) => {
     timeArr.unshift(date);
   }
 
+  // const capacityData = [
+  //   {
+  //     x: timeArr[0],
+  //     y: capacity,
+  //   },
+  //   {
+  //     x: timeArr[timeArr.length - 1],
+  //     y: capacity,
+  //   },
+  // ];
+
   return {
     datasets: [
       {
@@ -77,15 +89,20 @@ const createDataSets = (props) => {
         data: usageArr,
         color: '#ff6666', // red
       },
+      // {
+      //   label: 'Capacity',
+      //   data: capacityData,
+      //   color: '#808587', // grey
+      // }
     ],
     time: timeArr,
+    capacity: capacity
   };
 
 };
 
 const AreaGraph2 = (props) => {
   let data = createDataSets(props);
-  let capacity = computeCapacity(props);
   let title = getTitle(props);
 
   return (
@@ -93,8 +110,8 @@ const AreaGraph2 = (props) => {
         <LineChart
             datasets={data.datasets}
             time={data.time}
-            capacity={capacity}
             title={title}
+            capacity={data.capacity}
             stepSizeY={props.stepSizeY}
             stepSizeX={props.stepSizeX}
         />
