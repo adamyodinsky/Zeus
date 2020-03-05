@@ -57,9 +57,8 @@ const NodeSchema = new mongoose.Schema(
         },
         expirationDate: {
             type: Date,
-            // TODO - uncomment in prod
-            // expires: 0,
-            // default: Date.now() + 1000 * 60 * 15 // 15 minutes
+            expires: 0,
+            default: Date.now() + 1000 * 60 * config.SAVE_DOC_MIN
         }
     },
     {strict: false}

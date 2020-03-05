@@ -2,7 +2,7 @@
 
 module.exports = {
   METRIC_INTERVAL: Number(process.env.METRIC_INTERVAL) || 30,
-  SAVE_DOC: Number(process.env.SAVE_DOC) ||  60,
+  SAVE_DOC_MIN: Number(process.env.SAVE_DOC_MIN) ||  60,
   NAMESPACE: process.env.NAMESPACE || 'apps',
   ALL_NAMESPACES: process.env.ALL_NAMESPACES === "true",
   Host: process.env.HOST || 'localhost',

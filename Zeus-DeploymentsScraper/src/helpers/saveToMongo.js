@@ -3,9 +3,8 @@ const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
 const { Deployment, deploymentModelName } = require("../models/Deployment");
 const DeploymentModel = require("mongoose").model(deploymentModelName);
 
-
-const logger = require("../helpers/logger");
 const config = require('../config/config');
+const logger = require("../helpers/logger");
 
 const saveCurrentUsageObject = async curr_usage => {
   let count;
@@ -25,7 +24,7 @@ const saveCurrentUsageObject = async curr_usage => {
           cluster: config.CLUSTER,
           namespace: curr_usage.namespace,
           updates_counter: exist.updates_counter + 1,
-          expirationDate: Date.now() + (1000 * 1000 * 60 * config.SAVE_DOC)
+          expirationDate: Date.now() + (1000 * 60 * config.SAVE_DOC_MIN)
         },
         { new: true }
       );
@@ -62,8 +61,8 @@ const saveDeployment = async newDeployment => {
             cluster: newDeployment.cluster,
             last_update: Date.now(),
             namespace: newDeployment.namespace,
-            updates_counter: deploymentExists.updates_counter + 1
-            // TODO expirationDate: Date.now() + 1000 * 60 * config.SAVE_DOC
+            updates_counter: deploymentExists.updates_counter + 1,
+            expirationDate: Date.now() + 1000 * 60 * config.SAVE_DOC_MIN
           }
         },
         { new: true }

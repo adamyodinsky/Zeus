@@ -4,7 +4,7 @@ const { saveCurrentUsageObject, saveDeployment } = require("../helpers/saveToMon
 const { currentUsageModelName } = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
 const config = require("../config/config");
-const _ = require('lodash/array');
+const _ = require('lodash');
 
 const convertToNumber = (str) => {
   return Number(str.replace(/\D/g, ""));

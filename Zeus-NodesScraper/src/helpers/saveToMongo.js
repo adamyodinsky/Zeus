@@ -2,7 +2,7 @@ const { Node, nodeModelName } = require("../models/Node");
 const NodeModel = require("mongoose").model(nodeModelName);
 
 const logger = require("../helpers/logger");
-
+const config = require('../config/config');
 
 const saveNode = async newNode => {
   let count;
@@ -25,7 +25,7 @@ const saveNode = async newNode => {
               last_update: Date.now(),
               updates_counter: nodeExists.updates_counter + 1,
               pods: newNode.pods,
-              expirationDate: Date.now() + (1000 * 1000 * 60 * config.SAVE_DOC)
+              expirationDate: Date.now() + (1000 * 60 * config.SAVE_DOC_MIN)
             },
             $push: { "node": newNode.node[0] }
           },
