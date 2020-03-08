@@ -3,15 +3,8 @@ const config = require("../config/config");
 
 const NodeRequestSchema = new mongoose.Schema(
     {
-      name: {
-        type: String,
-        required: true
-      },
-      cluster: {
-        type: String,
-        required: true,
-        default: config.CLUSTER
-      },
+      name: String,
+      cluster: String,
       resources:
         {
           cpu: {
@@ -21,17 +14,11 @@ const NodeRequestSchema = new mongoose.Schema(
           memory: {
             request: [String],
             limit: [String]
-          }
+          },
+          date: Date
         },
-      date: {
-        type: Date,
-        required: true
-      },
-      expirationDate: {
-        type: Date,
-        expires: 0,
-        default: Date.now() + 1000 * 60 * config.SAVE_DOC_MIN
-      }
+      created: Date,
+      expirationDate: Date
     },
     {strict: false}
 );

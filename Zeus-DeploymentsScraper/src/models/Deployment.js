@@ -32,16 +32,15 @@ const DeploymentSchema = new mongoose.Schema(
     last_update: {
       type: Date
     },
-    created: {
+    date: {
       type: Date,
-      default: Date.now,
+      default: Date.now(),
       required: true,
     },
     expirationDate: {
       type: Date,
-      // TODO - uncomment in prod
-      // expires: 0,
-      // default: Date.now() + 1000 * 60 * 15 // 15 minutes
+      expires: 0,
+      default: Date.now() + 1000 * 60 * config.SAVE_DOC_MIN
     },
     replicas: {
       type: Number,
