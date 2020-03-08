@@ -68,3 +68,4 @@ const nodeModelName = "node";
 const Node = mongoose.model(nodeModelName, NodeSchema);
 
 module.exports = {nodeModelName, NodeSchema, Node};
+
