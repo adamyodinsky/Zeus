@@ -1,5 +1,6 @@
 import React from "react";
 import pagination from './Pagination.module.scss'
+import SearchBar from '../SearchBar/SearchBar';
 
 const Pagination = props => {
     return (
@@ -13,6 +14,9 @@ const Pagination = props => {
             <div className={pagination.page_box}>
                 Page: {props.page}
             </div>
+            <SearchBar
+                onSubmit={props.onSubmit}
+            />
         </section>
     );
 };
