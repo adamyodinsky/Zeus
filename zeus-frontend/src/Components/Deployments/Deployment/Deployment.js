@@ -5,7 +5,7 @@ import deployment from './Deployment.module.scss'
 const Deployment = (props) => {
   const renderedContainers = props.state.containers.map((container, i) => {
     return (
-        <Container key={i} state={container}/>
+        <Container key={i} container={container}/>
     )
   });
 

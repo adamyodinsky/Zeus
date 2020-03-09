@@ -1,0 +1,18 @@
+.box {
+  display: flex;
+  border-radius: 2.2rem;
+  background-color: transparent;
+  width: 46.5vw;
+}
+
+//.chart svg {
+//   border-radius: 0.5rem;
+// }
+
+.chart canvas {
+  height: 50rem !important;
+
+  &:hover {
+    height: 40rem !important;
+  }
+}
