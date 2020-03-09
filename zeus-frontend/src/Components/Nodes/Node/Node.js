@@ -29,6 +29,7 @@ class Node extends React.Component {
       usageResponse = axios.get(`${usageUrl}`);
       formalResponse = axios.get(`${formalUrl}`);
 
+      // eslint-disable-next-line
       await Promise.allSettled([usageResponse, formalResponse]).
           then((result) => {
             usageResponse = result[0].value.data.data;
