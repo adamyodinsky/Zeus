@@ -16,7 +16,6 @@ const getTitle = (props) => {
 
 const getDataLength = (props) => {
   let dataLength;
-
   if (props.formal.length > lengthLimit || props.real.length > lengthLimit) {
     dataLength = lengthLimit;
   } else {
@@ -46,7 +45,7 @@ const createDataSets = (props) => {
     const date = new Date(tmpFormal.date);
 
     let usage = convertToNumber((props.real[i])[props.dataType][0]);
-    let request = convertToNumber(tmpFormal[props.dataType].request[0]);
+    let request = convertToNumber(tmpFormal.resources[props.dataType].request[0]);
 
     if (props.dataType === 'memory') {
       request = Math.ceil(request / Math.pow(2, 20));
@@ -83,12 +82,12 @@ const createDataSets = (props) => {
     time: timeArr,
     capacity: capacity
   };
-
 };
 
 const AreaGraph2 = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
+  // console.log(props);
 
   return (
       <div className={areaGraph.box}>

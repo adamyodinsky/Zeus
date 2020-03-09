@@ -3,8 +3,11 @@
 module.exports = {
   DEFAULT_DEPLOYMENTS_LIMIT: Number(process.env.DEFAULT_DEPLOYMENTS_LIMIT) || 10,
   DEFAULT_NODES_LIMIT: Number(process.env.DEFAULT_NODES_LIMIT) || 10,
-  deploymentModelName: process.env.DEPLOYMENT_MODEL || 'deployments',
-  nodesModelName: process.env.DEPLOYMENT_MODEL || 'nodes',
+  DEFAULT_NODES_USAGE_LIMIT: Number(process.env.DEFAULT_NODES_USAGE_LIMIT) || 200,
+  deploymentModelName: process.env.DEPLOYMENT_MODEL || 'deployment',
+  nodeModelName: process.env.NODES_MODEL_NAME || 'node',
+  nodeUsageModelName: process.env.NODES_USAGE_MODEL_NAME || 'node-usage',
+  nodeRequestModelName: process.env.NODES_REQUEST_MODEL_NAME || 'node-request',
   Host: process.env.HOST || 'localhost',
   Port: Number(process.env.PORT) || 3001,
   logLevel: process.env.LOG_LEVEL || 'info',

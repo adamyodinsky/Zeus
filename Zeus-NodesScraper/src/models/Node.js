@@ -11,32 +11,10 @@ const NodeSchema = new mongoose.Schema(
             type: [String],
             required: true
         },
-        node: [
-            {
-                cpu: {
-                    request: [String],
-                    limit: [String]
-                },
-                memory: {
-                    request: [String],
-                    limit: [String]
-                },
-                date: Date
-            }
-        ],
         addresses: {
             type: Array,
             required: true
         },
-        usage: [
-            {
-                name: String,
-                cpu: [String],
-                memory: [String],
-                date: Date
-            }
-        ]
-        ,
         cluster: {
             type: String,
             required: true,
@@ -50,11 +28,6 @@ const NodeSchema = new mongoose.Schema(
         last_update: {
             type: Date
         },
-        created: {
-            type: Date,
-            default: Date.now,
-            required: true,
-        },
         expirationDate: {
             type: Date,
             expires: 0,
@@ -64,7 +37,7 @@ const NodeSchema = new mongoose.Schema(
     {strict: false}
 );
 
-const nodeModelName = "node";
+const nodeModelName = config.nodeModelName;
 const Node = mongoose.model(nodeModelName, NodeSchema);
 
 module.exports = {nodeModelName, NodeSchema, Node};

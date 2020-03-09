@@ -3,23 +3,13 @@ const config = require('../config/config');
 
 const NodeUsageSchema = new mongoose.Schema(
     {
-      name: {
-        type: String,
-        required: true,
-      },
-      cluster: {
-        type: String,
-        required: true,
-        default: config.CLUSTER,
-      },
+      name: String,
+      cluster: String,
       cpu: [String],
       memory: [String],
       date: Date,
-      expirationDate: {
-        type: Date,
-        expires: 0,
-        default: Date.now() + 1000 * 60 * config.SAVE_DOC_MIN,
-      },
+      created: String,
+      expirationDate: Date
     },
     {strict: false},
 );

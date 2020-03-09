@@ -3,50 +3,18 @@ const config = require("../config/config");
 
 const DeploymentSchema = new mongoose.Schema(
   {
-    deployment_name: {
-      type: String,
-      required: true
-    },
-    cluster: {
-      type: String,
-      required: true,
-      default: config.CLUSTER
-    },
-    namespace: {
-      type: String,
-      required: true,
-      default: config.NAMESPACE
-    },
-    pod_names: {
-      type: [String],
-      required: true
-    },
-    uid: {
-      type: String,
-      required: true
-    },
-    updates_counter: {
-      type: Number,
-      required: true,
-      default: 0
-    },
+    deployment_name: String,
+    cluster: String,
+    namespace: String,
+    pod_names: String,
+    uid: String,
+    updates_counter: Number,
     last_update: {
       type: Date
     },
-    created: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
-    expirationDate: {
-      type: Date,
-      expires: 0,
-      default: Date.now() + 1000 * 60 * 15 // 15 minutes
-    },
-    replicas: {
-      type: Number,
-      required: true
-    },
+    created: Date,
+    expirationDate: Date,
+    replicas: Number,
     containers: [
       {
         container_name: String,
