@@ -2,7 +2,7 @@
 
 const express = require('express');
 const { health } = require('../controllers/healthController');
-const { getDeploymentsState, getNodes, getNodesUsage} = require('../controllers/getStateControler');
+const { getDeploymentsState, getNodes, getNodesUsage, getNodesRequest} = require('../controllers/getStateControler');
 
 const routes = () => {
   const apiRouter = express.Router();
@@ -12,6 +12,8 @@ const routes = () => {
   apiRouter.get('/deployments', getDeploymentsState);
   apiRouter.get('/nodes', getNodes);
   apiRouter.get('/nodesUsage', getNodesUsage);
+  apiRouter.get('/nodesRequest', getNodesRequest);
+
 
   return apiRouter;
 };

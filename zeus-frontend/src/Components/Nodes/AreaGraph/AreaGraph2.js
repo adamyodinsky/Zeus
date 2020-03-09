@@ -16,7 +16,7 @@ const getTitle = (props) => {
 
 const getDataLength = (props) => {
   let dataLength;
-
+  // console.log(props);
   if (props.formal.length > lengthLimit || props.real.length > lengthLimit) {
     dataLength = lengthLimit;
   } else {
@@ -83,23 +83,23 @@ const createDataSets = (props) => {
     time: timeArr,
     capacity: capacity
   };
-
 };
 
 const AreaGraph2 = (props) => {
-  let data = createDataSets(props);
-  let title = getTitle(props);
+  // let data = createDataSets(props);
+  // let title = getTitle(props);
+  console.log(props.real);
 
   return (
       <div className={areaGraph.box}>
-        <LineChart
-            datasets={data.datasets}
-            time={data.time}
-            title={title}
-            capacity={data.capacity}
-            stepSizeY={props.stepSizeY}
-            stepSizeX={props.stepSizeX}
-        />
+        {/*<LineChart*/}
+        {/*    datasets={data.datasets}*/}
+        {/*    time={data.time}*/}
+        {/*    title={title}*/}
+        {/*    capacity={data.capacity}*/}
+        {/*    stepSizeY={props.stepSizeY}*/}
+        {/*    stepSizeX={props.stepSizeX}*/}
+        {/*/>*/}
       </div>
   );
 };
