@@ -39,8 +39,7 @@ class Node extends React.Component {
       console.log('ERROR: could not get nodes state object');
       console.log(e.stack);
     }
-    // console.log(usageResponse);
-    // console.log('hello node! i am node hello');
+
     return {
       usage: usageResponse,
       formal: formalResponse,

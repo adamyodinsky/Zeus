@@ -30,9 +30,6 @@ class Nodes extends React.Component  {
     };
 
     handleSearchSubmit(data) {
-        console.log('in handle submit func');
-        console.log(data);
-
         (async () => {
             this.setState({
                 search: data.search
@@ -51,7 +48,6 @@ class Nodes extends React.Component  {
 
 
     pageUp = () => {
-        console.log('Page Up');
 
         (async () => {
             this.setState({
@@ -70,7 +66,6 @@ class Nodes extends React.Component  {
     };
 
     pageDown = () => {
-        console.log('Page Down');
         if (this.state.page - 1 < 0) {
             return;
         }
