@@ -14,7 +14,7 @@ class Node extends React.Component {
           real: data.usage,
           formal: data.formal,
         }, () => {
-          console.log(this.state);
+          // console.log(this.state);
         });
       }
     });
@@ -32,7 +32,7 @@ class Node extends React.Component {
       await Promise.allSettled([usageResponse, formalResponse]).
           then((result) => {
             usageResponse = result[0].value.data.data;
-            formalResponse = result[0].value.data.data;
+            formalResponse = result[1].value.data.data;
           });
     } catch (e) {
       console.log('ERROR: could not get nodes state object');
@@ -50,14 +50,26 @@ class Node extends React.Component {
     let areaGraph;
 
     if (this.state.formal && this.state.real) {
-      areaGraph = <AreaGraph2
-          formal={this.state.formal}
-          real={this.state.real}
-          name={this.props.state.name}
-          dataType={'cpu'}
-          stepSizeY={3600}
-          stepSizeX={30}
-      />;
+      areaGraph =
+          <section className={nodeStyle.box_graph}>
+            <AreaGraph2
+                formal={this.state.formal}
+                real={this.state.real}
+                name={this.props.state.name}
+                dataType={'cpu'}
+                stepSizeY={3600}
+                stepSizeX={30}
+            />
+            <div className={nodeStyle.separator}/>
+            <AreaGraph2
+                formal={this.state.formal}
+                real={this.state.real}
+                name={this.props.state.name}
+                dataType={'memory'}
+                stepSizeY={16000}
+                stepSizeX={30}
+            />
+          </section>;
     }
 
     return (
@@ -67,15 +79,6 @@ class Node extends React.Component {
             <div className={nodeStyle.title_node}>{this.props.state.name}</div>
             <section className={nodeStyle.box_graph}>
               {areaGraph}
-              {/*<div className={nodeStyle.separator}/>*/}
-              {/*<AreaGraph2*/}
-              {/*    formal={props.state.node}*/}
-              {/*    real={props.state.usage}*/}
-              {/*    name={props.state.name}*/}
-              {/*    dataType={'memory'}*/}
-              {/*    stepSizeY={16000}*/}
-              {/*    stepSizeX={30}*/}
-              {/*/>*/}
             </section>
           </div>
         </div>
