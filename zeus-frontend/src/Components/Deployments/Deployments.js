@@ -126,9 +126,8 @@ class Deployments extends React.Component {
                         page={this.state.page}
                         pageUp={this.pageUp}
                         pageDown={this.pageDown}
-                    />
-                    <SearchBar
                         onSubmit={this.handleSearchSubmit}/>
+                    />
                 </section>
                 {renderedDeployments}
             </div>

@@ -1,7 +1,6 @@
 import React from 'react';
 import container from './Container.module.scss';
 import AreaGraphDeployment from '../AreaGraph/AreaGraphDeployment';
-import AreaGraph2 from '../../Nodes/AreaGraph/AreaGraph2';
 // import BarGraph from '../BarGraph/BarGraph';
 
 const Container = props => {
@@ -12,13 +11,15 @@ const Container = props => {
             <strong>Container:</strong> {props.container.container_name}
           </div>
         </div>
-          <AreaGraphDeployment
+        <section className={container.box_graph}>
+        <AreaGraphDeployment
               real={props.container.usage_samples}
               formal={props.container.resources}
               dataType={'cpu'}
               stepSizeY={200}
               stepSizeX={10}
           />
+          <div className={container.separator}/>
           <AreaGraphDeployment
               real={props.container.usage_samples}
               formal={props.container.resources}
@@ -26,6 +27,7 @@ const Container = props => {
               stepSizeY={200}
               stepSizeX={10}
           />
+        </section>
           {/*<BarGraph state={props.state} />*/}
       </div>
   );
