@@ -1,5 +1,4 @@
 const logger = require('../helpers/logger');
-const {computeCapacity} = require('../helpers/convert');
 const {saveNode, saveNodeResources} = require('../helpers/saveToMongo');
 const {parseDeep} = require('./parseDeep');
 const {convertToNumber} = require('../helpers/convert');
