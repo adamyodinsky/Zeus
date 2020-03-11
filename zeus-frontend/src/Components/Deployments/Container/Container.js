@@ -1,7 +1,6 @@
 import React from 'react';
 import container from './Container.module.scss';
 import AreaGraphDeployment from '../AreaGraph/AreaGraphDeployment';
-// import BarGraph from '../BarGraph/BarGraph';
 
 const Container = props => {
   return (
@@ -28,7 +27,6 @@ const Container = props => {
               stepSizeX={10}
           />
         </section>
-          {/*<BarGraph state={props.state} />*/}
       </div>
   );
 };
