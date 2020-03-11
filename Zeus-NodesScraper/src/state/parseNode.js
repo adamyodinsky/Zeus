@@ -1,6 +1,7 @@
 const logger = require('../helpers/logger');
 const {saveNode, saveNodeResources} = require('../helpers/saveToMongo');
 const {parseDeep} = require('./parseDeep');
+const {convertToNumber} = require('../helpers/convert');
 
 const parseNode = (node, date) => {
   let nodeObject, resourceObject;
@@ -34,15 +35,39 @@ const parseNode = (node, date) => {
 };
 
 const parseNodes = (nodesArray) => {
+  let clusterResourceObj = {
+    resources:
+        {
+          cpu: {
+            request: 0,
+            limit: 0
+          },
+          memory: {
+            request: 0,
+            limit: 0,
+          }
+        }
+  };
+
   for (let node of nodesArray.arr) {
     try {
       let {nodeObject, resourceObject} = parseNode(node, nodesArray.date);
       saveNode(nodeObject);
       saveNodeResources(resourceObject);
+
+      clusterResourceObj.resources.cpu.request += convertToNumber(resourceObject.resources.cpu.request[0]);
+      clusterResourceObj.resources.cpu.limit += convertToNumber(resourceObject.resources.cpu.limit[0]);
+      clusterResourceObj.resources.memory.request += convertToNumber(resourceObject.resources.memory.request[0]);
+      clusterResourceObj.resources.memory.limit += convertToNumber(resourceObject.resources.memory.limit[0]);
+      clusterResourceObj.date = resourceObject.date;
+
     } catch (e) {
       logger.error(e.stack);
     }
   }
+
+  return clusterResourceObj;
 };
 
-module.exports ={ parseNode, parseNodes};
+
+module.exports ={parseNode, parseNodes};

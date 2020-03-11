@@ -11,12 +11,12 @@ const ClusterRequestSchema = new mongoose.Schema(
       resources:
         {
           cpu: {
-            request: [String],
-            limit: [String]
+            request: Number,
+            limit: Number
           },
           memory: {
-            request: [String],
-            limit: [String]
+            request: Number,
+            limit: Number
           }
         },
       date: {
@@ -32,7 +32,7 @@ const ClusterRequestSchema = new mongoose.Schema(
     {strict: false}
 );
 
-const clusterRequestModelName = config.nodeRequestModelName;
+const clusterRequestModelName = config.clusterRequestModelName;
 const ClusterRequest = mongoose.model(clusterRequestModelName, ClusterRequestSchema);
 
 module.exports = {clusterRequestModelName, ClusterRequestSchema, ClusterRequest};
