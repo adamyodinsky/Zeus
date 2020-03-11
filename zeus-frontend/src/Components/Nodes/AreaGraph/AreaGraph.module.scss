@@ -10,9 +10,12 @@
 // }
 
 .chart canvas {
-  height: 50rem !important;
+  transition: all 0.3s;
 
-  &:hover {
+  height: 10rem;
+
+  &:hover
+  {
     height: 40rem !important;
   }
 }

@@ -3,7 +3,6 @@ import Deployment from './Deployment/Deployment'
 import axios from 'axios';
 // import * as qs from 'querystring'
 import Pagination from "../Pagination/Pagination";
-import SearchBar from "../SearchBar/SearchBar";
 import deployment from './Deployments.module.scss'
 
 
@@ -127,7 +126,6 @@ class Deployments extends React.Component {
                         pageUp={this.pageUp}
                         pageDown={this.pageDown}
                         onSubmit={this.handleSearchSubmit}/>
-                    />
                 </section>
                 {renderedDeployments}
             </div>

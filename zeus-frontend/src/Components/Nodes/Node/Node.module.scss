@@ -3,12 +3,12 @@
   padding: 0.5rem;
   background-color: rgba(4, 1, 129, 0.05);
   border-radius: 4rem;
-  width: 98vw;
+  width: 98.5vw;
   text-align: center;
 }
 
 .separator {
-  margin: 1rem;
+  margin: 5px;
 }
 
 .box_graph {
@@ -17,7 +17,13 @@
   margin: 0 0 1rem 1rem;
   border-radius: 2.2rem;
   padding: 1rem 0 0.4rem 1rem;
-  width: 96vw;
+  width: 97vw;
+
+  //transition: max-height .3s;
+  //height: auto;
+  //&:hover {
+  //  max-height: 50rem;
+  //}
 }
 
 
@@ -43,10 +49,3 @@
   margin: 0 2rem 0 0;
 }
 
-.blue {
-  color: royalblue;
-}
-
-.red {
-
-}
