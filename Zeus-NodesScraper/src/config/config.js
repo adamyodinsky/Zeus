@@ -13,4 +13,6 @@ module.exports = {
   nodeModelName: process.env.NODES_MODEL_NAME || 'node',
   nodeUsageModelName: process.env.NODES_USAGE_MODEL_NAME || 'node-usage',
   nodeRequestModelName: process.env.NODES_REQUEST_MODEL_NAME || 'node-request',
+  clusterUsageModelName: process.env.NODES_USAGE_MODEL_NAME || 'cluster-usage',
+  clusterRequestModelName: process.env.NODES_REQUEST_MODEL_NAME || 'cluster-request',
 };

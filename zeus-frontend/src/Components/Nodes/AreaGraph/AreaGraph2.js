@@ -65,7 +65,6 @@ const createDataSets = (props) => {
     timeArr.unshift(date);
   }
 
-
   return {
     datasets: [
       {

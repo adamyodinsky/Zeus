@@ -1,29 +1,12 @@
 const mongoose = require("mongoose");
 const config = require("../config/config");
 
-const NodeSchema = new mongoose.Schema(
+const ClusterSchema = new mongoose.Schema(
     {
-        name: {
-            type: String,
-            required: true
-        },
-        roles: {
-            type: [String],
-            required: true
-        },
-        addresses: {
-            type: Array,
-            required: true
-        },
         cluster: {
             type: String,
             required: true,
             default: config.CLUSTER
-        },
-        updates_counter: {
-            type: Number,
-            required: true,
-            default: 0
         },
         last_update: {
             type: Date
@@ -38,7 +21,7 @@ const NodeSchema = new mongoose.Schema(
 );
 
 const nodeModelName = config.nodeModelName;
-const Node = mongoose.model(nodeModelName, NodeSchema);
+const Node = mongoose.model(nodeModelName, ClusterSchema);
 
-module.exports = {nodeModelName, NodeSchema, Node};
+module.exports = {nodeModelName, NodeSchema: ClusterSchema, Node};
 
