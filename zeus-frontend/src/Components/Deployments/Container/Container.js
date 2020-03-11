@@ -1,23 +1,33 @@
-import React from "react";
-import container from "./Container.module.scss";
-import BarGraph from "../BarGraph/BarGraph";
+import React from 'react';
+import container from './Container.module.scss';
+import AreaGraphDeployment from '../AreaGraph/AreaGraphDeployment';
 
 const Container = props => {
   return (
-    <div className={container.box}>
-      <div className={container.requests_txt_block}>
-        <div className={container.title_container}>
-          <strong>Container:</strong> {props.state.container_name}
-          CPU Consumption in Percentage
+      <div className={container.box}>
+        <div className={container.requests_txt_block}>
+          <div className={container.title_container}>
+            <strong>Container:</strong> {props.container.container_name}
+          </div>
         </div>
-        {/*<div className={container.title_request}>Requests:</div>*/}
-        {/*<div className={container.resources_block}>*/}
-        {/*  <div>CPU={props.state.resources.txt.requests.cpu}</div>*/}
-        {/*  <div>RAM={props.state.resources.txt.requests.memory}</div>*/}
-        {/*</div>*/}
+        <section className={container.box_graph}>
+        <AreaGraphDeployment
+              real={props.container.usage_samples}
+              formal={props.container.resources}
+              dataType={'cpu'}
+              stepSizeY={200}
+              stepSizeX={10}
+          />
+          <div className={container.separator}/>
+          <AreaGraphDeployment
+              real={props.container.usage_samples}
+              formal={props.container.resources}
+              dataType={'memory'}
+              stepSizeY={200}
+              stepSizeX={10}
+          />
+        </section>
       </div>
-      <BarGraph state={props.state} />
-    </div>
   );
 };
 

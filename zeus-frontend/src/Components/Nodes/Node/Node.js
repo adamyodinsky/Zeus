@@ -58,7 +58,7 @@ class Node extends React.Component {
                 name={this.props.state.name}
                 dataType={'cpu'}
                 stepSizeY={3600}
-                stepSizeX={30}
+                stepSizeX={5}
             />
             <div className={nodeStyle.separator}/>
             <AreaGraph2
@@ -67,7 +67,7 @@ class Node extends React.Component {
                 name={this.props.state.name}
                 dataType={'memory'}
                 stepSizeY={16000}
-                stepSizeX={30}
+                stepSizeX={5}
             />
           </section>;
     }

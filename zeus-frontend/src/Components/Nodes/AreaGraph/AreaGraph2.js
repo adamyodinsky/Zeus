@@ -90,7 +90,7 @@ const AreaGraph2 = (props) => {
   // console.log(props);
 
   return (
-      <div className={areaGraph.box}>
+      <div className={areaGraph.box + ' ' + areaGraph.chart}>
         <LineChart
             datasets={data.datasets}
             time={data.time}

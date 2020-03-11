@@ -2,7 +2,7 @@
   display: flex;
   border-radius: 2.2rem;
   background-color: transparent;
-  width: 46.5vw;
+  width: 43.5vw;
 }
 
 //.chart svg {
@@ -10,12 +10,9 @@
 // }
 
 .chart canvas {
-  transition: all 0.3s;
+  height: 50rem !important;
 
-  height: 10rem;
-
-  &:hover
-  {
+  &:hover {
     height: 40rem !important;
   }
 }
