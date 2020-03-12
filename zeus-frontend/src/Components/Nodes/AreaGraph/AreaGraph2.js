@@ -2,12 +2,19 @@ import React from 'react';
 import LineChart from '../../LineChart/LineChart';
 import areaGraph from './AreaGraph.module.scss';
 
-const lengthLimit = 500; // TODO make it an external config
+const lengthLimit = 100; // TODO make it an external config
 
 const computeCapacity = (props) => {
-  let usageValue = convertToNumber(props.real[0][props.dataType][0]);
-  let usagePercent = convertToNumber(props.real[0][props.dataType][1]);
-  return Math.ceil(usageValue * (100 / usagePercent));
+  let res;
+
+  // console.log(props.real[0][props.dataType][0], props.real[0][props.dataType][1]);
+  const value = convertToNumber(props.real[0][props.dataType][0]);
+  const percent = convertToNumber(props.real[0][props.dataType][1]);
+
+  res = Math.ceil(value * (100 / percent));
+  // console.log(props.name, props.dataType);
+  // console.log('val: '+ value, 'percent: '+ percent, 'capacity: '+ res);
+  return res;
 };
 
 const getTitle = (props) => {
@@ -48,7 +55,11 @@ const createDataSets = (props) => {
     let request = convertToNumber(tmpFormal.resources[props.dataType].request[0]);
 
     if (props.dataType === 'memory') {
-      request = Math.ceil(request / Math.pow(2, 20));
+      if(tmpFormal.resources[props.dataType].request[0].includes('Ki')) {
+        request = Math.ceil(request / Math.pow(2, 10));
+      } else {
+        request = Math.ceil(request / Math.pow(2, 20));
+      }
     }
 
     requestArr.unshift({

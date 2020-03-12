@@ -8,6 +8,10 @@ const ClusterRequestSchema = new mongoose.Schema(
         required: true,
         default: config.CLUSTER
       },
+      capacity: {
+        cpu: Number,
+        memory: Number
+      },
       resources:
         {
           cpu: {

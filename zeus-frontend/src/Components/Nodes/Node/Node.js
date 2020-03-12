@@ -82,8 +82,7 @@ class Node extends React.Component {
             </section>
           </div>
         </div>
-    )
-        ;
+    );
   }
 };
 

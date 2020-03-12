@@ -1,8 +1,8 @@
 import React from 'react';
 import LineChart from '../../LineChart/LineChart';
-import areaGraph from './LineChart.module.scss';
+import areaGraph from './ClusterLineChart.module.scss';
 
-const lengthLimit = 500; // TODO make it an external config
+const lengthLimit = 100; // TODO make it an external config
 
 const getTitle = (props) => {
   return props.dataType === 'cpu' ? 'CPU' : 'Memory';
@@ -15,7 +15,6 @@ const getDataLength = (props) => {
   } else {
     dataLength = min(props.formal.length, props.real.length);
   }
-
   return dataLength;
 };
 
@@ -29,13 +28,16 @@ const createDataSets = (props) => {
   const usageArr = [];
   const timeArr = [];
   const dataLength = getDataLength(props);
+  const capacity = props.formal[0].capacity[props.dataType];
+  console.log(capacity);
 
   for (let i = 0; i < dataLength; i++) {
     const tmpFormal = props.formal[i];
     const date = new Date(tmpFormal.date);
+    console.log(tmpFormal);
 
-    let usage = (props.real[i])[props.dataType][0];
-    let request = tmpFormal.resources[props.dataType].request[0];
+    let usage = (props.real[i])[props.dataType];
+    let request = tmpFormal.resources[props.dataType].request;
 
     if (props.dataType === 'memory') {
       request = Math.ceil(request / Math.pow(2, 20));
@@ -54,7 +56,6 @@ const createDataSets = (props) => {
 
     timeArr.unshift(date);
   }
-
   return {
     datasets: [
       {
@@ -69,11 +70,11 @@ const createDataSets = (props) => {
       }
     ],
     time: timeArr,
-    capacity: capacity
+    capacity: 500000//capacity //props.formal[0].capacity[rops.dataType]
   };
 };
 
-const LineChart = (props) => {
+const ClusterLineChart = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
   // console.log(props);
@@ -92,4 +93,4 @@ const LineChart = (props) => {
   );
 };
 
-export default LineChart;
+export default ClusterLineChart;

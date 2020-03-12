@@ -1,4 +1,5 @@
 const logger = require('../helpers/logger');
+const {computeCapacity} = require('../helpers/convert');
 const {saveNode, saveNodeResources} = require('../helpers/saveToMongo');
 const {parseDeep} = require('./parseDeep');
 const {convertToNumber} = require('../helpers/convert');
@@ -36,6 +37,10 @@ const parseNode = (node, date) => {
 
 const parseNodes = (nodesArray) => {
   let clusterResourceObj = {
+    capacity: {
+      cpu: 0,
+      memory: 0
+    },
     resources:
         {
           cpu: {
@@ -60,6 +65,8 @@ const parseNodes = (nodesArray) => {
       clusterResourceObj.resources.memory.request += convertToNumber(resourceObject.resources.memory.request[0]);
       clusterResourceObj.resources.memory.limit += convertToNumber(resourceObject.resources.memory.limit[0]);
       clusterResourceObj.date = resourceObject.date;
+      clusterResourceObj.capacity.cpu += computeCapacity(resourceObject.resources.cpu.request);
+      clusterResourceObj.capacity.memory += computeCapacity(resourceObject.resources.memory.request);
     } catch (e) {
       logger.error(e.stack);
     }
