@@ -83,7 +83,6 @@ const createDataSets = (props) => {
 const AreaGraph2 = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
-  // console.log(props);
 
   return (
       <div className={areaGraph.box}>

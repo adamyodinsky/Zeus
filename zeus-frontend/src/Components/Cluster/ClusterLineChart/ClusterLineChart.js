@@ -29,12 +29,10 @@ const createDataSets = (props) => {
   const timeArr = [];
   const dataLength = getDataLength(props);
   const capacity = props.formal[0].capacity[props.dataType];
-  console.log(capacity);
 
   for (let i = 0; i < dataLength; i++) {
     const tmpFormal = props.formal[i];
     const date = new Date(tmpFormal.date);
-    console.log(tmpFormal);
 
     let usage = (props.real[i])[props.dataType];
     let request = tmpFormal.resources[props.dataType].request;
@@ -52,6 +50,7 @@ const createDataSets = (props) => {
 
     timeArr.unshift(date);
   }
+
   return {
     datasets: [
       {
@@ -73,8 +72,7 @@ const createDataSets = (props) => {
 const ClusterLineChart = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
-  console.log(props);
-
+  console.log(data);
   return (
       <div className={areaGraph.box}>
         <LineChart

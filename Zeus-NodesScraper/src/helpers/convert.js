@@ -15,7 +15,7 @@ const normalizeData = (resourceValue, dataType) => {
   if (dataType === 'memory') {
     if (resourceValue.includes('Ki')) {
       result = Math.ceil(result / Math.pow(2, 10));
-    } else {
+    } else if (!resourceValue.includes('Mi')) {
       result = Math.ceil(result / Math.pow(2, 20));
     }
   }

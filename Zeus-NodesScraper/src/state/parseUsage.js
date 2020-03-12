@@ -27,8 +27,6 @@ const parseNodesUsage = (nodesUsageArray) => {
       saveNodeUsage(nodesUsageObj);
 
       clusterUsageObj.cpu += nodesUsageObj.cpu[0];
-      clusterUsageObj.cpu += nodesUsageObj.cpu[0];
-      clusterUsageObj.memory += nodesUsageObj.memory[0];
       clusterUsageObj.memory += nodesUsageObj.memory[0];
       clusterUsageObj.date = nodesUsageObj.date;
 

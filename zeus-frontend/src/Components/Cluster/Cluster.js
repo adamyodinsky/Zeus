@@ -50,7 +50,6 @@ class Cluster extends React.Component {
 
   render() {
     let ClusterLineChartRendered;
-    // data.usage[""0""].cluster
     if (this.state.data.formal && this.state.data.usage) {
       ClusterLineChartRendered =
           <div className={clusterStyle.box}>
