@@ -8,8 +8,8 @@ const deepParseNodeUsage = (node, date) => {
 
   return {
     name: arrUsage[0],
-    cpu: [arrUsage[1], arrUsage[2]],
-    memory: [arrUsage[3], arrUsage[4]],
+    cpu: [convertToNumber(arrUsage[1]), convertToNumber(arrUsage[2])],
+    memory: [convertToNumber(arrUsage[3]), convertToNumber(arrUsage[4])],
     date: date,
   };
 };
@@ -26,10 +26,10 @@ const parseNodesUsage = (nodesUsageArray) => {
       nodesUsageObj = deepParseNodeUsage(node, nodesUsageArray.date);
       saveNodeUsage(nodesUsageObj);
 
-      clusterUsageObj.cpu += convertToNumber(nodesUsageObj.cpu[0]);
-      clusterUsageObj.cpu += convertToNumber(nodesUsageObj.cpu[0]);
-      clusterUsageObj.memory += convertToNumber(nodesUsageObj.memory[0]);
-      clusterUsageObj.memory += convertToNumber(nodesUsageObj.memory[0]);
+      clusterUsageObj.cpu += nodesUsageObj.cpu[0];
+      clusterUsageObj.cpu += nodesUsageObj.cpu[0];
+      clusterUsageObj.memory += nodesUsageObj.memory[0];
+      clusterUsageObj.memory += nodesUsageObj.memory[0];
       clusterUsageObj.date = nodesUsageObj.date;
 
     } catch (e) {

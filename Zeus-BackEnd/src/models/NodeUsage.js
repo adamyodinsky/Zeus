@@ -5,8 +5,8 @@ const NodeUsageSchema = new mongoose.Schema(
     {
       name: String,
       cluster: String,
-      cpu: [String],
-      memory: [String],
+      cpu: [Number],
+      memory: [Number],
       date: Date,
       created: String,
       expirationDate: Date

@@ -61,7 +61,7 @@ class Cluster extends React.Component {
                     real={this.state.data.usage}
                     name={this.state.data.formal[0].cluster}
                     dataType={'cpu'}
-                    stepSizeY={3600}
+                    stepSizeY={36000}
                     stepSizeX={5}
                 />
                 <div className={clusterStyle.separator}/>
@@ -70,10 +70,10 @@ class Cluster extends React.Component {
                     real={this.state.data.usage}
                     name={this.state.data.formal[0].cluster}
                     dataType={'memory'}
-                    stepSizeY={16000}
+                    stepSizeY={160000}
                     stepSizeX={5}
                 />
-              </section>;
+              </section>
           </div>
     }
 
@@ -82,7 +82,6 @@ class Cluster extends React.Component {
           {ClusterLineChartRendered}
         </div>
     )
-        ;
   }
 };
 

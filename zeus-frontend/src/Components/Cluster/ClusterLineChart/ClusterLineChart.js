@@ -39,10 +39,6 @@ const createDataSets = (props) => {
     let usage = (props.real[i])[props.dataType];
     let request = tmpFormal.resources[props.dataType].request;
 
-    if (props.dataType === 'memory') {
-      request = Math.ceil(request / Math.pow(2, 20));
-    }
-
     requestArr.unshift({
           x: date,
           y: request,
@@ -70,14 +66,14 @@ const createDataSets = (props) => {
       }
     ],
     time: timeArr,
-    capacity: 500000//capacity //props.formal[0].capacity[rops.dataType]
+    capacity: capacity
   };
 };
 
 const ClusterLineChart = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
-  // console.log(props);
+  console.log(props);
 
   return (
       <div className={areaGraph.box}>

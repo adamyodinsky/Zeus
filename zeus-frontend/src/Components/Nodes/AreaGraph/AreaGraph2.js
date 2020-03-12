@@ -6,14 +6,12 @@ const lengthLimit = 100; // TODO make it an external config
 
 const computeCapacity = (props) => {
   let res;
+  if(props.real[0]){
+    const value = props.real[0][props.dataType][0];
+    const percent = props.real[0][props.dataType][1];
 
-  // console.log(props.real[0][props.dataType][0], props.real[0][props.dataType][1]);
-  const value = convertToNumber(props.real[0][props.dataType][0]);
-  const percent = convertToNumber(props.real[0][props.dataType][1]);
-
-  res = Math.ceil(value * (100 / percent));
-  // console.log(props.name, props.dataType);
-  // console.log('val: '+ value, 'percent: '+ percent, 'capacity: '+ res);
+    res = Math.ceil(value * (100 / percent));
+  }
   return res;
 };
 
@@ -28,13 +26,9 @@ const getDataLength = (props) => {
   } else {
     dataLength = min(props.formal.length, props.real.length);
   }
-
   return dataLength;
 };
 
-const convertToNumber = (str) => {
-  return Number(str.replace(/\D/g, ''));
-};
 
 const min = (a, b) => {
   return a < b ? a : b;
@@ -51,16 +45,8 @@ const createDataSets = (props) => {
     const tmpFormal = props.formal[i];
     const date = new Date(tmpFormal.date);
 
-    let usage = convertToNumber((props.real[i])[props.dataType][0]);
-    let request = convertToNumber(tmpFormal.resources[props.dataType].request[0]);
-
-    if (props.dataType === 'memory') {
-      if(tmpFormal.resources[props.dataType].request[0].includes('Ki')) {
-        request = Math.ceil(request / Math.pow(2, 10));
-      } else {
-        request = Math.ceil(request / Math.pow(2, 20));
-      }
-    }
+    let usage = (props.real[i])[props.dataType][0];
+    let request = tmpFormal.resources[props.dataType].request[0];
 
     requestArr.unshift({
           x: date,

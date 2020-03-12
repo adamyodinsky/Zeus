@@ -12,8 +12,8 @@ const NodeUsageSchema = new mongoose.Schema(
         required: true,
         default: config.CLUSTER,
       },
-      cpu: [String],
-      memory: [String],
+      cpu: [Number],
+      memory: [Number],
       date: Date,
       expirationDate: {
         type: Date,
