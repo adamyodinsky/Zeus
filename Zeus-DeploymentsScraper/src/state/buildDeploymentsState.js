@@ -7,7 +7,7 @@ const config = require("../config/config");
 const _ = require('lodash');
 
 const convertToNumber = (str) => {
-  return Number(str.replace(/\D/g, ""));
+  return Number(str.replace(/\D/g,''));
 };
 
 const convertResourcesValues = (resources) => {
@@ -100,8 +100,8 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
     while (currentUsageObject) {
         // gather sum of memory and cpu
         for (let container of currentUsageObject._doc.containers) {
-          memSumMap[container.container_name].push(convertToNumber(container.cpu));
-          cpuSumMap[container.container_name].push(convertToNumber(container.memory));
+          cpuSumMap[container.container_name].push(convertToNumber(container.cpu));
+          memSumMap[container.container_name].push(convertToNumber(container.memory));
         }
 
         // gather and count pods names
