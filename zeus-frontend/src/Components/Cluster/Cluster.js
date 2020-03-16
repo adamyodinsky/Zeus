@@ -84,8 +84,7 @@ class Cluster extends React.Component {
     if (this.state.data.formal && this.state.data.usage) {
       ClusterLineChartRendered = (
           <div className={clusterStyle.box + ' ' +  clusterStyle.centerText}>
-            <div
-                className={clusterStyle.title_node}>{this.state.data.formal[0].cluster}</div>
+            <div className={clusterStyle.title_node}>{this.state.data.formal[0].cluster}</div>
             <section className={clusterStyle.box_graph}>
               <ClusterLineChart
                   formal={this.state.data.formal}
