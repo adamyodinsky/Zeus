@@ -6,8 +6,8 @@ module.exports = {
   logLevel: process.env.LOG_LEVEL || 'info',
   DEBUG: process.env.DEBUG === "true",
   //----------MONGO-DB----------------------------
-  DEFAULT_DEPLOYMENTS_LIMIT: Number(process.env.DEFAULT_DEPLOYMENTS_LIMIT) || 10,
-  DEFAULT_NODES_LIMIT: Number(process.env.DEFAULT_NODES_LIMIT) || 10,
+  DEFAULT_DEPLOYMENTS_LIMIT: Number(process.env.DEFAULT_DEPLOYMENTS_LIMIT) || 5,
+  DEFAULT_NODES_LIMIT: Number(process.env.DEFAULT_NODES_LIMIT) || 5,
   DEFAULT_NODES_USAGE_LIMIT: Number(process.env.DEFAULT_NODES_USAGE_LIMIT) || 200,
   DEFAULT_CLUSTER_USAGE_LIMIT: Number(process.env.DEFAULT_CLUSTER_USAGE_LIMIT) || 200,
   deploymentModelName: process.env.DEPLOYMENT_MODEL || 'deployment',

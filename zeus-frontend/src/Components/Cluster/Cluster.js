@@ -7,7 +7,7 @@ class Cluster extends React.Component {
   state = {
     data: {
       usage: null,
-      formal: null,
+      formal: null
     },
   };
 
@@ -23,7 +23,7 @@ class Cluster extends React.Component {
     });
   }
 
-  computeCostForMonth = (formalArr, usageArr) => {
+  createCostDiv = (formalArr, usageArr) => {
     let capacityAvg = formalArr.reduce(
         (sum, currObj) => sum + currObj.capacity.cpu, 0) / formalArr.length;
     let avgUsage = usageArr.reduce((sum, currObj) => sum + currObj.cpu, 0) /
@@ -37,7 +37,7 @@ class Cluster extends React.Component {
     let realNeed = Math.round( neededNodes * 0.40 * 24 * 30);
     let couldBeSaved = Math.round((unNeededNodes* 0.40 * 24 * 30));
 
-    return {
+    let cost = {
       money: {
         total: totalSpent,
         real: realNeed,
@@ -48,8 +48,52 @@ class Cluster extends React.Component {
         real: neededNodes,
         save: unNeededNodes
       }
-    }
+    };
 
+    return (
+        <div className={clusterStyle.box + ' ' + clusterStyle.costs}>
+          <h2>Month Estimations by Average Usage</h2>
+          <div className={clusterStyle.cost_innerBox}>
+            <h3>Nodes:</h3>
+            <section>Total Acquired : {cost.nodes.total}</section>
+            <section>Real Need: {cost.nodes.real}</section>
+            <section>Could Be Evicted: {cost.nodes.save}</section>
+          </div>
+          <div className={clusterStyle.cost_innerBox}>
+            <h3>Money:</h3>
+            <section>Total: ${cost.money.total}</section>
+            <section>Could Be: ${cost.money.real}</section>
+            <section>You Can Save: ${cost.money.save}</section>
+          </div>
+        </div>
+    );
+  };
+
+  createClusterLineChart = () => {
+    return  (
+        <div className={clusterStyle.box + ' ' +  clusterStyle.centerText}>
+          <div className={clusterStyle.title_node}>{this.state.data.formal[0].cluster}</div>
+          <section className={clusterStyle.box_graph}>
+            <ClusterLineChart
+                formal={this.state.data.formal}
+                real={this.state.data.usage}
+                name={this.state.data.formal[0].cluster}
+                dataType={'cpu'}
+                stepSizeY={36000}
+                stepSizeX={5}
+            />
+            <div className={clusterStyle.separator}/>
+            <ClusterLineChart
+                formal={this.state.data.formal}
+                real={this.state.data.usage}
+                name={this.state.data.formal[0].cluster}
+                dataType={'memory'}
+                stepSizeY={160000}
+                stepSizeX={5}
+            />
+          </section>
+        </div>
+    );
   };
 
   getClusterData = async () => {
@@ -75,6 +119,7 @@ class Cluster extends React.Component {
       usage: usageResponse,
       formal: formalResponse,
     };
+
   };
 
   render() {
@@ -82,51 +127,8 @@ class Cluster extends React.Component {
     let costDiv = <div/>;
 
     if (this.state.data.formal && this.state.data.usage) {
-      ClusterLineChartRendered = (
-          <div className={clusterStyle.box + ' ' +  clusterStyle.centerText}>
-            <div className={clusterStyle.title_node}>{this.state.data.formal[0].cluster}</div>
-            <section className={clusterStyle.box_graph}>
-              <ClusterLineChart
-                  formal={this.state.data.formal}
-                  real={this.state.data.usage}
-                  name={this.state.data.formal[0].cluster}
-                  dataType={'cpu'}
-                  stepSizeY={36000}
-                  stepSizeX={5}
-              />
-              <div className={clusterStyle.separator}/>
-              <ClusterLineChart
-                  formal={this.state.data.formal}
-                  real={this.state.data.usage}
-                  name={this.state.data.formal[0].cluster}
-                  dataType={'memory'}
-                  stepSizeY={160000}
-                  stepSizeX={5}
-              />
-            </section>
-          </div>
-      );
-
-      let cost = this.computeCostForMonth(this.state.data.formal,
-          this.state.data.usage);
-
-      costDiv = (
-          <div className={clusterStyle.box + ' ' + clusterStyle.costs}>
-            <h2>Month Estimations by Average Usage</h2>
-            <div className={clusterStyle.cost_innerBox}>
-              <h3>Nodes:</h3>
-              <section>Total Acquired : {cost.nodes.total}</section>
-              <section>Real Need: {cost.nodes.real}</section>
-              <section>Could Be Evicted: {cost.nodes.save}</section>
-            </div>
-            <div className={clusterStyle.cost_innerBox}>
-              <h3>Money:</h3>
-              <section>Total: ${cost.money.total}</section>
-              <section>Could Be: ${cost.money.real}</section>
-              <section>You Can Save: ${cost.money.save}</section>
-            </div>
-          </div>
-      );
+      ClusterLineChartRendered = this.createClusterLineChart();
+      costDiv = this.createCostDiv(this.state.data.formal, this.state.data.usage);
     }
 
     return (
