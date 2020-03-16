@@ -3,5 +3,33 @@
 }
 
 .navigation_inner {
-  margin: 3rem;
+  //margin: 3rem;
+}
+
+.navBar ul{
+  font-size: 1.7rem;
+  padding: 3px;
+  margin: 2rem 0;
+  display: flex;
+  list-style: none;
+  width: 100%;
+  background-color: rgb(60, 60, 60);
+
+  & li {
+    padding: 0 8rem 0 8rem;
+  }
+}
+.navBar ul a{
+  text-decoration: none;
+  color: black;
+  display: block;
+  padding: 0 10px;
+  margin: 2px 5px;
+  border-radius: 1rem;
+  background-color: rgb(198, 203, 203);
+}
+
+.navBar ul .active, .navBar ul a:hover{
+  background: white;
+  color: #222;
 }

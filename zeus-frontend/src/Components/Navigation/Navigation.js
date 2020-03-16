@@ -1,15 +1,19 @@
 import React from 'react';
-import {BrowserRouter as Router, NavLink, Link} from "react-router-dom";
+import {NavLink} from "react-router-dom";
 import navigation from './Navigation.module.scss'
 
-const Navigation = (props) => {
-  return (
-      <nav className={navigation.navigation}>
-        <NavLink className={navigation.navigation_inner} to="/">Cluster</NavLink>
-        <NavLink className={navigation.navigation_inner} to="/deployments">Deployments</NavLink>
-        <NavLink className={navigation.navigation_inner} to="/nodes">Nodes</NavLink>
-      </nav>
-  )
+class Navigation extends React.Component {
+  render() {
+    return (
+        <nav className={navigation.navBar}>
+          <ul>
+            <li><NavLink exact to="/">Cluster</NavLink></li>
+            <li><NavLink to="/nodes">Nodes</NavLink></li>
+            <li><NavLink to="/deployments">Deployments</NavLink></li>
+          </ul>
+        </nav>
+    )
+  }
 };
 
 export default Navigation;
