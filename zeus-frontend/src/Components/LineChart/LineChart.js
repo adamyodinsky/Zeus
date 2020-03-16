@@ -41,7 +41,7 @@ class LineChart extends React.Component {
               type: 'time',
               time: {
                 stepSize: this.props.stepSizeX,
-                // unit: 'hour'
+                // unit: 'minute'
               },
               display: true,
               // scaleLabel: {

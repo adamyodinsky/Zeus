@@ -1,19 +1,8 @@
 import React from 'react';
 import LineChart from '../../LineChart/LineChart';
-import areaGraph from './AreaGraph.module.scss';
+import areaGraph from './ClusterLineChart.module.scss';
 
 const lengthLimit = 100; // TODO make it an external config
-
-const computeCapacity = (props) => {
-  let res;
-  if(props.real[0]){
-    const value = props.real[0][props.dataType][0];
-    const percent = props.real[0][props.dataType][1];
-
-    res = Math.ceil(value * (100 / percent));
-  }
-  return res;
-};
 
 const getTitle = (props) => {
   return props.dataType === 'cpu' ? 'CPU' : 'Memory';
@@ -39,14 +28,14 @@ const createDataSets = (props) => {
   const usageArr = [];
   const timeArr = [];
   const dataLength = getDataLength(props);
-  const capacity = computeCapacity(props);
+  const capacity = props.formal[0].capacity[props.dataType];
 
   for (let i = 0; i < dataLength; i++) {
     const tmpFormal = props.formal[i];
     const date = new Date(tmpFormal.date);
 
-    let usage = (props.real[i])[props.dataType][0];
-    let request = tmpFormal.resources[props.dataType].request[0];
+    let usage = (props.real[i])[props.dataType];
+    let request = tmpFormal.resources[props.dataType].request;
 
     requestArr.unshift({
           x: date,
@@ -80,10 +69,10 @@ const createDataSets = (props) => {
   };
 };
 
-const AreaGraph2 = (props) => {
+const ClusterLineChart = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
-
+  console.log(data);
   return (
       <div className={areaGraph.box}>
         <LineChart
@@ -98,4 +87,4 @@ const AreaGraph2 = (props) => {
   );
 };
 
-export default AreaGraph2;
+export default ClusterLineChart;

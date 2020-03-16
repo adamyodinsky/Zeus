@@ -8,12 +8,12 @@ const NodeRequestSchema = new mongoose.Schema(
       resources:
         {
           cpu: {
-            request: [String],
-            limit: [String]
+            request: [Number],
+            limit: [Number]
           },
           memory: {
-            request: [String],
-            limit: [String]
+            request: [Number],
+            limit: [Number]
           },
           date: Date
         },

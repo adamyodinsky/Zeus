@@ -1,19 +1,15 @@
 const mongoose = require('mongoose');
 const config = require('../config/config');
 
-const NodeUsageSchema = new mongoose.Schema(
+const ClusterUsageSchema = new mongoose.Schema(
     {
-      name: {
-        type: String,
-        required: true,
-      },
       cluster: {
         type: String,
         required: true,
         default: config.CLUSTER,
       },
-      cpu: [Number],
-      memory: [Number],
+      cpu: Number,
+      memory: Number,
       date: Date,
       expirationDate: {
         type: Date,
@@ -24,7 +20,7 @@ const NodeUsageSchema = new mongoose.Schema(
     {strict: false},
 );
 
-const nodeUsageModelName = config.nodeUsageModelName;
-const NodeUsage = mongoose.model(nodeUsageModelName, NodeUsageSchema);
+const clusterUsageModelName = config.clusterUsageModelName;
+const ClusterUsage = mongoose.model(clusterUsageModelName, ClusterUsageSchema);
 
-module.exports = {nodeUsageModelName, NodeUsageSchema, NodeUsage};
+module.exports = {clusterUsageModelName, ClusterUsageSchema, ClusterUsage};

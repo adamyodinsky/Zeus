@@ -24,6 +24,18 @@ const NodesRequestModel = require('mongoose').model(
     NodeRequestSchema,
 );
 
+const {ClusterRequestSchema} = require('../models/ClusterRequest');
+const ClusterRequestModel = require('mongoose').model(
+    config.clusterRequestModelName,
+    ClusterRequestSchema,
+);
+
+const {ClusterUsageSchema} = require('../models/ClusterUsage');
+const ClusterUsageModel = require('mongoose').model(
+    config.clusterUsageModelName,
+    ClusterUsageSchema,
+);
+
 const getDeploymentsState = async (req, res) => {
   try {
     const limit = req.query.limit || config.DEFAULT_DEPLOYMENTS_LIMIT;
@@ -92,6 +104,7 @@ const getNodes = async (req, res) => {
   }
 };
 
+
 const getNodesUsage = async (req, res) => {
   try {
     const limit = Number(req.query.limit || config.DEFAULT_NODES_USAGE_LIMIT);
@@ -151,4 +164,52 @@ const getNodesRequest = async (req, res) => {
   }
 };
 
-module.exports = {getDeploymentsState, getNodes, getNodesUsage, getNodesRequest};
+
+const getClusterUsage = async (req, res) => {
+  try {
+    const limit = Number(req.query.limit || config.DEFAULT_CLUSTER_USAGE_LIMIT);
+    const page = req.query.page || 0;
+    const sort = Number(req.query.sort) || 1;
+
+    const response = await ClusterUsageModel.find().
+        limit(limit).
+        skip(page * limit).
+        sort({date: sort});
+
+    res.status(200).json({
+      length: response.length,
+      data: response,
+    });
+
+    logger.info('get nodes usage state controller - success');
+  } catch (e) {
+    res.status(500).json('Internal Server Error');
+    logger.error(e.stack);
+  }
+};
+
+
+const getClusterRequest = async (req, res) => {
+  try {
+    const limit = Number(req.query.limit || config.DEFAULT_CLUSTER_USAGE_LIMIT);
+    const page = req.query.page || 0;
+    const sort = Number(req.query.sort) || 1;
+
+    const response = await ClusterRequestModel.find().
+        limit(limit).
+        skip(page * limit).
+        sort({date: sort});
+
+    res.status(200).json({
+      length: response.length,
+      data: response,
+    });
+
+    logger.info('get nodes usage state controller - success');
+  } catch (e) {
+    res.status(500).json('Internal Server Error');
+    logger.error(e.stack);
+  }
+};
+
+module.exports = {getDeploymentsState, getNodes, getNodesUsage, getNodesRequest, getClusterRequest, getClusterUsage};

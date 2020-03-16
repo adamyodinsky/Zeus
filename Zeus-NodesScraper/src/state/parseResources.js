@@ -1,4 +1,6 @@
 const _ = require('lodash/array');
+const {convertToNumber} = require('../helpers/convert');
+const {normalizeData} = require('../helpers/convert');
 
 const parsePodsResources = (resourceArray) => {
   const pods = [];
@@ -23,17 +25,19 @@ const parsePodsResources = (resourceArray) => {
   return pods;
 };
 
+
+
 const parseNodeResources = (resourceArray, date) => {
 
   let cpu = resourceArray.filter(line => line.match(/cpu/));
   cpu = _.compact(cpu[0].split(/\s+/));
-  let cpuRequest = [cpu[1], cpu[2]];
-  let cpuLimits = [cpu[3], cpu[4]];
+  let cpuRequest = [convertToNumber(cpu[1]), convertToNumber(cpu[2])];
+  let cpuLimits = [convertToNumber(cpu[3]), convertToNumber(cpu[4])];
 
   let memory = resourceArray.filter(line => line.match(/memory/));
   memory = _.compact(memory[0].split(/\s+/));
-  let memRequest = [memory[1], memory[2]];
-  let memLimits = [memory[3], memory[4]];
+  let memRequest = [normalizeData(memory[1], 'memory'), convertToNumber(memory[2])];
+  let memLimits = [normalizeData(memory[3], 'memory'), convertToNumber(memory[4])];
 
   return {
     cpu: {

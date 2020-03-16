@@ -7,7 +7,7 @@ const config = require("../config/config");
 const _ = require('lodash');
 
 const convertToNumber = (str) => {
-  return Number(str.replace(/\D/g, ""));
+  return Number(str.replace(/\D/g,''));
 };
 
 const convertResourcesValues = (resources) => {
@@ -100,13 +100,13 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
     while (currentUsageObject) {
         // gather sum of memory and cpu
         for (let container of currentUsageObject._doc.containers) {
-          memSumMap[container.container_name].push(convertToNumber(container.cpu));
-          cpuSumMap[container.container_name].push(convertToNumber(container.memory));
+          cpuSumMap[container.container_name].push(convertToNumber(container.cpu));
+          memSumMap[container.container_name].push(convertToNumber(container.memory));
         }
 
         // gather and count pods names
         podNames.push(currentUsageObject._doc.pod_name);
-        date = currentUsageObject._doc.date;
+        // date = currentUsageObject._doc.date;
         countPods++;
         currentUsageObject = await CurrentUsageModel.findOneAndDelete({ $and: conditions}); // for next iteration
     }
@@ -124,8 +124,7 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
       newContainersMap[key].usage_samples[0].sum.cpu = cpuSumMap[key];
       newContainersMap[key].usage_samples[0].avg.memory = memSumMap[key] / newDeploymentObject.replicas;
       newContainersMap[key].usage_samples[0].avg.cpu = cpuSumMap[key] / newDeploymentObject.replicas;
-      newContainersMap[key].usage_samples[0].date = date;
-
+      newContainersMap[key].usage_samples[0].date = Date.now();
       newDeploymentObject.containers.push(newContainer);
     }
   } catch (e) {

@@ -56,7 +56,10 @@ const DeploymentSchema = new mongoose.Schema(
         },
         usage_samples: [
           {
-            date: Date,
+            date: {
+              type: Date,
+              required: true
+            },
             txt: {
               memory: String,
               cpu: String

@@ -2,9 +2,43 @@ const {Node, nodeModelName} = require('../models/Node');
 const NodeModel = require('mongoose').model(nodeModelName);
 const {NodeRequest} = require('../models/NodeRequest');
 const {NodeUsage}  = require('../models/NodeUsage');
+const {ClusterRequest} = require('../models/ClusterRequest');
+const {ClusterUsage} = require('../models/ClusterUsage');
 
 const logger = require('../helpers/logger');
 const config = require('../config/config');
+
+const saveClusterResources = async (newResourceObj) => {
+  let count;
+  let newResourceDoc;
+
+  try {
+    newResourceDoc = new ClusterRequest({...newResourceObj});
+    await newResourceDoc.save();
+    count = 1;
+    logger.debug('Stored Cluster resource Object in DB', null);
+  } catch (err) {
+    count = 0;
+    logger.error(err.stack);
+  }
+  return count;
+};
+
+const saveClusterUsage = async (newResourceObj) => {
+  let count;
+  let newResourceDoc;
+
+  try {
+    newResourceDoc = new ClusterUsage({...newResourceObj});
+    await newResourceDoc.save();
+    count = 1;
+    logger.debug('Stored Cluster usage Object in DB', null);
+  } catch (err) {
+    count = 0;
+    logger.error(err.stack);
+  }
+  return count;
+};
 
 const saveNodeResources = async newNode => {
   let count;
@@ -75,4 +109,4 @@ const saveNodeUsage = async newNode => {
   return count;
 };
 
-module.exports = {saveNode, saveNodeUsage, saveNodeResources};
+module.exports = {saveNode, saveNodeUsage, saveNodeResources, saveClusterResources, saveClusterUsage};
