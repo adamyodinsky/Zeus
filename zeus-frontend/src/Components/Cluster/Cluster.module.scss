@@ -4,7 +4,30 @@
   background-color: rgba(4, 1, 129, 0.05);
   border-radius: 4rem;
   width: 98.5vw;
-  text-align: center;
+}
+
+.centerText {
+ text-align: center;
+}
+
+.costs {
+  font-size: 1.6rem;
+  display: block;
+  //margin: 2rem;
+  padding: 2rem;
+
+  & h2 {
+    display: block;
+  }
+
+  & section {
+    display: block;
+    margin: 0 5rem 0 0;
+  }
+}
+
+.cost_innerBox {
+  margin: 2rem;
 }
 
 .separator {
