@@ -106,7 +106,7 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
 
         // gather and count pods names
         podNames.push(currentUsageObject._doc.pod_name);
-        date = currentUsageObject._doc.date;
+        // date = currentUsageObject._doc.date;
         countPods++;
         currentUsageObject = await CurrentUsageModel.findOneAndDelete({ $and: conditions}); // for next iteration
     }
@@ -124,8 +124,7 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
       newContainersMap[key].usage_samples[0].sum.cpu = cpuSumMap[key];
       newContainersMap[key].usage_samples[0].avg.memory = memSumMap[key] / newDeploymentObject.replicas;
       newContainersMap[key].usage_samples[0].avg.cpu = cpuSumMap[key] / newDeploymentObject.replicas;
-      newContainersMap[key].usage_samples[0].date = date;
-
+      newContainersMap[key].usage_samples[0].date = Date.now();
       newDeploymentObject.containers.push(newContainer);
     }
   } catch (e) {
