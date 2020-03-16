@@ -72,7 +72,7 @@ const createDataSets = (props) => {
 const ClusterLineChart = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
-  console.log(data);
+
   return (
       <div className={areaGraph.box}>
         <LineChart
