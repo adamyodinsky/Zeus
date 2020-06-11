@@ -20,18 +20,6 @@ const DeploymentSchema = new mongoose.Schema(
       type: [String],
       required: true
     },
-    uid: {
-      type: String,
-      required: true
-    },
-    updates_counter: {
-      type: Number,
-      required: true,
-      default: 0
-    },
-    last_update: {
-      type: Date
-    },
     date: {
       type: Date,
       default: Date.now(),
@@ -54,12 +42,8 @@ const DeploymentSchema = new mongoose.Schema(
           num: Object,
           sum: Object
         },
-        usage_samples: [
+        usage:
           {
-            date: {
-              type: Date,
-              required: true
-            },
             txt: {
               memory: String,
               cpu: String
@@ -73,7 +57,6 @@ const DeploymentSchema = new mongoose.Schema(
               cpu: Number
             }
           }
-        ]
       }
     ]
   },

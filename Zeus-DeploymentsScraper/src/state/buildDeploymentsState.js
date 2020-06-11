@@ -1,10 +1,11 @@
-const { exec } = require("../helpers/exec");
 const logger = require("../helpers/logger");
-const { saveCurrentUsageObject, saveDeployment } = require("../helpers/saveToMongo");
+const { saveDeployment } = require("../helpers/saveToMongo");
 const { currentUsageModelName } = require("../models/CurrentUsage");
 const CurrentUsageModel = require("mongoose").model(currentUsageModelName);
 const config = require("../config/config");
-const _ = require('lodash');
+const {buildPodsRequestUsageList} = require('./fetch');
+const {populateCurrentUsage} = require('./fetch');
+const {fetchPodsJson} = require('./fetch');
 
 const convertToNumber = (str) => {
   return Number(str.replace(/\D/g,''));
@@ -75,7 +76,6 @@ const CreateInitialContainers = (deployment, newDeploymentObject, memSumMap, cpu
 
 
 const buildDeploymentObject = async (deployment, newDeploymentObject) => {
-  let date;
 
   // init basic variables
   let countPods = 0;
@@ -135,135 +135,23 @@ const buildDeploymentObject = async (deployment, newDeploymentObject) => {
 };
 
 
-const populateCurrentUsage = async podsCurrentUsage => {
-  let count = 0;
-  for (let pod of podsCurrentUsage) {
-    try {
-      count += await saveCurrentUsageObject(pod); // save to mongo
-    } catch (e) {
-      logger.error(e.stack);
-    }
-  }
-  return count;
-};
-
-const parsePodUsage = (PodsCurrentUsage) => {
-  let pod = {};
-  try {
-    pod = _.compact(PodsCurrentUsage.split(/\s+/));
-    if (config.ALL_NAMESPACES) {
-      let namespace = pod.shift();
-      pod.push(namespace);
-    } else if (config.NAMESPACE) {
-      pod.push(config.NAMESPACE);
-    } else {
-      logger.error('FATAL ERROR IN CONFIGURATION. config.NAMESPACE config.ALL_NAMESPACES');
-    }
-  } catch (e) {
-    logger.error(e.stack);
-  }
-
-  return pod;
-};
-
-const buildPodsCurrentUsageList = async () => {
-  let count = 0;
-  const podsCurrentUsage = [];
-  let command;
-
-  if (config.ALL_NAMESPACES) {
-    command = `kubectl top pods -A --containers`;
-  } else if (config.NAMESPACE) {
-    command = `kubectl top pods  -n ${config.NAMESPACE} --containers`;
-  } else {
-    logger.error('FATAL CONFIGURATION ERROR!');
-  }
-
-  try {
-    // make a list of pods current resources usage
-    let PodsCurrentUsageList = await exec(command);
-    let date = Date.now();
-    PodsCurrentUsageList = _.compact(PodsCurrentUsageList.stdout.split("\n"));
-    PodsCurrentUsageList.shift(); // remove title;
-
-    // create pod current resources usage objects and push into the array
-    for (let i = 0; i < PodsCurrentUsageList.length; i++) {
-      let pod = parsePodUsage(PodsCurrentUsageList[i]);
-
-      let newPodObject = {
-        pod_name: pod[0],
-        namespace: pod[4],
-        containers: [],
-        date: date
-      };
-
-      newPodObject.containers.push({
-        container_name: pod[1],
-        cpu: pod[2],
-        memory: pod[3],
-      });
-
-      // push containers to the same pod object
-      while (PodsCurrentUsageList[i+1]) {
-        let nextPod = parsePodUsage(PodsCurrentUsageList[i+1]);
-        if (pod[0] === nextPod[0] && pod[4] === nextPod[4]) {
-          newPodObject.containers.push({
-            container_name: nextPod[1],
-            cpu: nextPod[2],
-            memory: nextPod[3],
-            date: date
-          });
-          i++;
-        } else {
-          break;
-        }
-      }
-      podsCurrentUsage.push(newPodObject);
-    }
-    logger.info(`Got current usage state to mongo collection, count:`, count);
-  } catch (e) {
-    logger.error(e.stack);
-  }
-  return podsCurrentUsage;
-};
-
-const fetchDeploymentsJson = async () => {
-  let command;
-
-  if(config.ALL_NAMESPACES){
-    command = `kubectl get deployments -A -o json`;
-  } else {
-    command = `kubectl get deployments -n ${config.NAMESPACE} -o json`;
-  }
-  let deploymentsJson;
-
-  try {
-    deploymentsJson = await exec(command);
-    deploymentsJson = JSON.parse(deploymentsJson.stdout);
-    logger.info(`Got Deployments Json, length=${deploymentsJson.items.length}`);
-  } catch (err) {
-    logger.error(err.stack);
-  }
-
-  return deploymentsJson;
-};
 
 const buildDeploymentsState = async () => {
   logger.info("Deployment State Build Iteration Starting...");
   let startTime = Date.now();
   let count = 0;
-  let deploymentsJson;
+  let podsJson;
 
   try {
-    deploymentsJson = await fetchDeploymentsJson();
-    const podsCurrentUsage = await buildPodsCurrentUsageList();
+    podsJson = await fetchPodsJson();
+    const podsCurrentUsage = await buildPodsRequestUsageList(podsJson);
     await populateCurrentUsage(podsCurrentUsage);
   } catch (e) {
     logger.error(e.stack);
     return;
   }
 
-  for (const deployment of deploymentsJson.items) {
+  for (const deployment of podsJson.items) {
     try {
       let newDeploymentObject = {
         deployment_name: deployment.metadata.name,
