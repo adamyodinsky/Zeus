@@ -13,18 +13,18 @@ const getDataLength = (props) => {
   if (props.real.length > lengthLimit) {
     dataLength = lengthLimit;
   } else {
-    dataLength = min(props.formal.length, props.real.length);
+    dataLength = props.real.length;
   }
 
   return dataLength;
 };
 
-
-const min = (a, b) => {
-  return a < b ? a : b;
-};
+// const min = (a, b) => {
+//   return a < b ? a : b;
+// };
 
 const createDataSets = (props) => {
+  console.log(props);
   const usageArr = [];
   const timeArr = [];
   const dataLength = getDataLength(props);
@@ -64,7 +64,7 @@ const createDataSets = (props) => {
 const AreaGraphDeployment = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
-  console.log(data);
+  // console.log(data);
 
   return (
       <div className={areaGraph.box}>
