@@ -63,6 +63,7 @@ const parseControllerNameFromPod = (podJson) => {
     controllerName += controllerNameArr[i] + '-';
   }
 
+
   return {
     name: controllerName.substring(0, controllerName.length - 1),
     kind: controllerKind
