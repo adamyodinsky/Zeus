@@ -43,7 +43,7 @@ const controllerSchema = new mongoose.Schema({
   }
 }, {strict: false});
 
-const controllerModelName = config.controllerModelName;
+const controllerModelName = config.CONTROLLER_MODEL_NAME;
 const Controller = mongoose.model(controllerModelName, controllerSchema);
 
 module.exports = { controllerModelName, Controller, controllerSchema };

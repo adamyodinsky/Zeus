@@ -31,7 +31,7 @@ const liveControllerSchema = new mongoose.Schema({
   }
 }, {strict: false});
 
-const controllerModelName = 'current_usage';
-const Controller = mongoose.model(controllerModelName, liveControllerSchema);
+const liveControllerModelName = config.LIVE_CONTROLLER_MODEL_NAME;
+const LiveController = mongoose.model(liveControllerModelName, liveControllerSchema);
 
-module.exports = { controllerModelName, Controller, controllerSchema: liveControllerSchema };
+module.exports = { liveControllerModelName, LiveController, liveControllerSchema };
