@@ -1,4 +1,6 @@
 const logger = require("../helpers/logger");
+const {saveLiveController} = require('../helpers/saveToMongo');
+const {saveController} = require('../helpers/saveToMongo');
 const {fetchPodsUsage} = require('./fetch');
 const {parseControllerNameFromPod} = require('./parse');
 const {fetchPodsJson} = require('./fetch');
@@ -115,25 +117,19 @@ const buildControllersRequestUsageList = async () => {
 const build = async () => {
   logger.info("Deployment State Build Iteration Starting...");
   let startTime = Date.now();
-  let count = 0;
-
   try {
     const controllersSet = await buildControllersRequestUsageList();
-    console.log("controllers set length:", controllersSet.length);
-
+    logger.info("Controllers Set Length:", controllersSet.length);
     // insert set into database
     for (const [key, value] of Object.entries(controllersSet)) {
-      // TODO -save to mongo
-      console.log(`saved ${value.name} to mongoDB`);
+      await saveController(value);
+      await saveLiveController(value);
     }
-
   } catch (e) {
     logger.error(e.stack);
   }
   let interval =  (Date.now() - startTime) / 1000;
-  logger.info(`Deployment State Build Iteration Ended Successfully, Modified: ${count} Docs`);
-  logger.info("Deployment Build Iteration Time:", interval + 's');
-  return count;
+  logger.info("Deployment State Build Iteration Ended Successfully, Build Iteration Time:", interval + 's');
 };
 
 module.exports = { buildControllersState: build };

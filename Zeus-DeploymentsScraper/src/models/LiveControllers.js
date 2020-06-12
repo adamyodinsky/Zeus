@@ -11,6 +11,10 @@ const liveControllerSchema = new mongoose.Schema({
     required: true,
     default: config.CLUSTER
   },
+  updates_counter: {
+    type: Number,
+    default: 0
+  },
   namespace: {
     type: String,
     required: true
