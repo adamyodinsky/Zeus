@@ -38,19 +38,25 @@ const parseControllerName = (podName, rmStrings) => {
 const parseControllerNameFromPod = (podJson) => {
   let controllerName = "";
   let controllerNameArr = podJson.metadata.name.split('-');
-  let rmStrings = 0;
-  let controllerKind = "Pod";
+  let rmStrings, controllerKind;
 
   try {
-    if (podJson.metadata.ownerReferences[0].kind === "ReplicaSet") {
-      rmStrings = 2;
-      controllerKind = "ReplicaSet";
-    } else if (podJson.metadata.ownerReferences[0].kind === "DaemonSet") {
-      controllerKind = "DaemonSet";
-      rmStrings = 1;
+    controllerKind = podJson.metadata.ownerReferences[0].kind;
+    switch (controllerKind) {
+      case 'ReplicaSet':
+        rmStrings = 2;
+        break;
+      case 'DaemonSet':
+      case 'StatefulSet':
+        rmStrings = 1;
+        break;
+      default:
+        rmStrings = 0;
     }
   } catch (e) {
-    logger.info("no owner was found, using pod name as controller name");
+    logger.debug("no owner was found, using pod name as controller name");
+    controllerKind = "Pod";
+    rmStrings = 0;
   }
 
   for (let i=0; i < controllerNameArr.length - rmStrings; i++) {

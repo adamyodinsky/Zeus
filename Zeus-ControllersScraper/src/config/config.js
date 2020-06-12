@@ -2,7 +2,7 @@
 
 module.exports = {
   CONTROLLER_MODEL_NAME: process.env.CONTROLLER_MODEL_NAME || "controller",
-  LIVE_CONTROLLER_MODEL_NAME: process.env.LIVE_CONTROLLER_MODEL_NAME || "live_controller",
+  LIVE_CONTROLLER_MODEL_NAME: process.env.LIVE_CONTROLLER_MODEL_NAME || "live-controller",
   METRIC_INTERVAL: Number(process.env.METRIC_INTERVAL) || 30,
   SAVE_DOC_MIN: Number(process.env.SAVE_DOC_MIN) ||  60,
   NAMESPACE: process.env.NAMESPACE || 'apps',
