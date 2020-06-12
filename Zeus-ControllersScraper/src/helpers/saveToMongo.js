@@ -7,6 +7,8 @@ const logger = require("../helpers/logger");
 
 const saveController = async (newControllerObj) => {
   const containers = [];
+
+  // set containers array for dataset
   for (const [key, value] of Object.entries(newControllerObj.containers)) {
     containers.push(value);
   }
@@ -26,7 +28,6 @@ const saveController = async (newControllerObj) => {
   }
   return count;
 };
-
 
 
 const saveLiveController = async (newControllerObj) => {
