@@ -36,7 +36,7 @@ const ClusterRequestSchema = new mongoose.Schema(
     {strict: false}
 );
 
-const clusterRequestModelName = config.clusterRequestModelName;
+const clusterRequestModelName = config.CLUSTER_REQUEST_MODEL_NAME;
 const ClusterRequest = mongoose.model(clusterRequestModelName, ClusterRequestSchema);
 
 module.exports = {clusterRequestModelName, ClusterRequestSchema, ClusterRequest};

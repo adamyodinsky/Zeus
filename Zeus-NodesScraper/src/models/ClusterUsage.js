@@ -20,7 +20,7 @@ const ClusterUsageSchema = new mongoose.Schema(
     {strict: false},
 );
 
-const clusterUsageModelName = config.clusterUsageModelName;
+const clusterUsageModelName = config.CLUSTER_USAGE_MODEL_NAME;
 const ClusterUsage = mongoose.model(clusterUsageModelName, ClusterUsageSchema);
 
 module.exports = {clusterUsageModelName, ClusterUsageSchema, ClusterUsage};

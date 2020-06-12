@@ -1,4 +1,10 @@
 const logger = require("../helpers/logger");
+const _ = require('lodash');
+const config = require('../config/config');
+
+const convertToNumber = (str) => {
+  return Number(str.replace(/\D/g,''));
+};
 
 const parsePodUsage = (PodsCurrentUsage) => {
   let pod = {};
@@ -15,24 +21,48 @@ const parsePodUsage = (PodsCurrentUsage) => {
   } catch (e) {
     logger.error(e.stack);
   }
-
   return pod;
 };
 
-const parseDeploymentNameFromPod = (pod) => {
-  let deploymentName = "";
-  let deploymentNameArr = pod[0].split('-');
+const parseControllerName = (podName, rmStrings) => {
+  let controllerNameArr = podName.split('-');
+  let controllerName = "";
 
-  for (let i=0; i < deploymentNameArr.length - 2; i++) {
-    deploymentName += deploymentNameArr[i];
+  for (let i=0; i < controllerNameArr.length - rmStrings; i++) {
+    controllerName += controllerNameArr[i] + '-';
   }
 
-  return deploymentName;
+  return controllerName.substring(0, controllerName.length - 1);
 };
 
-const parsePodResourcesRequests = (newPodObject, podsJson) => {
+const parseControllerNameFromPod = (podJson) => {
+  let controllerName = "";
+  let controllerNameArr = podJson.metadata.name.split('-');
+  let rmStrings = 0;
+  let controllerKind = "Pod";
 
+  try {
+    if (podJson.metadata.ownerReferences[0].kind === "ReplicaSet") {
+      rmStrings = 2;
+      controllerKind = "ReplicaSet";
+    } else if (podJson.metadata.ownerReferences[0].kind === "DaemonSet") {
+      controllerKind = "DaemonSet";
+      rmStrings = 1;
+    }
+  } catch (e) {
+    logger.info("no owner was found, using pod name as controller name");
+  }
+
+  for (let i=0; i < controllerNameArr.length - rmStrings; i++) {
+    controllerName += controllerNameArr[i] + '-';
+  }
+
+  return {
+    name: controllerName.substring(0, controllerName.length - 1),
+    kind: controllerKind
+  };
 };
 
 
-module.exports = { parsePodUsage, parseDeploymentNameFromPod };
+
+module.exports = { convertToNumber, parseControllerName, parsePodUsage, parseControllerNameFromPod };

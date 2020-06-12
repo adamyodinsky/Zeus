@@ -8,7 +8,7 @@ const logger = bunyan.createLogger({
   src: true,
   streams: [
     {
-      level: config.logLevel,
+      level: config.LOG_LEVEL,
       stream: process.stdout
     }
   ]
