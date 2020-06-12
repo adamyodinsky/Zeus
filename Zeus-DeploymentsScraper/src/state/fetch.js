@@ -16,7 +16,7 @@ const fetchPodsJson = async () => {
   try {
     podsJson = await exec(command);
     podsJson = JSON.parse(podsJson.stdout);
-    logger.info(`Got Deployments Json, length=${podsJson.items.length}`);
+    logger.info(`Got Pods Json, length=${podsJson.items.length}`);
   } catch (err) {
     logger.error(err.stack);
   }

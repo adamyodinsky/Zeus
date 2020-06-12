@@ -8,17 +8,16 @@ const LiveControllerModel = require("mongoose").model(liveControllerModelName);
 const logger = require("../helpers/logger");
 
 const saveController = async (newControllerObj) => {
-  let count;
+  let count = 0;
   let newControllerDoc;
 
 
   try {
     newControllerDoc = new Controller({...newControllerObj});
     await newControllerDoc.save();
-    count = 1;
     logger.debug('Stored Controller Object in DB', newControllerObj.name);
+    count = 1;
   } catch (err) {
-    count = 0;
     logger.error(err.stack);
   }
   return count;
@@ -27,7 +26,7 @@ const saveController = async (newControllerObj) => {
 
 
 const saveLiveController = async (newControllerObj) => {
-  let count;
+  let count = 0;
   let newControllerDoc;
   let conditions = [ { name: newControllerObj.name }, { namespace: newControllerObj.namespace} ];
 
@@ -48,6 +47,7 @@ const saveLiveController = async (newControllerObj) => {
           {new: true},
       );
     }
+    count = 1;
     logger.debug('Stored Controller Object in DB', newControllerObj.name);
   } catch (err) {
     logger.error(err.stack);

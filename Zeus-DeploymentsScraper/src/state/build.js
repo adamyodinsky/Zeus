@@ -8,7 +8,6 @@ const {convertToNumber} = require(
     '../../../Zeus-NodesScraper/src/helpers/convert');
 const {parseControllerName} = require('./parse');
 const {parsePodUsage} = require('./parse');
-const { saveDeployment } = require("../helpers/saveToMongo");
 
 
 // insert containers to a key-value set in a controller object
@@ -107,7 +106,7 @@ const buildControllersRequestUsageList = async () => {
     // insert containers usages under controller objects
     InsertContainersUsage(controllersSet, PodsCurrentUsageList);
 
-    logger.info("parsed Pod-Manifests:", podsJson.items.length, "Pod Usages:", PodsCurrentUsageList.length);
+    logger.info("Parsed Pod-Manifests:", podsJson.items.length, "Container-Usage:", PodsCurrentUsageList.length);
   } catch (e) {
     logger.error(e.stack);
   }
@@ -115,21 +114,25 @@ const buildControllersRequestUsageList = async () => {
 };
 
 const build = async () => {
-  logger.info("Deployment State Build Iteration Starting...");
+  logger.info("Controllers Build Iteration Starting...");
+  let resourcesCount = 0;
+  let controllerCount = 0;
+  let controllersSetCount = 0;
   let startTime = Date.now();
+
   try {
     const controllersSet = await buildControllersRequestUsageList();
-    logger.info("Controllers Set Length:", controllersSet.length);
-    // insert set into database
     for (const [key, value] of Object.entries(controllersSet)) {
-      await saveController(value);
-      await saveLiveController(value);
+      resourcesCount += await saveController(value);
+      controllerCount += await saveLiveController(value);
+      controllersSetCount++;
     }
   } catch (e) {
     logger.error(e.stack);
   }
   let interval =  (Date.now() - startTime) / 1000;
-  logger.info("Deployment State Build Iteration Ended Successfully, Build Iteration Time:", interval + 's');
+  logger.info(`Set-Count: ${controllersSetCount}, Resources-Count: ${resourcesCount}, Controllers-Count: ${controllerCount}`);
+  logger.info("Controllers Build Ended Successfully, Iteration Time:", interval + 's');
 };
 
 module.exports = { buildControllersState: build };
