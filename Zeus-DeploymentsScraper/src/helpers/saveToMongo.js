@@ -9,6 +9,7 @@ const saveController = async (newControllerObj) => {
   let count;
   let newControllerDoc;
 
+
   try {
     newControllerDoc = new Controller({...newControllerObj});
     await newControllerDoc.save();
@@ -26,9 +27,10 @@ const saveController = async (newControllerObj) => {
 const saveLiveController = async (newControllerObj) => {
   let count;
   let newControllerDoc;
+  let conditions = [ { name: newControllerObj.name }, { namespace: newControllerObj.namespace} ];
 
   try {
-    let exist = await CurrentUsage.findOne({ $and: conditions });
+    let exist = await LiveController.findOne({ $and: conditions });
     if (!exist) {
       count = await newUsageObject.save();
     } else {
