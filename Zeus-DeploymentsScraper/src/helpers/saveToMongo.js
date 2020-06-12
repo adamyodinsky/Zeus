@@ -28,6 +28,12 @@ const saveLiveController = async (newControllerObj) => {
   let newControllerDoc;
 
   try {
+    let exist = await CurrentUsage.findOne({ $and: conditions });
+    if (!exist) {
+      count = await newUsageObject.save();
+    } else {
+      count = await CurrentUsageModel.updateOne(
+
     newControllerDoc = new Controller({...newControllerObj});
     await newControllerDoc.save();
     count = 1;
