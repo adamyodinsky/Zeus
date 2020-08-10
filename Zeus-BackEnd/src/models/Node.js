@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const config = require("../config/config");
 
-const NodeSchema = new mongoose.Schema(
-    {
+const NodeSchema = new mongoose.Schema({
         name: String,
         roles: [String],
         addresses: Array,
