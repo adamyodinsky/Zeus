@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: Controller
 metadata:
   name: demoservice-deployment-{{ .Values.letter}}-{{ .Values.num }}
   labels:

@@ -1,12 +1,12 @@
 import React from 'react';
-import Deployment from './Deployment/Deployment'
+import Controller from './Controller/Controller'
 import axios from 'axios';
 // import * as qs from 'querystring'
 import Pagination from "../Pagination/Pagination";
-import deployment from './Deployments.module.scss'
+import deployment from './Controllers.module.scss'
 
 
-class Deployments extends React.Component {
+class Controllers extends React.Component {
 
     constructor(props) {
         super(props);
@@ -113,7 +113,7 @@ class Deployments extends React.Component {
         if (this.state.data) {
             renderedDeployments = this.state.data.map((deployment, i) => {
                 return (
-                    <Deployment key={i} state={deployment}/>
+                    <Controller key={i} state={deployment}/>
                 )
             });
         }
@@ -133,4 +133,4 @@ class Deployments extends React.Component {
     }
 }
 
-export default Deployments;
+export default Controllers;

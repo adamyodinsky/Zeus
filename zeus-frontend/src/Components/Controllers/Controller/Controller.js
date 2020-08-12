@@ -1,8 +1,8 @@
 import React from 'react';
 import Container from '../Container/Container';
-import deployment from './Deployment.module.scss'
+import deployment from './Controller.module.scss'
 
-const Deployment = (props) => {
+const Controller = (props) => {
   const renderedContainers = props.state.containers.map((container, i) => {
     return (
         <Container key={i} container={container}/>
@@ -24,4 +24,4 @@ const Deployment = (props) => {
   );
 };
 
-export default Deployment;
+export default Controller;
