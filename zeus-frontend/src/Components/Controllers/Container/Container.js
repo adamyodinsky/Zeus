@@ -3,6 +3,7 @@ import container from './Container.module.scss';
 import AreaGraphDeployment from '../AreaGraph/AreaGraphDeployment';
 
 const Container = props => {
+  console.log(props);
   return (
       <div className={container.box}>
         <div className={container.requests_txt_block}>

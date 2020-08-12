@@ -24,7 +24,7 @@ const getDataLength = (props) => {
 // };
 
 const createDataSets = (props) => {
-  console.log(props);
+  // console.log(props);
   const usageArr = [];
   const timeArr = [];
   const dataLength = getDataLength(props);

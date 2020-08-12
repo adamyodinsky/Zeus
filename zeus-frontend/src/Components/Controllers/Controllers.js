@@ -21,10 +21,11 @@ class Controllers extends React.Component {
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
     }
 
-    getDeploymentsState = async () => {
-        const url = `http://localhost:3001/deployments?page=${this.state.page}&regex=${this.state.search}`;
+    getControllersState = async () => {
+        const url = `http://localhost:3001/controllers?page=${this.state.page}&regex=${this.state.search}`;
         try {
             const response = await axios.get(`${url}`);
+            // console.log(response.data);
             return response.data;
         } catch (e) {
             console.log('ERROR: could not get deployments state object');
@@ -35,17 +36,15 @@ class Controllers extends React.Component {
     // TODO query params (url) integration
     //   const query_params = qs.parse(`${this.props.location.search.slice(1)}`);
 
-
     handleSearchSubmit(data) {
         console.log('in handle submit func');
-        // console.log(data);
 
         (async () => {
             this.setState({
                 search: data.search
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -64,7 +63,7 @@ class Controllers extends React.Component {
                 page: this.state.page + 1
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -85,7 +84,7 @@ class Controllers extends React.Component {
                 page: this.state.page - 1
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -97,7 +96,7 @@ class Controllers extends React.Component {
     };
 
     componentDidMount() {
-        this.getDeploymentsState().then((data) => {
+        this.getControllersState().then((data) => {
             if (data) {
                 this.setState({
                     data: data.data,
@@ -109,11 +108,11 @@ class Controllers extends React.Component {
 
 
     render() {
-        let renderedDeployments = [];
+        let renderedControllers = [];
         if (this.state.data) {
-            renderedDeployments = this.state.data.map((deployment, i) => {
+            renderedControllers = this.state.data.map((controller, i) => {
                 return (
-                    <Controller key={i} state={deployment}/>
+                    <Controller key={i} state={controller}/>
                 )
             });
         }
@@ -127,7 +126,7 @@ class Controllers extends React.Component {
                         pageDown={this.pageDown}
                         onSubmit={this.handleSearchSubmit}/>
                 </section>
-                {renderedDeployments}
+                {renderedControllers}
             </div>
         );
     }

@@ -3,6 +3,7 @@ import Container from '../Container/Container';
 import deployment from './Controller.module.scss'
 
 const Controller = (props) => {
+  // console.log(props);
   const renderedContainers = props.state.containers.map((container, i) => {
     return (
         <Container key={i} container={container}/>
