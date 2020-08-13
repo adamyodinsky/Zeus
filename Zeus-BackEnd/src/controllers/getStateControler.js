@@ -7,6 +7,11 @@ const ControllerModel = require('mongoose').model(
     config.controllerModelName,
     controllerSchema,
 );
+const {liveControllerSchema} = require('../models/LiveControllers');
+const LiveControllerModel = require('mongoose').model(
+    config.liveControllerModelName,
+    liveControllerSchema,
+);
 const {NodeSchema} = require('../models/Node');
 const NodesModel = require('mongoose').model(
     config.nodeModelName,
@@ -55,7 +60,7 @@ const getControllers = async (req, res) => {
       'containers.name'];
     const conditions = createConditions(regex, fields, regexOptions);
 
-    const response = await ControllerModel.find(conditions).
+    const response = await LiveControllerModel.find(conditions).
         limit(limit).
         skip(page * limit).
         sort(sort);
