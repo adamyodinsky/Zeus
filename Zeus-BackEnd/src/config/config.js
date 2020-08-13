@@ -11,7 +11,7 @@ module.exports = {
   DEFAULT_NODES_LIMIT: Number(process.env.DEFAULT_NODES_LIMIT) || 5,
   DEFAULT_NODES_USAGE_LIMIT: Number(process.env.DEFAULT_NODES_USAGE_LIMIT) || 200,
   DEFAULT_CLUSTER_USAGE_LIMIT: Number(process.env.DEFAULT_CLUSTER_USAGE_LIMIT) || 200,
-  liveControllerModelName: process.env.LIVE_CONTROLLER_MODEL_NAME || 'live_controller',
+  liveControllerModelName: process.env.LIVE_CONTROLLER_MODEL_NAME || 'live-controller',
   controllerModelName: process.env.CONTROLLER_MODEL_NAME || 'controller',
   nodeModelName: process.env.NODES_MODEL_NAME || 'node',
   nodeUsageModelName: process.env.NODES_USAGE_MODEL_NAME || 'node-usage',

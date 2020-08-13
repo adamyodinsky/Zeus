@@ -42,7 +42,7 @@ const saveLiveController = async (newControllerObj) => {
         name: newControllerObj.name,
         namespace: newControllerObj.namespace,
         date: newControllerObj.date,
-        replaces: newControllerObj.replicas,
+        replicas: newControllerObj.replicas,
         kind: newControllerObj.kind
       });
       await newLiveControllerDoc.save();

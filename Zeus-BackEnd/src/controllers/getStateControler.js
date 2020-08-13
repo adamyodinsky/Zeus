@@ -57,7 +57,7 @@ const getControllers = async (req, res) => {
       'cluster',
       'namespace',
       'name',
-      'containers.name'];
+      'kind'];
     const conditions = createConditions(regex, fields, regexOptions);
 
     const response = await LiveControllerModel.find(conditions).
@@ -148,7 +148,6 @@ const getNodesUsage = async (req, res) => {
     const sort = Number(req.query.sort) || 1;
     const cluster = req.query.cluster;
     const name = req.query.name;
-
 
     // set conditions
     const conditions = [{name: name}, {cluster: cluster}];

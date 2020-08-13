@@ -10,7 +10,7 @@ const routes = () => {
   // API Routes
   apiRouter.get('/', health);
   apiRouter.get('/controllers', getControllers);
-  apiRouter.get('/controllersUsage', getSpecificController);
+  apiRouter.get('/controllerUsage', getSpecificController);
   apiRouter.get('/nodes', getNodes);
   apiRouter.get('/nodesUsage', getNodesUsage);
   apiRouter.get('/nodesRequest', getNodesRequest);
