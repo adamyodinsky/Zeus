@@ -20,7 +20,7 @@ class App extends React.Component {
             <Switch>
               <Route exact path="/" name="PORUS"  component={Cluster}/>
               <Route exact path="/nodes" name="PORUS" component={Nodes}/>
-              <Route exect path="/deployments" name="PORUS" component={Controllers} />
+              <Route exect path="/controllers" name="PORUS" component={Controllers} />
               <Route name="PORUS">
                 <NoMatch/>
               </Route>

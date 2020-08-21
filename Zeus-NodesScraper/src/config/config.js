@@ -9,7 +9,7 @@ module.exports = {
   DEBUG: process.env.DEBUG === "true",
   CLUSTER: process.env.CLUSTER || 'eks-dev',
   MONGO_URI: process.env.MONGO_URI || "mongodb://root:1234@localhost:27017/admin",
-  DEPLOYMENT_MODEL_NAME: process.env.DEPLOYMENT_MODEL || 'deployment',
+  DEPLOYMENT_MODEL_NAME: process.env.DEPLOYMENT_MODEL || 'controller',
   NODES_MODEL_NAME: process.env.NODES_MODEL_NAME || 'node',
   NODES_USAGE_MODEL_NAME: process.env.NODES_USAGE_MODEL_NAME || 'node-usage',
   NODES_REQUEST_MODEL_NAME: process.env.NODES_REQUEST_MODEL_NAME || 'node-request',

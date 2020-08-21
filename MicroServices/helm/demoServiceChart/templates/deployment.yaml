@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Controller
 metadata:
-  name: demoservice-deployment-{{ .Values.letter}}-{{ .Values.num }}
+  name: demoservice-controller-{{ .Values.letter}}-{{ .Values.num }}
   labels:
     app: demoservice-{{ .Values.letter}}-{{ .Values.num }}
 spec:

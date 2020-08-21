@@ -4,7 +4,6 @@ import AreaGraphDeployment from '../AreaGraph/AreaGraphDeployment';
 
 const Container = props => {
   // TODO - from here start to parse the new data structure of the container, then continue from  there
-  console.log(props);
   return (
       <div className={container.box}>
         <div className={container.requests_txt_block}>

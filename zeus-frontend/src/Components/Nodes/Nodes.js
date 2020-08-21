@@ -97,7 +97,6 @@ class Nodes extends React.Component  {
     }
 
     render () {
-
         let renderedNodes = [];
         if (this.state.data) {
             renderedNodes = this.state.data.map((node, i) => {

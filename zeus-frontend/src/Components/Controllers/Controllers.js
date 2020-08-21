@@ -13,7 +13,7 @@ class Controllers extends React.Component {
 
         this.state = {
             page: 0,
-            data: null,
+            controllers: null,
             length: 0,
             search: ""
         };
@@ -79,6 +79,7 @@ class Controllers extends React.Component {
         if (this.state.page - 1 < 0) {
             return;
         }
+
         (async () => {
             this.setState({
                 page: this.state.page - 1
@@ -87,7 +88,7 @@ class Controllers extends React.Component {
             this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
-                        data: data.data,
+                        controllers: data.data,
                         length: data.length
                     })
                 }
@@ -95,26 +96,28 @@ class Controllers extends React.Component {
         });
     };
 
+
     componentDidMount() {
-        this.getControllersState().then((data) => {
-            if (data) {
-                this.setState({
-                    data: data.data,
-                    length: data.length
-                })
-            }
-        });
+        this.renderControllers();
     }
 
+    renderControllers = async () => {
+        let payload = await this.getControllersState();
+        let length = payload.length;
+        let data = payload.data;
+
+        if(data){
+            this.setState({
+                controllers: data,
+                length: length
+            })
+        }
+    }
 
     render() {
         let renderedControllers = [];
-        if (this.state.data) {
-            renderedControllers = this.state.data.map((controller, i) => {
-                return (
-                    <Controller key={i} state={controller}/>
-                )
-            });
+        if (this.state.controllers) {
+            renderedControllers = this.state.controllers.map((controller, i) => <Controller key={i} state={controller}/>);
         }
 
         return (
