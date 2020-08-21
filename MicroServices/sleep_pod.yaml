@@ -34,7 +34,7 @@ spec:
     app: sleep
 ---
 apiVersion: apps/v1
-kind: Deployment
+kind: Controller
 metadata:
   name: sleep
 spec:

@@ -1,19 +1,19 @@
 import React from 'react';
-import Deployment from './Deployment/Deployment'
+import Controller from './Controller/Controller'
 import axios from 'axios';
 // import * as qs from 'querystring'
 import Pagination from "../Pagination/Pagination";
-import deployment from './Deployments.module.scss'
+import deployment from './Controllers.module.scss'
 
 
-class Deployments extends React.Component {
+class Controllers extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
             page: 0,
-            data: null,
+            controllers: null,
             length: 0,
             search: ""
         };
@@ -21,10 +21,11 @@ class Deployments extends React.Component {
         this.handleSearchSubmit = this.handleSearchSubmit.bind(this);
     }
 
-    getDeploymentsState = async () => {
-        const url = `http://localhost:3001/deployments?page=${this.state.page}&regex=${this.state.search}`;
+    getControllersState = async () => {
+        const url = `http://localhost:3001/controllers?page=${this.state.page}&regex=${this.state.search}`;
         try {
             const response = await axios.get(`${url}`);
+            // console.log(response.data);
             return response.data;
         } catch (e) {
             console.log('ERROR: could not get deployments state object');
@@ -35,17 +36,15 @@ class Deployments extends React.Component {
     // TODO query params (url) integration
     //   const query_params = qs.parse(`${this.props.location.search.slice(1)}`);
 
-
     handleSearchSubmit(data) {
         console.log('in handle submit func');
-        // console.log(data);
 
         (async () => {
             this.setState({
                 search: data.search
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -64,7 +63,7 @@ class Deployments extends React.Component {
                 page: this.state.page + 1
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
                         data: data.data,
@@ -80,15 +79,16 @@ class Deployments extends React.Component {
         if (this.state.page - 1 < 0) {
             return;
         }
+
         (async () => {
             this.setState({
                 page: this.state.page - 1
             });
         })().then(() => {
-            this.getDeploymentsState().then((data) => {
+            this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
-                        data: data.data,
+                        controllers: data.data,
                         length: data.length
                     })
                 }
@@ -96,26 +96,28 @@ class Deployments extends React.Component {
         });
     };
 
+
     componentDidMount() {
-        this.getDeploymentsState().then((data) => {
-            if (data) {
-                this.setState({
-                    data: data.data,
-                    length: data.length
-                })
-            }
-        });
+        this.renderControllers();
     }
 
+    renderControllers = async () => {
+        let payload = await this.getControllersState();
+        let length = payload.length;
+        let data = payload.data;
+
+        if(data){
+            this.setState({
+                controllers: data,
+                length: length
+            })
+        }
+    }
 
     render() {
-        let renderedDeployments = [];
-        if (this.state.data) {
-            renderedDeployments = this.state.data.map((deployment, i) => {
-                return (
-                    <Deployment key={i} state={deployment}/>
-                )
-            });
+        let renderedControllers = [];
+        if (this.state.controllers) {
+            renderedControllers = this.state.controllers.map((controller, i) => <Controller key={i} state={controller}/>);
         }
 
         return (
@@ -127,10 +129,10 @@ class Deployments extends React.Component {
                         pageDown={this.pageDown}
                         onSubmit={this.handleSearchSubmit}/>
                 </section>
-                {renderedDeployments}
+                {renderedControllers}
             </div>
         );
     }
 }
 
-export default Deployments;
+export default Controllers;

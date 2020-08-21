@@ -24,7 +24,7 @@ const NodeUsageSchema = new mongoose.Schema(
     {strict: false},
 );
 
-const nodeUsageModelName = config.nodeUsageModelName;
+const nodeUsageModelName = config.NODES_USAGE_MODEL_NAME;
 const NodeUsage = mongoose.model(nodeUsageModelName, NodeUsageSchema);
 
 module.exports = {nodeUsageModelName, NodeUsageSchema, NodeUsage};

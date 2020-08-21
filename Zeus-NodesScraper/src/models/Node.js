@@ -20,7 +20,7 @@ const ClusterSchema = new mongoose.Schema(
     {strict: false}
 );
 
-const nodeModelName = config.nodeModelName;
+const nodeModelName = config.NODES_MODEL_NAME;
 const Node = mongoose.model(nodeModelName, ClusterSchema);
 
 module.exports = {nodeModelName, NodeSchema: ClusterSchema, Node};

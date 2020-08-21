@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import Deployments from './Components/Deployments/Deployments'
+import Controllers from './Components/Controllers/Controllers'
 import Header from './Components/Header/Header';
 import NoMatch from './Components/noMatch/NoMatch';
 import Nodes from "./Components/Nodes/Nodes";
@@ -20,7 +20,7 @@ class App extends React.Component {
             <Switch>
               <Route exact path="/" name="PORUS"  component={Cluster}/>
               <Route exact path="/nodes" name="PORUS" component={Nodes}/>
-              <Route exect path="/deployments" name="PORUS" component={Deployments} />
+              <Route exect path="/controllers" name="PORUS" component={Controllers} />
               <Route name="PORUS">
                 <NoMatch/>
               </Route>

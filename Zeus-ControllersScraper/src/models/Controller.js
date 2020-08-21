@@ -1,35 +1,35 @@
 const mongoose = require('mongoose');
 const config = require('../config/config');
 
-const CurrentDeploymentsUsageSchema = new mongoose.Schema({
+const controllerSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
   cluster: {
     type: String,
     required: true,
     default: config.CLUSTER
   },
+  replicas: {
+    type: Number,
+    required: true
+  },
   namespace: {
     type: String,
     required: true
   },
-  pod_name: {
-    type: String,
+  pods: {
+    type: Array,
     required: true
   },
   containers: {
     type: [Object],
     required: true
   },
-  updates_counter: {
-    type: Number,
-    required: true,
-    default: 0
-  },
   date: {
     type: Date,
     required: true
-  },
-  last_update: {
-    type: Date
   },
   created: {
     type: Date,
@@ -39,11 +39,11 @@ const CurrentDeploymentsUsageSchema = new mongoose.Schema({
   expirationDate: {
     type: Date,
     expires: 0,
-    default: (Date.now() + 1000*60*2),
+    default: (Date.now() + 1000 * 60 * config.SAVE_DOC_MIN),
   }
 }, {strict: false});
 
-const currentUsageModelName = 'current_usage';
-const CurrentUsage = mongoose.model(currentUsageModelName, CurrentDeploymentsUsageSchema);
+const controllerModelName = config.CONTROLLER_MODEL_NAME;
+const Controller = mongoose.model(controllerModelName, controllerSchema);
 
-module.exports = { currentUsageModelName, CurrentUsage, CurrentUsageSchema: CurrentDeploymentsUsageSchema };
+module.exports = { controllerModelName, Controller, controllerSchema };

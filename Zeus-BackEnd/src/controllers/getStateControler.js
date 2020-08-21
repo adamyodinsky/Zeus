@@ -2,10 +2,15 @@ const config = require('../config/config');
 const logger = require('../helpers/logger');
 const {createConditions} = require('../helpers/createCondition');
 //MongoDB
-const {DeploymentSchema} = require('../models/Deployment');
-const DeploymentModel = require('mongoose').model(
-    config.deploymentModelName,
-    DeploymentSchema,
+const {controllerSchema} = require('../models/Controller');
+const ControllerModel = require('mongoose').model(
+    config.controllerModelName,
+    controllerSchema,
+);
+const {liveControllerSchema} = require('../models/LiveControllers');
+const LiveControllerModel = require('mongoose').model(
+    config.liveControllerModelName,
+    liveControllerSchema,
 );
 const {NodeSchema} = require('../models/Node');
 const NodesModel = require('mongoose').model(
@@ -36,9 +41,9 @@ const ClusterUsageModel = require('mongoose').model(
     ClusterUsageSchema,
 );
 
-const getDeploymentsState = async (req, res) => {
+const getControllers = async (req, res) => {
   try {
-    const limit = req.query.limit || config.DEFAULT_DEPLOYMENTS_LIMIT;
+    const limit = req.query.limit || config.DEFAULT_CONTROLLERS_LIMIT;
     const page = req.query.page || 0;
     const sort = req.query.sort || '';
     const regexOptions = req.query.regexOpt || 'i';
@@ -51,11 +56,11 @@ const getDeploymentsState = async (req, res) => {
     const fields = [
       'cluster',
       'namespace',
-      'deployment_name',
-      'containers.container_name'];
+      'name',
+      'kind'];
     const conditions = createConditions(regex, fields, regexOptions);
 
-    const response = await DeploymentModel.find(conditions).
+    const response = await LiveControllerModel.find(conditions).
         limit(limit).
         skip(page * limit).
         sort(sort);
@@ -71,6 +76,37 @@ const getDeploymentsState = async (req, res) => {
     logger.error(e.stack);
   }
 };
+
+const getSpecificController = async (req, res) => {
+  try {
+    const limit = Number(req.query.limit || config.DEFAULT_SPECIFIC_CONTROLLER_LIMIT);
+    const page = req.query.page || 0;
+    const sort = Number(req.query.sort) || 1;
+    const cluster = req.query.cluster;
+    const name = req.query.name;
+    const namespace = req.query.namespace;
+    const kind = req.query.kind;
+
+    // set conditions
+    const conditions = [{name: name}, {cluster: cluster}, {kind: kind}, {namespace: namespace}];
+
+    const response = await ControllerModel.find({$and: conditions}).
+        limit(limit).
+        skip(page * limit).
+        sort({date: sort});
+
+    res.status(200).json({
+      length: response.length,
+      data: response,
+    });
+
+    logger.info('get specific controller - success');
+  } catch (e) {
+    res.status(500).json('Internal Server Error');
+    logger.error(e.stack);
+  }
+};
+
 
 const getNodes = async (req, res) => {
   try {
@@ -112,7 +148,6 @@ const getNodesUsage = async (req, res) => {
     const sort = Number(req.query.sort) || 1;
     const cluster = req.query.cluster;
     const name = req.query.name;
-
 
     // set conditions
     const conditions = [{name: name}, {cluster: cluster}];
@@ -212,4 +247,4 @@ const getClusterRequest = async (req, res) => {
   }
 };
 
-module.exports = {getDeploymentsState, getNodes, getNodesUsage, getNodesRequest, getClusterRequest, getClusterUsage};
+module.exports = {getControllers, getSpecificController, getNodes, getNodesUsage, getNodesRequest, getClusterRequest, getClusterUsage};

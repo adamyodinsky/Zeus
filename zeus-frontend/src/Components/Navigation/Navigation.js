@@ -9,7 +9,7 @@ class Navigation extends React.Component {
           <ul>
             <li><NavLink exact to="/">Cluster</NavLink></li>
             <li><NavLink to="/nodes">Nodes</NavLink></li>
-            <li><NavLink to="/deployments">Deployments</NavLink></li>
+            <li><NavLink to="/controllers">Controllers</NavLink></li>
           </ul>
         </nav>
     )

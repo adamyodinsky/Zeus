@@ -36,7 +36,7 @@ const NodeRequestSchema = new mongoose.Schema(
     {strict: false}
 );
 
-const nodeRequestModelName = config.nodeRequestModelName;
+const nodeRequestModelName = config.NODES_REQUEST_MODEL_NAME;
 const NodeRequest = mongoose.model(nodeRequestModelName, NodeRequestSchema);
 
 module.exports = {nodeRequestModelName, NodeRequestSchema, NodeRequest};

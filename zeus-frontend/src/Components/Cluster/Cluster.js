@@ -16,9 +16,7 @@ class Cluster extends React.Component {
       if (data) {
         this.setState({
           data: data,
-        }, () => {
-          // console.log(this.state);
-        });
+        }, () => {});
       }
     });
   }
@@ -70,30 +68,36 @@ class Cluster extends React.Component {
   };
 
   createClusterLineChart = () => {
-    return  (
-        <div className={clusterStyle.box + ' ' +  clusterStyle.centerText}>
-          <div className={clusterStyle.title_node}>{this.state.data.formal[0].cluster}</div>
-          <section className={clusterStyle.box_graph}>
-            <ClusterLineChart
-                formal={this.state.data.formal}
-                real={this.state.data.usage}
-                name={this.state.data.formal[0].cluster}
-                dataType={'cpu'}
-                stepSizeY={36000}
-                stepSizeX={5}
-            />
-            <div className={clusterStyle.separator}/>
-            <ClusterLineChart
-                formal={this.state.data.formal}
-                real={this.state.data.usage}
-                name={this.state.data.formal[0].cluster}
-                dataType={'memory'}
-                stepSizeY={160000}
-                stepSizeX={5}
-            />
-          </section>
-        </div>
-    );
+    if(this.state.data.formal[0].cluster){
+      return  (
+          <div className={clusterStyle.box + ' ' +  clusterStyle.centerText}>
+            <div className={clusterStyle.title_node}>{this.state.data.formal[0].cluster}</div>
+            <section className={clusterStyle.box_graph}>
+              <ClusterLineChart
+                  formal={this.state.data.formal}
+                  real={this.state.data.usage}
+                  name={this.state.data.formal[0].cluster}
+                  dataType={'cpu'}
+                  stepSizeY={36000}
+                  stepSizeX={5}
+              />
+              <div className={clusterStyle.separator}/>
+              <ClusterLineChart
+                  formal={this.state.data.formal}
+                  real={this.state.data.usage}
+                  name={this.state.data.formal[0].cluster}
+                  dataType={'memory'}
+                  stepSizeY={160000}
+                  stepSizeX={5}
+              />
+            </section>
+          </div>
+      );
+    } else {
+      return (
+          <div></div>
+      )
+    }
   };
 
   getClusterData = async () => {

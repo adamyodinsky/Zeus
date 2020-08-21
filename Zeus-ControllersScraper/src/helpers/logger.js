@@ -4,11 +4,11 @@ const bunyan = require('bunyan');
 const config = require('../config/config');
 
 const logger = bunyan.createLogger({
-  name: `Porus-Deployments-Scraper-${config.CLUSTER}`,
+  name: `Porus-Controllers-Scraper-${config.CLUSTER}`,
   src: true,
   streams: [
     {
-      level: config.logLevel,
+      level: config.LOG_LEVEL,
       stream: process.stdout
     }
   ]
