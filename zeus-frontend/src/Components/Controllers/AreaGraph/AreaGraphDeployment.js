@@ -2,53 +2,44 @@ import React from 'react';
 import LineChart from '../../LineChart/LineChart';
 import areaGraph from './AreaGraphDeployment.module.scss';
 
-const lengthLimit = 200; // TODO make it an external config
+const convertToNumber = (str) => {
+  return Number(str.replace(/\D/g, ""));
+};
 
 const getTitle = (props) => {
   return props.dataType === 'cpu' ? 'CPU' : 'Memory';
 };
 
-const getDataLength = (props) => {
-  let dataLength;
-  if (props.real.length > lengthLimit) {
-    dataLength = lengthLimit;
-  } else {
-    dataLength = props.real.length;
-  }
-
-  return dataLength;
-};
-
-// const min = (a, b) => {
-//   return a < b ? a : b;
-// };
-
 const createDataSets = (props) => {
-  // console.log(props);
   const usageArr = [];
+  const requestArr = [];
   const timeArr = [];
-  const dataLength = getDataLength(props);
+  let request = 1 // TODO delete this
 
-  let request = props.formal.sum.requests[props.dataType];
-
-  for (let i = 0; i < dataLength; i++) {
-    const date = new Date(props.real[i].date);
-    const usage = props.real[i].sum[props.dataType];
+  for (let i = 0; i < props.samples.length; i++) {
+    const date = new Date(props.samples[i].date);
+    const usage = props.samples[i].real.sum[props.dataType];
+    const request = convertToNumber(props.samples[i].formal.requests[props.dataType]) * props.samples[i].replicas;
 
     usageArr.unshift({
       x: date,
       y: usage,
     });
 
+    requestArr.unshift({
+      x: date,
+      y: request,
+    });
+
     timeArr.unshift(date);
   }
 
-
+  console.log(usageArr);
   return {
     datasets: [
       {
         label: 'Request',
-        data: [{x: timeArr[0], y: request}, {x: timeArr[timeArr.length - 1], y: request}],
+        data: requestArr,
         color: '#66b3ff', // blue
       },
       {
@@ -64,7 +55,6 @@ const createDataSets = (props) => {
 const AreaGraphDeployment = (props) => {
   let data = createDataSets(props);
   let title = getTitle(props);
-  // console.log(data);
 
   return (
       <div className={areaGraph.box}>
