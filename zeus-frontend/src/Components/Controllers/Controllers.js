@@ -25,7 +25,6 @@ class Controllers extends React.Component {
         const url = `http://localhost:3001/controllers?page=${this.state.page}&regex=${this.state.search}`;
         try {
             const response = await axios.get(`${url}`);
-            // console.log(response.data);
             return response.data;
         } catch (e) {
             console.log('ERROR: could not get deployments state object');
@@ -47,7 +46,7 @@ class Controllers extends React.Component {
             this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
-                        data: data.data,
+                        controllers: data.data,
                         length: data.length
                     })
                 }
@@ -66,7 +65,7 @@ class Controllers extends React.Component {
             this.getControllersState().then((data) => {
                 if (data) {
                     this.setState({
-                        data: data.data,
+                        controllers: data.data,
                         length: data.length
                     })
                 }
@@ -101,23 +100,21 @@ class Controllers extends React.Component {
         this.renderControllers();
     }
 
-    renderControllers = async () => {
-        let payload = await this.getControllersState();
-        let length = payload.length;
-        let data = payload.data;
-
-        if(data){
-            this.setState({
-                controllers: data,
-                length: length
-            })
-        }
+    renderControllers = () => {
+        this.getControllersState().then((payload) => {
+            if(payload){
+                this.setState({
+                    controllers: payload.data,
+                    length: payload.length
+                })
+            }
+        });
     }
 
     render() {
         let renderedControllers = [];
         if (this.state.controllers) {
-            renderedControllers = this.state.controllers.map((controller, i) => <Controller key={i} state={controller}/>);
+            renderedControllers = this.state.controllers.map((controller, i) => <Controller key={i} controller={controller}/>);
         }
 
         return (

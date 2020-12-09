@@ -1,9 +1,8 @@
 #!/bin/bash -e
-#set -x
-
-mem="${3}"
-cpu="${4}"
-replicas="${5}"
+set -x
+mem=${3:-64}
+cpu=${4:-20}
+replicas="${5:-1}
 
 helm_template() {
   local letter="${1}"

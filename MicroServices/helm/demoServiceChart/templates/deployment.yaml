@@ -1,5 +1,5 @@
 apiVersion: apps/v1
-kind: Controller
+kind: Deployment
 metadata:
   name: demoservice-controller-{{ .Values.letter}}-{{ .Values.num }}
   labels:
@@ -16,6 +16,8 @@ spec:
     spec:
       containers:
         - name: demoservice
+          imagePullSecrets:
+            - name: regcred
           image: adamyo/public:demoService-v1.0.3
           imagePullPolicy: Always
           resources:
