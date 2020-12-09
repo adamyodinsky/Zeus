@@ -3,15 +3,18 @@ import container from './Container.module.scss';
 import AreaGraphDeployment from '../AreaGraph/AreaGraphDeployment';
 
 const Container = props => {
-  const samples = props.data.map((element) => {
-    return {
-      name: element.containers[props.index].name,
-      real: element.containers[props.index].usage,
-      formal: element.containers[props.index].resources,
-      replicas: element.replicas,
-      date: element.date
-    }
-  });
+
+  // console.log(props.data)
+  // const samples = props.data.map((element) => {
+  //   return {
+  //     name: element.containers[props.index].name,
+  //     real: element.containers[props.index].usage,
+  //     formal: element.containers[props.index].resources,
+  //     replicas: element.replicas,
+  //     date: element.date
+  //   }
+  // });
+
 
   return (
       <div className={container.box}>
@@ -22,14 +25,14 @@ const Container = props => {
         </div>
         <section className={container.box_graph}>
         <AreaGraphDeployment
-              samples={samples}
+              samples={props.data}
               dataType={'cpu'}
               stepSizeY={200}
               stepSizeX={10}
           />
           <div className={container.separator}/>
           <AreaGraphDeployment
-              samples={samples}
+              samples={props.data}
               dataType={'memory'}
               stepSizeY={200}
               stepSizeX={10}

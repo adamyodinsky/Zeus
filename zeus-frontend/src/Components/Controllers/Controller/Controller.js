@@ -13,7 +13,7 @@ class Controller extends React.Component {
     this.getControllerState(this.props.controller).then((data) => {
       if (data) {
         this.setState({
-          data: data.data
+          data: data
         }, () => {
         });
       }
@@ -24,7 +24,8 @@ class Controller extends React.Component {
       const url = `http://localhost:3001/controllerUsage?name=${controller.name}&namespace=${controller.namespace}&kind=${controller.kind}&cluster=${controller.cluster}`;
     try {
       const response = await axios.get(`${url}`);
-      return response.data;
+      // console.log(response.data.data)
+      return response.data.data;
     } catch (e) {
       console.log('ERROR: could not get deployments state object');
       console.log(e.stack)
@@ -35,7 +36,6 @@ class Controller extends React.Component {
     let renderedContainers = [];
 
     if (this.state.data) {
-      // console.log(this.state.data);
       renderedContainers = this.state.data[0].containers.map((container, i) => {
         return (
             <Container key={i} data={this.state.data} index={i}/>

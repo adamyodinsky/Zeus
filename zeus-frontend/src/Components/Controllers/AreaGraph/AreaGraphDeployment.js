@@ -14,12 +14,15 @@ const createDataSets = (props) => {
   const usageArr = [];
   const requestArr = [];
   const timeArr = [];
-  let request = 1 // TODO delete this
+  let request
 
   for (let i = 0; i < props.samples.length; i++) {
     const date = new Date(props.samples[i].date);
-    const usage = props.samples[i].real.sum[props.dataType];
-    const request = convertToNumber(props.samples[i].formal.requests[props.dataType]) * props.samples[i].replicas;
+    const usage = props.samples[i].containers[0].usage.sum[props.dataType];
+
+    if (props.samples[i].containers[0].resources) {
+       request = convertToNumber(props.samples[i].containers[0].resources.requests[props.dataType]) * props.samples[i].replicas;
+    }
 
     usageArr.unshift({
       x: date,
@@ -34,7 +37,6 @@ const createDataSets = (props) => {
     timeArr.unshift(date);
   }
 
-  console.log(usageArr);
   return {
     datasets: [
       {
@@ -53,6 +55,7 @@ const createDataSets = (props) => {
 };
 
 const AreaGraphDeployment = (props) => {
+
   let data = createDataSets(props);
   let title = getTitle(props);
 
