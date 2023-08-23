@@ -1,12 +1,14 @@
-const logger = require('../helpers/logger');
-const {parseNodes} = require('./parseNode');
-const {parseNodesUsage} = require('./parseUsage');
-const {fetchNodesArray, fetchNodesUsage} = require('./fetch');
-const {saveClusterResources, saveClusterUsage} = require('../helpers/saveToMongo');
-
+const logger = require("../helpers/logger");
+const { parseNodes } = require("./parseNode");
+const { parseNodesUsage } = require("./parseUsage");
+const { fetchNodesArray, fetchNodesUsage } = require("./fetch");
+const {
+  saveClusterResources,
+  saveClusterUsage,
+} = require("../helpers/saveToMongo");
 
 const mainNodesStateBuilder = async () => {
-  logger.info('Nodes State Build Iteration Starting...');
+  logger.info("Nodes State Build Iteration Starting...");
   let startTime = Date.now();
 
   const nodesArray = await fetchNodesArray();
@@ -17,9 +19,11 @@ const mainNodesStateBuilder = async () => {
   saveClusterUsage(clusterUsage);
 
   let interval = (Date.now() - startTime) / 1000;
-  logger.info('Nodes State Build Iteration Ended Successfully, Nodes modified:',
-      nodesArray.arr.length);
-  logger.info('Nodes Build Iteration Time:', interval + 's');
+  logger.info(
+    "Nodes State Build Iteration Ended Successfully, Nodes modified:",
+    nodesArray.arr.length
+  );
+  logger.info("Nodes Build Iteration Time:", interval + "s");
 };
 
-module.exports = {mainNodesStateBuilder};
+module.exports = { mainNodesStateBuilder };

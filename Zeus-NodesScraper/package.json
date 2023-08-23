@@ -9,6 +9,7 @@
   "author": "Adam Yodinsky",
   "license": "ISC",
   "dependencies": {
+    "@kubernetes/client-node": "^0.18.1",
     "bunyan": "^1.8.12",
     "exec-sh": "^0.3.4",
     "express": "^4.17.1",

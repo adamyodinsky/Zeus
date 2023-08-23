@@ -1,21 +1,21 @@
-version: '3.4'
+version: "3.4"
 
 services:
-#  mongo:
-#    image: mongo
-#    restart: always
-#    container_name: 'mongo_porus'
-#    environment:
-##      MONGO_INITDB_DATABASE: porus
-#      MONGO_INITDB_ROOT_USERNAME: root
-#      MONGO_INITDB_ROOT_PASSWORD: 1234
-#    ports:
-#      - '27017-27019:27017-27019'
+  #  mongo:
+  #    image: mongo
+  #    restart: always
+  #    container_name: 'mongo_porus'
+  #    environment:
+  ##      MONGO_INITDB_DATABASE: porus
+  #      MONGO_INITDB_ROOT_USERNAME: root
+  #      MONGO_INITDB_ROOT_PASSWORD: 1234
+  #    ports:
+  #      - '27017-27019:27017-27019'
 
   mongo:
     image: mongo
     restart: always
-    container_name: 'mongo_porus'
+    container_name: "mongo_porus"
     hostname: mongodb
     environment:
       #      MONGO_INITDB_DATABASE: porus
@@ -27,9 +27,8 @@ services:
       interval: 10s
       start_period: 30s
     ports:
-      - '27017-27019:27017-27019'
+      - "27027:27017"
 #    command: ["-f", "/etc/mongod.conf.orig", "--replSet", "r01", "--bind_ip_all"]
-
 
 #  mongo-express:
 #    image: mongo-express
