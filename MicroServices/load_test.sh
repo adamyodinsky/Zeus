@@ -1,10 +1,10 @@
 #!/bin/bash -e
 set -x
 
-url="${1}"
-length="${2}"
-inner_interval="${3}"
-outer_interval="${4}"
+url="${1:-http\:\/\/localhost\:3000}"
+length="${2:-5}"
+inner_interval="${3:-2}"
+outer_interval="${4:-2}"
 
 while true; do
   echo "Starting load test..."

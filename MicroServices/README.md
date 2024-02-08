@@ -1,8 +1,13 @@
-# Zeus
+# Zeus Demo Micro-Services chain
 
-# helm 
+Demo micro-services chain designed to simulate a load of microservices in a k8s cluster as easily as possible.
 
 Execute this script to create a microservices chain set
-```MicroServices/helm/generate_microservices.sh <letter> <number>``` 
+`./MicroServices/generate_microservices.sh <letter> <number>`
+
 - letter: is the microservices chain set identifier
-- length: the length of the microservices chain 
+- length: the length of the microservices chain
+
+## Load Testing
+
+`./load_test.sh <url> <length> <inner-loop-interval> <outer-loop-interval>
