@@ -23,7 +23,7 @@ helm_install() {
   local target_num=$((host_num + 1))
   local script_dir=$(get_script_dir)
 
-  helm install demo-service-${letter}-${host_num} ${script_dir}/helm/demoServiceChart/ \
+  helm install demo-service-${letter}-${host_num} ${script_dir}/demoServiceChart/ \
     --set letter="${letter}" \
     --set num="${host_num}" \
     --set target_host="demoservice-${letter}-${target_num}" \

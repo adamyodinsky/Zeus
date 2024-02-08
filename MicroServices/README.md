@@ -10,4 +10,6 @@ Execute this script to create a microservices chain set
 
 ## Load Testing
 
-`./load_test.sh <url> <length> <inner-loop-interval> <outer-loop-interval>
+Do some load testing on the chain
+
+`./load_test.sh <url> <length> <inner-loop-interval> <outer-loop-interval>`
