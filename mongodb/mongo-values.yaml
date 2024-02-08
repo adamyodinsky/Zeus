@@ -1,0 +1,4 @@
+auth:
+  enabled: true
+  rootUser: root
+  rootPassword: "1234"

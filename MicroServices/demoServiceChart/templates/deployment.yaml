@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demoservice-controller-{{ .Values.letter}}-{{ .Values.num }}
+  labels:
+    app: demoservice-{{ .Values.letter}}-{{ .Values.num }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: demoservice-{{ .Values.letter }}-{{ .Values.num }}
+  template:
+    metadata:
+      labels:
+        app: demoservice-{{ .Values.letter }}-{{ .Values.num }}
+    spec:
+      containers:
+        - name: demoservice
+          imagePullSecrets:
+            - name: regcred
+          image: adamyo/public:demoService-v1.0.3
+          imagePullPolicy: Always
+          resources:
+            requests:
+              memory: "{{ .Values.mem }}Mi"
+              cpu: "{{ .Values.cpu }}m"
+            limits:
+              memory: "256Mi"
+              cpu: "500m"
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 2
+          env:
+            - name: TARGET_HOST
+              value: "{{ .Values.target_host }}"
+            - name: TARGET_PORT
+              value: "3000"
+            - name: NON_LEAF
+              value: "{{ .Values.non_leaf }}"
